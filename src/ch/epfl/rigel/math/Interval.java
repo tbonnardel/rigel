@@ -10,7 +10,7 @@ package ch.epfl.rigel.math;
 public abstract class Interval {
 
     /**
-     * La borne inféieure de l'intervalle
+     * La borne inférieure de l'intervalle
      */
     private final double lowBound;
 
