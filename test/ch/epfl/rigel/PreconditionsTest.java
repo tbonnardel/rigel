@@ -1,5 +1,6 @@
 package ch.epfl.rigel;
 
+import ch.epfl.rigel.math.ClosedInterval;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

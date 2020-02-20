@@ -31,7 +31,9 @@ public final class Preconditions {
      * @throws IllegalArgumentException si value n'appartient pas à interval
      */
     public static double checkInInterval(Interval interval, double value) {
-        // TODO: A implémenter une fois la classe Interval créée
-        return 0;
+        if (!interval.contains(value))
+            throw new IllegalArgumentException();
+
+        return value;
     }
 }
