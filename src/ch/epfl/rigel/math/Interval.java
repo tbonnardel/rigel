@@ -80,7 +80,7 @@ public abstract class Interval {
     }
 
     /**
-     * Redéfinition de hashCode de Object en levant l'exception UnsupportedOperationException.
+     * Redéfinition de equal de Object en levant l'exception UnsupportedOperationException.
      * Remarque : il n'est pas pertinent de comparer deux intervalles dans la mesure où les approximations
      * des flottants en Java rend toute comparaison délicate ...
      *
