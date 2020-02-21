@@ -75,6 +75,6 @@ abstract class SphericalCoordinates {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(lon, lat);
+        throw new UnsupportedOperationException();
     }
 }
