@@ -59,5 +59,8 @@ public class GeographicCoordinatesTest {
     void onStringWorksWithValidParameters() {
         GeographicCoordinates gc = GeographicCoordinates.ofDeg(12.3456, 7.8901);
         assertEquals("(lon=12.3456°, lat=7.8901°)", gc.toString());
+
+        gc =GeographicCoordinates.ofDeg(6.57, 46.52);
+        assertEquals("(lon=6.5700°, lat=46.5200°)", gc.toString());
     }
 }
