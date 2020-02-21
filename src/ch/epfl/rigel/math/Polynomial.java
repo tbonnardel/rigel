@@ -54,7 +54,7 @@ public final class Polynomial {
     }
 
     /**
-     * Redéfintion de la mathode toString de la classe Object pour représenter
+     * Redéfintion de la méthode toString de la classe Object pour représenter
      * de manière textuelle le polynôme.
      *
      * @return la représentation textuelle du polynôme
