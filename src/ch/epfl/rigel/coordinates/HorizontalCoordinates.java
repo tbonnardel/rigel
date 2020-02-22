@@ -1,9 +1,15 @@
 package ch.epfl.rigel.coordinates;
 
+import static java.lang.Math.acos;
+import static java.lang.Math.sin;
+import static java.lang.Math.cos;
+
 import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
 import ch.epfl.rigel.math.RightOpenInterval;
+
+import java.util.Locale;
 
 /**
  * Classe qui représente des coordonnées horizontales.
@@ -98,6 +104,7 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
         double MAX_WEST_IN_OCTANT_NAME = 337.5;
         double MIN_EAST_IN_OCTANT_NAME = 22.5;
         double MAX_EAST_IN_OCTANT_NAME = 157.5;
+
         if (MIN_NORTH_IN_OCTANT_NAME < azDeg || azDeg < MAX_NORTH_IN_OCTANT_NAME)
             stringBuilder.append(n);
         if (MIN_SOUTH_IN_OCTANT_NAME < azDeg && azDeg < MAX_SOUTH_IN_OCTANT_NAME)
@@ -107,5 +114,54 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
         if (MIN_WEST_IN_OCTANT_NAME < azDeg && azDeg < MAX_WEST_IN_OCTANT_NAME)
             stringBuilder.append(w);
         return stringBuilder.toString();
+    }
+
+    /**
+     * Méthode qui retourne la hauteur en radians.
+     *
+     * @return la hauteur en radians
+     */
+    public double alt() {
+        return lat();
+    }
+
+    /**
+     * Méthode qui retourne la hauteur en degrés.
+     *
+     * @return la hauteur en degrés
+     */
+    public double altDeg() {
+        return latDeg();
+    }
+
+    /**
+     * Méthode qui retourne la distance angulaire entre le récepteur courant
+     * et le point donné en argument.
+     *
+     * @param that le point donné
+     * @return la distance angulaire entre le récepteur et le point that
+     */
+    public double angularDistanceTo(HorizontalCoordinates that) {
+        double az1 = az();
+        double az2 = that.az();
+        double alt1 = alt();
+        double alt2 = that.alt();
+
+        return acos(sin(alt1) * sin(alt2)
+                + cos(alt1) * cos(alt2) * cos(az1-az2));
+    }
+
+    /**
+     * Redéfinition de la méthode toString qui retourne la représentation textuelle des coordonnées horizontales,
+     * en degrés avec une précision de e-4.
+     *
+     * @return la représentation textuelle des coordonnées horizontales
+     */
+    @Override
+    public String toString() {
+        return String.format(Locale.ROOT,
+                "(az=%.4f°, alt=%.4f°)",
+                lonDeg(),
+                latDeg());
     }
 }
