@@ -27,32 +27,12 @@ public final class EquatorialCoordinates extends SphericalCoordinates {
      * @throws IllegalArgumentException si l'une des composantes est invalide
      */
     public static EquatorialCoordinates of(double ra, double dec) {
-        Preconditions.checkArgument(isValidRa(ra));
-        Preconditions.checkArgument(isValidDec(dec));
+        RightOpenInterval raInterval = RightOpenInterval.of(Angle.ofDeg(0), Angle.ofDeg(360));
+        ClosedInterval decInterval = ClosedInterval.symmetric(Angle.ofDeg(180));
+        Preconditions.checkInInterval(raInterval, ra);
+        Preconditions.checkInInterval(decInterval, dec);
 
         return new EquatorialCoordinates(ra, dec);
-    }
-
-    /**
-     * Méthode qui vérifie la validité de la valeur de l'ascension droite en radians.
-     *
-     * @param ra l'ascension droite en radians
-     * @return true ssi la valeur de l'ascension droite en radians est valide
-     */
-    private static boolean isValidRa(double ra) {
-        RightOpenInterval raInterval = RightOpenInterval.of(Angle.ofDeg(0), Angle.ofDeg(360));
-        return raInterval.contains(ra);
-    }
-
-    /**
-     * Méthode qui vérifie la validité de la valeur de la déclinaison en radians.
-     *
-     * @param dec la déclinaison en radians
-     * @return true ssi la valeur de la déclinaison en radians est valide
-     */
-    private static boolean isValidDec(double dec) {
-        ClosedInterval decInterval = ClosedInterval.symmetric(Angle.ofDeg(180));
-        return decInterval.contains(dec);
     }
 
     /**
