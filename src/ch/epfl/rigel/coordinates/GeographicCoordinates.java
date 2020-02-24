@@ -47,7 +47,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
     }
 
     /**
-     * Méthode statique qui vérifie su l'angle de latitude passé en degrés est valide.
+     * Méthode statique qui vérifie si l'angle de latitude passé en degrés est valide.
      *
      * @param latDeg la latitude en degrés à tester
      * @return vrai ssi l'angle qui lui est passé représente une latitude valide en degrés
