@@ -11,8 +11,8 @@ import java.util.Objects;
  */
 abstract class SphericalCoordinates {
 
-    private double lon;
-    private double lat;
+    private final double lon;
+    private final double lat;
 
     SphericalCoordinates(double lon, double lat) {
         this.lon = lon;
