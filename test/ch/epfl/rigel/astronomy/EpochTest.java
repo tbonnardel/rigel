@@ -11,6 +11,10 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class EpochTest {
 
+    private final static double NB_DAYS_IN_CENTURY = 36525;
+    private final static double NB_HOURS_IN_CENTURY = NB_DAYS_IN_CENTURY * 24.;
+    private final static double NB_MINUTES_IN_CENTURY = NB_HOURS_IN_CENTURY * 60.;
+
     @Test
     void daysUntilWorksWithExactZonedDateTimeAndJ2000() {
         ZonedDateTime target = ZonedDateTime.of(
@@ -45,10 +49,11 @@ public class EpochTest {
     void julianCenturiesUntilWorksWithStandardZonedDateTimeAndJ2000() {
         ZonedDateTime d = ZonedDateTime.of(
                 LocalDate.of(2100, Month.JANUARY, 3),
-                LocalTime.of(18, 0),
+                LocalTime.of(18, 10),
                 ZoneOffset.UTC);
 
-        assertEquals(1.0000616016427104, Epoch.J2000.julianCenturiesUntil(d), 1e-10); // TODO: vérifier cette valeur
+        double expected = 1. + 2./NB_DAYS_IN_CENTURY + (18. - 12.)/NB_HOURS_IN_CENTURY + 10./NB_MINUTES_IN_CENTURY;
+        assertEquals(expected, Epoch.J2000.julianCenturiesUntil(d), 1e-10);
     }
 
     @Test
@@ -84,11 +89,11 @@ public class EpochTest {
     @Test
     void julianCenturiesUntilWorksWithStandardZonedDateTimeAndJ2010() {
         ZonedDateTime d = ZonedDateTime.of(
-                LocalDate.of(2100, Month.JANUARY, 3),
-                LocalTime.of(18, 0),
+                LocalDate.of(2110, Month.JANUARY, 3),
+                LocalTime.of(18, 10),
                 ZoneOffset.UTC);
-
-        assertEquals(0.9000889801505818, Epoch.J2010.julianCenturiesUntil(d), 1e-10); // TODO: vérifier cette valeur
+        double expected = 1. + 2./NB_DAYS_IN_CENTURY + 18./NB_HOURS_IN_CENTURY + 10./NB_MINUTES_IN_CENTURY;
+        assertEquals(expected, Epoch.J2010.julianCenturiesUntil(d), 1e-10);
     }
 
     // TODO: Faire un test avec des untils qui sont négatifs
