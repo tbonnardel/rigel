@@ -46,8 +46,8 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
         // Formule provenant du paragraphe 2.6 de l'énoncé de l'étape 3
         Polynomial P = Polynomial.of(
                 Angle.ofDMS(0,0, 0.00181),
-                Angle.ofDMS(0, 0, -0.0006),
-                Angle.ofDMS(0, 0, -46.815),
+                -1.*Angle.ofDMS(0, 0, 0.0006),
+                -1.*Angle.ofDMS(0, 0, 46.815),
                 Angle.ofDMS(23, 26, 21.45));
         double T = Epoch.J2000.julianCenturiesUntil(when);
 
