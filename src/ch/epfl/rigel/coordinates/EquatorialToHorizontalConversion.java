@@ -1,14 +1,14 @@
 package ch.epfl.rigel.coordinates;
 
 import ch.epfl.rigel.astronomy.SiderealTime;
+import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.ClosedInterval;
+import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.time.ZonedDateTime;
 import java.util.function.Function;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static java.lang.Math.atan2;
-import static java.lang.Math.asin;
+import static java.lang.Math.*;
 
 /**
  * Cette classe représente un changement de système de coordonnées depuis
@@ -35,12 +35,13 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
         double cosDec = cos(equ.dec());
         double sinDec = sin(equ.dec());
 
-        double h = asin(sinDec*sinLat + cosDec*cosLat*cos(H));
-        double A = atan2(
-                -1.*cosDec*cosLat*sin(H),
-                sinDec - sinLat*sin(h)
-        );
-        return HorizontalCoordinates.of(A, h);
+        double h = sinDec*sinLat + cosDec*cosLat*cos(H);
+        double A = Angle.normalizePositive(atan2(
+                -cosDec*cosLat*sin(H),
+                sinDec - sinLat*h
+        ));
+
+        return HorizontalCoordinates.of(A, asin(h));
     }
 
     /**
