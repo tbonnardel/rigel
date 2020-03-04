@@ -5,7 +5,6 @@ import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.Polynomial;
 
 import java.time.ZonedDateTime;
-import java.util.Objects;
 import java.util.function.Function;
 
 import static java.lang.Math.cos;
