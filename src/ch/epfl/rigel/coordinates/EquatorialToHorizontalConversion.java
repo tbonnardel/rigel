@@ -2,8 +2,6 @@ package ch.epfl.rigel.coordinates;
 
 import ch.epfl.rigel.astronomy.SiderealTime;
 import ch.epfl.rigel.math.Angle;
-import ch.epfl.rigel.math.ClosedInterval;
-import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.time.ZonedDateTime;
 import java.util.function.Function;
@@ -28,6 +26,7 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
         this.cosLat = cos(where.lat());
         this.sinLat = sin(where.lat());
     }
+
 
     @Override
     public HorizontalCoordinates apply(EquatorialCoordinates equ) {

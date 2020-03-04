@@ -53,15 +53,4 @@ public final class SiderealTime {
     public static double local(ZonedDateTime when, GeographicCoordinates where) {
         return greenwich(when) + where.lon();
     }
-
-    public static void main(String[] args) {
-        ZonedDateTime d = ZonedDateTime.of(
-                LocalDate.of(2000, Month.JANUARY, 1),
-                LocalTime.of(14, 30),
-                ZoneOffset.UTC
-        ); // d est à 3h30 après J2000
-        ZonedDateTime d2 = d.truncatedTo(ChronoUnit.DAYS);
-        System.out.println(d.withZoneSameInstant(ZoneOffset.UTC));
-
-    }
 }
