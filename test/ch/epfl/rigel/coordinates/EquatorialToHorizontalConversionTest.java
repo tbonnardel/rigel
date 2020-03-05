@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class EquatorialToHorizontalConversionTest {
 
-    private final static double DELTA = 1e-7;
+    private final static double DELTA = 1e-2;
 
     @Test
     void EquatorialToHorizontalConversionWorksWithValidParameters() {
@@ -27,7 +27,7 @@ public class EquatorialToHorizontalConversionTest {
         EquatorialToHorizontalConversion conversionObject = new EquatorialToHorizontalConversion(d, gc);
     }
 
-    // @Test
+    @Test
     void conversionWorksWithTheExampleOfTheBook() {
         // Page 48
 
@@ -35,15 +35,23 @@ public class EquatorialToHorizontalConversionTest {
         // double H = Angle.ofHr(5.862222); // 5h 51m 44s
         // System.out.println("H: " + Angle.toHr(H) + "h");
 
+        double H = 5.862222; // en heures
+        double lambdaHr = -3.6;
+        double lambdaDeg = Angle.toDeg(Angle.ofHr(-3.6));
+        double t = (H - 6.697374558 - lambdaHr) / 1.002737909;
+        int h = 2;
+        int min = 45;
+        int s = 26;
+
         EquatorialCoordinates equ = EquatorialCoordinates.of(
                 0,
                 Angle.ofDMS(23, 13, 10)
         );
 
-        GeographicCoordinates gc = GeographicCoordinates.ofDeg(Angle.normalizePositive(Angle.ofDeg(-64)), 52);
+        GeographicCoordinates gc = GeographicCoordinates.ofDeg(lambdaDeg, 52);
         ZonedDateTime d = ZonedDateTime.of(
-                LocalDate.of(1980, Month.APRIL, 22),
-                LocalTime.of(12, 0, 0),
+                LocalDate.of(2000, Month.JANUARY, 1),
+                LocalTime.of(h, min, s),
                 ZoneOffset.UTC
         );
 
