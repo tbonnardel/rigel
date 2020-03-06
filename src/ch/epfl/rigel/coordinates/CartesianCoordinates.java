@@ -1,7 +1,6 @@
 package ch.epfl.rigel.coordinates;
 
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Cette classe représente des coordonnées cartésiennes.
