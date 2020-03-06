@@ -1,5 +1,6 @@
 package ch.epfl.rigel.coordinates;
 
+import ch.epfl.rigel.math.Angle;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,12 +10,18 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class MyStereographicProjectionTest {
 
+    private final static double DELTA = 1e-9;
+
     @Test
     void constructorWorksWithStandardParameters() {
         StereographicProjection sp = new StereographicProjection(HorizontalCoordinates.ofDeg(11, -3.1));
     }
 
-
+    @Test
+    void applyToAngleWorks() {
+        StereographicProjection sp = new StereographicProjection(HorizontalCoordinates.ofDeg(11, -3.1));
+        assertEquals(2., sp.applyToAngle(Angle.ofDeg(180)), DELTA);
+    }
 
     @Test
     void equalsThrowsException() {
