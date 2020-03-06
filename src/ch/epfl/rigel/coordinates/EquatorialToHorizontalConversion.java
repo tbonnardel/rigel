@@ -21,6 +21,14 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
     private final double cosLat;
     private final double sinLat;
 
+    /**
+     * Constructeur qui construit un changement de système de coordonnées entre
+     * les coordonnées équatoriales et les coordonnées horizontales pour le couple date/heure when
+     * et la localisation d'observation where.
+     *
+     * @param when le couple date/heure de l'observation
+     * @param where les coordonnées du lieu d'observation
+     */
     public EquatorialToHorizontalConversion(ZonedDateTime when, GeographicCoordinates where) {
         this.localSideralTime =  SiderealTime.local(when, where);
         this.cosLat = cos(where.lat());
@@ -28,6 +36,13 @@ public final class EquatorialToHorizontalConversion implements Function<Equatori
     }
 
 
+    /**
+     * Méthode qui retourne les coordonnées horizontales correspondant
+     * aux coordonnées équatoriales equ.
+     *
+     * @param equ les coordonnnées équatoriales à convertir
+     * @return les coordonnées horizontales correspondant aux coordonnées équatoriales données
+     */
     @Override
     public HorizontalCoordinates apply(EquatorialCoordinates equ) {
         double H = this.localSideralTime - equ.ra();
