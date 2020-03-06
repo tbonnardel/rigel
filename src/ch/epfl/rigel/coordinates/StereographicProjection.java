@@ -1,7 +1,6 @@
 package ch.epfl.rigel.coordinates;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.function.Function;
 
 import static java.lang.Math.sin;
