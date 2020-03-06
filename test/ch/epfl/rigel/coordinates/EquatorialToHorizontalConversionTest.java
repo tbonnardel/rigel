@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class EquatorialToHorizontalConversionTest {
 
-    private final static double DELTA = 1e-2;
+    private final static double DELTA = 1e-4;
 
     @Test
     void EquatorialToHorizontalConversionWorksWithValidParameters() {
@@ -40,8 +40,9 @@ public class EquatorialToHorizontalConversionTest {
         double lambdaDeg = Angle.toDeg(Angle.ofHr(-3.6));
         double t = (H - 6.697374558 - lambdaHr) / 1.002737909;
         int h = 2;
-        int min = 45;
-        int s = 26;
+        int min = 47; // 45
+        int s = 23; // 26
+        int ns = 999000000;
 
         EquatorialCoordinates equ = EquatorialCoordinates.of(
                 0,
@@ -51,7 +52,7 @@ public class EquatorialToHorizontalConversionTest {
         GeographicCoordinates gc = GeographicCoordinates.ofDeg(lambdaDeg, 52);
         ZonedDateTime d = ZonedDateTime.of(
                 LocalDate.of(2000, Month.JANUARY, 1),
-                LocalTime.of(h, min, s),
+                LocalTime.of(h, min, s, ns),
                 ZoneOffset.UTC
         );
 
