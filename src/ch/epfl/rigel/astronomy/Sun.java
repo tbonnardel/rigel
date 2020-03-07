@@ -36,4 +36,22 @@ public final class Sun extends CelestialObject {
         this.eclipticPos = Objects.requireNonNull(eclipticPos);
         this.meanAnomaly = meanAnomaly;
     }
+
+    /**
+     * Méthode d'accès qui retourne la position écliptique du Soleil.
+     *
+     * @return la position écliptique du Soleil
+     */
+    public EclipticCoordinates eclipticPos() {
+        return eclipticPos;
+    }
+
+    /**
+     * Méthode d'accès qui retourne l'anomalie moyenne du Soleil.
+     *
+     * @return l'anomalie moyenne du Soleil
+     */
+    public double meanAnomaly() {
+        return meanAnomaly;
+    }
 }
