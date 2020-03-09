@@ -1,65 +1,88 @@
 package ch.epfl.rigel.coordinates;
 
+import ch.epfl.test.TestRandomizer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @author Thomas Bonnardel (319827)
- */
-public class GeographicCoordinatesTest {
-
+class GeographicCoordinatesTest {
     @Test
-    void ofDegWorksOnValidParameters() {
-        GeographicCoordinates gc = GeographicCoordinates.ofDeg(-15., 21);
-        assertEquals(-15., gc.lonDeg(), 1e-10);
-        assertEquals(21., gc.latDeg(), 1e-10);
-        gc = GeographicCoordinates.ofDeg(-180., 21);
-        assertEquals(-180., gc.lonDeg(), 1e-10);
-        assertEquals(21., gc.latDeg(), 1e-10);
-        gc = GeographicCoordinates.ofDeg(-179.9, 21);
-        assertEquals(-179.9, gc.lonDeg(), 1e-10);
-        assertEquals(21., gc.latDeg(), 1e-10);
-        gc = GeographicCoordinates.ofDeg(-21, -90.);
-        assertEquals(-21., gc.lonDeg(), 1e-10);
-        assertEquals(-90., gc.latDeg(), 1e-10);
-        gc = GeographicCoordinates.ofDeg(-21, 90.);
-        assertEquals(-21., gc.lonDeg(), 1e-10);
-        assertEquals(90., gc.latDeg(), 1e-10);
+    void isValidLonDegWorks() {
+        var rng = TestRandomizer.newRandom();
+        for (int i = 0; i < TestRandomizer.RANDOM_ITERATIONS; i++) {
+            var lonDeg = rng.nextDouble(-180, 180);
+            assertTrue(GeographicCoordinates.isValidLonDeg(lonDeg));
+        }
+        assertFalse(GeographicCoordinates.isValidLonDeg(-180.0001));
+        assertFalse(GeographicCoordinates.isValidLonDeg(+180));
     }
 
     @Test
-    void ofDegFailedOnIllegalLongitude() {
+    void isValidLatDegWorks() {
+        var rng = TestRandomizer.newRandom();
+        for (int i = 0; i < TestRandomizer.RANDOM_ITERATIONS; i++) {
+            var latDeg = rng.nextDouble(-90, 90);
+            assertTrue(GeographicCoordinates.isValidLatDeg(latDeg));
+        }
+        assertTrue(GeographicCoordinates.isValidLatDeg(90));
+        assertFalse(GeographicCoordinates.isValidLatDeg(-90.0001));
+        assertFalse(GeographicCoordinates.isValidLatDeg(+90.0001));
+    }
+
+    @Test
+    void geoOfDegWorksWithValidCoordinates() {
+        var rng = TestRandomizer.newRandom();
+        for (int i = 0; i < TestRandomizer.RANDOM_ITERATIONS; i++) {
+            var lonDeg = rng.nextDouble(-180, 180);
+            var latDeg = rng.nextDouble(-90, 90);
+            var c = GeographicCoordinates.ofDeg(lonDeg, latDeg);
+            assertEquals(lonDeg, c.lonDeg(), 1e-8);
+            assertEquals(latDeg, c.latDeg(), 1e-8);
+        }
+    }
+
+    @Test
+    void geoOfDegFailsWithInvalidCoordinates() {
         assertThrows(IllegalArgumentException.class, () -> {
-            GeographicCoordinates gc = GeographicCoordinates.ofDeg(-181., 21);
+            GeographicCoordinates.ofDeg(-180.0001, 0);
         });
         assertThrows(IllegalArgumentException.class, () -> {
-            GeographicCoordinates gc = GeographicCoordinates.ofDeg(180., 21);
+            GeographicCoordinates.ofDeg(180, 0);
         });
         assertThrows(IllegalArgumentException.class, () -> {
-            GeographicCoordinates gc = GeographicCoordinates.ofDeg(200., 21);
+            GeographicCoordinates.ofDeg(0, -90.0001);
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            GeographicCoordinates.ofDeg(0, 90.0001);
         });
     }
 
     @Test
-    void ofDegFailedOnIllegalLatitude() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            GeographicCoordinates gc = GeographicCoordinates.ofDeg(11., -90.1);
-        });
-        assertThrows(IllegalArgumentException.class, () -> {
-            GeographicCoordinates gc = GeographicCoordinates.ofDeg(11., -100);
-        });
-        assertThrows(IllegalArgumentException.class, () -> {
-            GeographicCoordinates gc = GeographicCoordinates.ofDeg(11., 90.1);
+    void geoLonLatReturnValuesInRadians() {
+        var rng = TestRandomizer.newRandom();
+        for (int i = 0; i < TestRandomizer.RANDOM_ITERATIONS; i++) {
+            var lonDeg = rng.nextDouble(-180, 180);
+            var latDeg = rng.nextDouble(-90, 90);
+            var c = GeographicCoordinates.ofDeg(lonDeg, latDeg);
+            var lon = Math.toRadians(lonDeg);
+            var lat = Math.toRadians(latDeg);
+            assertEquals(lon, c.lon(), 1e-8);
+            assertEquals(lat, c.lat(), 1e-8);
+        }
+    }
+
+    @Test
+    void geoEqualsThrowsUOE() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            var c = GeographicCoordinates.ofDeg(0, 0);
+            c.equals(c);
         });
     }
 
     @Test
-    void onStringWorksWithValidParameters() {
-        GeographicCoordinates gc = GeographicCoordinates.ofDeg(12.3456, 7.8901);
-        assertEquals("(lon=12.3456°, lat=7.8901°)", gc.toString());
-
-        gc =GeographicCoordinates.ofDeg(6.57, 46.52);
-        assertEquals("(lon=6.5700°, lat=46.5200°)", gc.toString());
+    void geoHashCodeThrowsUOE() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            GeographicCoordinates.ofDeg(0, 0).hashCode();
+        });
     }
 }

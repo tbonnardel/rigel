@@ -50,6 +50,6 @@ public final class SiderealTime {
      * @return le temps sidéral local, en radians et compris dans l'intervalle [0, τ[
      */
     public static double local(ZonedDateTime when, GeographicCoordinates where) {
-        return greenwich(when) + where.lon();
+        return Angle.normalizePositive(greenwich(when) + where.lon());
     }
 }

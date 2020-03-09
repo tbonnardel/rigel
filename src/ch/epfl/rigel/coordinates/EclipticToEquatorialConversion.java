@@ -74,7 +74,7 @@ public final class EclipticToEquatorialConversion implements Function<EclipticCo
                 sinLon*cosOfEclipticObliquity - tan(lat)*sinOfEclipticObliquity,
                 cos(lon));
         double dec = asin(sin(lat)*cosOfEclipticObliquity + cosLat*sinOfEclipticObliquity*sinLon);
-        return EquatorialCoordinates.of(ra, dec);
+        return EquatorialCoordinates.of(Angle.normalizePositive(ra), dec);
     }
 
     /**

@@ -7,118 +7,73 @@ import java.time.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @author Thomas Bonnardel (319827)
- */
-public class EquatorialToHorizontalConversionTest {
+class EquatorialToHorizontalConversionTest {
+    private static final GeographicCoordinates EPFL =
+            GeographicCoordinates.ofDeg(6.57, 46.52);
 
-    private final static double DELTA = 1e-4;
-
-    @Test
-    void EquatorialToHorizontalConversionWorksWithValidParameters() {
-        ZonedDateTime d = ZonedDateTime.of(
-                LocalDate.now(),
-                LocalTime.now(),
-                ZoneOffset.UTC
-        );
-
-        GeographicCoordinates gc = GeographicCoordinates.ofDeg(11, 12);
-
-        EquatorialToHorizontalConversion conversionObject = new EquatorialToHorizontalConversion(d, gc);
-    }
+    private static final ZonedDateTime ZDT_SEMESTER_START = ZonedDateTime.of(
+            LocalDate.of(2020, Month.FEBRUARY, 17),
+            LocalTime.of(13, 15),
+            ZoneOffset.ofHours(1));
 
     @Test
-    void conversionWorksWithTheExampleOfTheBook() {
-        // Page 48
-
-        // Fonctionne en mettant ces lignes dans la méthode apply :
-        // double H = Angle.ofHr(5.862222); // 5h 51m 44s
-        // System.out.println("H: " + Angle.toHr(H) + "h");
-
-        double H = 5.862222; // en heures
-        double lambdaHr = -3.6;
-        double lambdaDeg = Angle.toDeg(Angle.ofHr(-3.6));
-        double t = (H - 6.697374558 - lambdaHr) / 1.002737909;
-        int h = 2;
-        int min = 47; // 45
-        int s = 23; // 26
-        int ns = 999000000;
-
-        EquatorialCoordinates equ = EquatorialCoordinates.of(
-                0,
-                Angle.ofDMS(23, 13, 10)
-        );
-
-        GeographicCoordinates gc = GeographicCoordinates.ofDeg(lambdaDeg, 52);
-        ZonedDateTime d = ZonedDateTime.of(
-                LocalDate.of(2000, Month.JANUARY, 1),
-                LocalTime.of(h, min, s, ns),
-                ZoneOffset.UTC
-        );
-
-        EquatorialToHorizontalConversion conversionObject = new EquatorialToHorizontalConversion(d, gc);
-        HorizontalCoordinates hc = conversionObject.apply(equ);
-
-        HorizontalCoordinates hcExpected = HorizontalCoordinates.of(
-                Angle.ofDMS(283, 16, 15.7),
-                Angle.ofDMS(19, 20, 3.64)
-        );
-
-        assertEquals(hcExpected.az(), hc.az(), DELTA);
-        assertEquals(hcExpected.alt(), hc.alt(), DELTA);
+    void e2hApplyWorksOnBookExample() {
+        // PACS4, §25, p. 47
+        var where = GeographicCoordinates.ofDeg(0, 52);
+        var when = ZonedDateTime.of(
+                LocalDate.of(2020, Month.MARCH, 6),
+                LocalTime.of(17, 0),
+                ZoneOffset.UTC);
+        var equToHor = new EquatorialToHorizontalConversion(when, where);
+        var starEquPos = EquatorialCoordinates.of(
+                5.7936855654392385,
+                Angle.ofDMS(23, 13, 10));
+        var starHorPos = equToHor.apply(starEquPos);
+        assertEquals(
+                Angle.ofDMS(283, 16, 15.70),
+                starHorPos.az(),
+                Angle.ofDMS(0, 0, 0.01 / 2d));
+        assertEquals(
+                Angle.ofDMS(19, 20, 3.64),
+                starHorPos.alt(),
+                Angle.ofDMS(0, 0, 0.01 / 2d));
     }
 
-    //@Test
-    void conversionWorksWithAWebsiteConverter() {
-        // Source : http://xjubier.free.fr/en/site_pages/astronomy/coordinatesConverter.html
-        EquatorialCoordinates equ = EquatorialCoordinates.of(
-                Angle.ofDMS(2*15, 0, 0),
-                Angle.ofDMS(3, 0, 0)
-        );
 
-        GeographicCoordinates gc = GeographicCoordinates.ofDeg(0, 0);
-        ZonedDateTime d = ZonedDateTime.of(
-                LocalDate.of(2000, Month.JULY, 1),
-                LocalTime.of(0, 1, 0),
-                ZoneOffset.UTC
-        );
+    @Test
+    void e2hApplyWorksOnKnownValues() {
+        var conversion = new EquatorialToHorizontalConversion(ZDT_SEMESTER_START, EPFL);
 
-        EquatorialToHorizontalConversion conversionObject = new EquatorialToHorizontalConversion(d, gc);
-        HorizontalCoordinates hc = conversionObject.apply(equ);
+        var ecl1 = conversion.apply(EquatorialCoordinates.of(4.9541, -1.4153));
+        var ecl2 = conversion.apply(EquatorialCoordinates.of(3.1282, +1.0420));
+        var ecl3 = conversion.apply(EquatorialCoordinates.of(5.8611, -1.1461));
+        var ecl4 = conversion.apply(EquatorialCoordinates.of(4.6253, +0.7497));
+        var ecl5 = conversion.apply(EquatorialCoordinates.of(3.9206, -0.6974));
 
-        HorizontalCoordinates hcExpected = HorizontalCoordinates.of(
-                Angle.normalizePositive(Angle.ofDeg(-20.4)),
-                Angle.ofDeg(86.8)
-        );
-
-        assertEquals(hcExpected.az(), hc.az(), DELTA);
-        assertEquals(hcExpected.alt(), hc.alt(), DELTA);
+        assertEquals(3.3066186595315328, ecl1.az(), 1e-9);
+        assertEquals(-0.712006491500507, ecl1.alt(), 1e-9);
+        assertEquals(6.0837767698593845, ecl2.az(), 1e-9);
+        assertEquals(0.3094716108610624, ecl2.alt(), 1e-9);
+        assertEquals(3.1528850649053615, ecl3.az(), 1e-9);
+        assertEquals(-0.3873294393853973, ecl3.alt(), 1e-9);
+        assertEquals(5.127316217769322, ecl4.az(), 1e-9);
+        assertEquals(0.7048208908932408, ecl4.alt(), 1e-9);
+        assertEquals(4.400817599512725, ecl5.az(), 1e-9);
+        assertEquals(-0.7328787267995615, ecl5.alt(), 1e-9);
     }
 
-    //@Test
-    void conversionWorksWithAnotherWebsite() {
-        // Source : http://infomesh.net/stuff/coords
-        EquatorialCoordinates equ = EquatorialCoordinates.of(
-                Angle.ofDeg(11),
-                Angle.ofDeg(-5)
-        );
+    @Test
+    void e2hEqualsThrowsUOE() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            var c = new EquatorialToHorizontalConversion(ZDT_SEMESTER_START, EPFL);
+            c.equals(c);
+        });
+    }
 
-        GeographicCoordinates gc = GeographicCoordinates.ofDeg(46.53, 6.62);
-        ZonedDateTime d = ZonedDateTime.of(
-                LocalDate.of(2020, Month.MARCH, 3),
-                LocalTime.of(22, 57, 30),
-                ZoneOffset.ofHours(1)
-        );
-
-        EquatorialToHorizontalConversion conversionObject = new EquatorialToHorizontalConversion(d, gc);
-        HorizontalCoordinates hc = conversionObject.apply(equ);
-
-        HorizontalCoordinates hcExpected = HorizontalCoordinates.of(
-                Angle.ofDeg(147.404),
-                Angle.ofDeg(-33.228)
-        );
-
-        assertEquals(hcExpected.az(), hc.az(), DELTA);
-        assertEquals(hcExpected.alt(), hc.alt(), DELTA);
+    @Test
+    void e2hHashCodeThrowsUOE() {
+        assertThrows(UnsupportedOperationException.class, () -> {
+            new EquatorialToHorizontalConversion(ZDT_SEMESTER_START, EPFL).hashCode();
+        });
     }
 }
