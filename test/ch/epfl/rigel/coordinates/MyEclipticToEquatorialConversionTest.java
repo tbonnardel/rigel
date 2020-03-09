@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Thomas Bonnardel (319827)
  */
-public class EclipticToEquatorialConversionTest {
+public class MyEclipticToEquatorialConversionTest {
 
     private final static double DELTA = 1e-4;
 

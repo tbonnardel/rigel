@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Thomas Bonnardel (319827)
  */
-public class HorizontalCoordinatesTest {
+public class MyHorizontalCoordinatesTest {
 
     @Test
     void ofWorksWithValidParameters() {

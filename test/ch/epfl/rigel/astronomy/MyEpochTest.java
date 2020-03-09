@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Thomas Bonnardel (319827)
  */
-public class EpochTest {
+public class MyEpochTest {
 
     private final static double NB_DAYS_IN_CENTURY = 36525;
     private final static double NB_HOURS_IN_CENTURY = NB_DAYS_IN_CENTURY * 24.;

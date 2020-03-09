@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Thomas Bonnardel (319827)
  */
-public class GeographicCoordinatesTest {
+public class MyGeographicCoordinatesTest {
 
     @Test
     void ofDegWorksOnValidParameters() {

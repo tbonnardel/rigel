@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Thomas Bonnardel (319827)
  */
-public class EclipticCoordinatesTest {
+public class MyEclipticCoordinatesTest {
 
     @Test
     void ofWorksWithValidParameters() {
