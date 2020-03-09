@@ -56,7 +56,8 @@ public class StereographicProjection implements Function<HorizontalCoordinates, 
      * @return le rayon du cercle correspondant à la projection du parallèle étudié
      */
     public double circleRadiusForParallel(HorizontalCoordinates hor) {
-        return cos(phi1) / (sin(hor.alt()) + sin(phi1));
+        double phi = hor.alt();
+        return cos(phi) / (sin(phi) + sin(phi1));
     }
 
     /**
