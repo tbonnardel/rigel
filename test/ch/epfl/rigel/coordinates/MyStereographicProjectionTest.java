@@ -108,6 +108,27 @@ public class MyStereographicProjectionTest {
     }
 
     @Test
+    void inverseApplyWorksWithMoreComplexParameters() {
+        /*
+        x = 1.4
+        y = -1.2
+        lambda0 = .1 rad
+        phi1 = .2 rad
+
+        rho = 1.84390889146
+        sinc = 0.8381404052
+        cosc = -0.54545454545
+         */
+        double lambda = Angle.normalizePositive(-0.880648981);
+        double phi = -0.698339604;
+        StereographicProjection sp = new StereographicProjection(HorizontalCoordinates.of(0.1, 0.2));
+        HorizontalCoordinates value = sp.inverseApply(CartesianCoordinates.of(1.4, -1.2));
+
+        assertEquals(lambda, value.az(), DELTA);
+        assertEquals(phi, value.alt(), DELTA);
+    }
+
+    @Test
     void equalsThrowsException() {
         assertThrows(UnsupportedOperationException.class, () -> {
             StereographicProjection sp = new StereographicProjection(HorizontalCoordinates.ofDeg(11, -3.1));
