@@ -3,7 +3,7 @@ package ch.epfl.rigel.astronomy;
 import ch.epfl.rigel.coordinates.EclipticToEquatorialConversion;
 
 /**
- * Cette classe représente un modèle d'objet céleste, c'est-à-dire d'une manière
+ * Cette interface représente un modèle d'objet céleste, c'est-à-dire d'une manière
  * de calculer les caractéristiques de cet objet à un instant donné.
  *
  * @author Thomas Bonnardel (319827)
