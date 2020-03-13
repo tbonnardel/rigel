@@ -4,6 +4,8 @@ import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.ClosedInterval;
 
+import static java.lang.Math.round;
+
 /**
  * Cette classe représente une étoile. Elle hérite de CelestialObject car,
  * dans le cadre de ce projet en tout cas, les étoiles sont fixes dans le
@@ -49,7 +51,7 @@ public final class Star extends CelestialObject {
      * @return la température de couleur de l'étoile
      */
     private int calculateColorTemperature(float colorIndex) {
-        return (int) (4600*(1/(.92*colorIndex + 1.7 ) + 1/(.92*colorIndex + .62)));
+        return (int) round(4600*(1/(.92*colorIndex + 1.7 ) + 1/(.92*colorIndex + .62)));
     }
 
     /**
