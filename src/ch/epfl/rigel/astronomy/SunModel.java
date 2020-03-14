@@ -32,7 +32,7 @@ public enum SunModel implements CelestialObjectModel<Sun> {
      * @param daysSinceJ2010 nombre de jours après l'époque J2000
      * @param eclipticToEquatorialConversion la conversion pour obtenir ses coordonnées équatoriales
      *                                       à partir de ses coordonnées écliptiques
-     * @return
+     * @return le modèle calculé
      */
     @Override
     public Sun at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
