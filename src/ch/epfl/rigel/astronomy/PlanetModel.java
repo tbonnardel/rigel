@@ -1,13 +1,21 @@
 package ch.epfl.rigel.astronomy;
 
+import ch.epfl.rigel.coordinates.EclipticCoordinates;
 import ch.epfl.rigel.coordinates.EclipticToEquatorialConversion;
+import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.Angle;
+import ch.epfl.rigel.math.Polynomial;
 
-import java.lang.reflect.Member;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.tan;
+import static java.lang.Math.asin;
+import static java.lang.Math.atan2;
+import static java.lang.Math.PI;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.log10;
 
 /**
  * Cette énumération contient les modèles des huit planètes du système solaire.
@@ -35,6 +43,9 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
     public static List<PlanetModel> ALL = List.of(MERCURY, VENUS, EARTH, MARS,
             JUPITER, SATURN, URANUS, NEPTUNE);
+
+    private final static double TROPICAL_YEAR = 365.242191;
+
 
     private final String frenchName;
     private final double orbitalPeriod;
@@ -77,9 +88,117 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         this.magnitude = magnitude;
     }
 
+    /**
+     * Méthode qui retourne la planète modélisé par le modèle en fonction des paramètres donnés.
+     *
+     * @param daysSinceJ2010 nombre de jours après l'époque J2000
+     * @param eclipticToEquatorialConversion la conversion pour obtenir ses coordonnées équatoriales
+     *                                       à partir de ses coordonnées écliptiques
+     * @return
+     */
     @Override
     public Planet at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
-        // TODO: To implement
-        return null;
+        double meanAnomaly = calculateMeanAnomaly(daysSinceJ2010);
+        double trueAnomaly = calculateTrueAnomaly(meanAnomaly);
+
+        double orbitRadius = calculateOrbitRadius(trueAnomaly);
+        double orbitPlaneLongitude = calculateOrbitPlaneLongitude(trueAnomaly);
+        double eclipticLatitude = calculateEclipticLatitude(orbitPlaneLongitude);
+
+        double eclipticRadius = calculateEclipticRadius(orbitRadius, eclipticLatitude);
+        double eclipticLongitude = calculateEclipticLongitude(orbitPlaneLongitude);
+
+        double geocentricEclipticLongitude;
+        if (isInnerPlanet()) {
+            geocentricEclipticLongitude = calculateGeocentricEclipticLongitudeForInnerPlanets(eclipticRadius, eclipticLongitude);
+        } else {
+            geocentricEclipticLongitude = calculateGeocentricEclipticLongitudeForOuterPlanets(eclipticRadius, eclipticLongitude);
+        }
+        double geocentricEclipticLatitude = calculateGeocentricEclipticLatitude(eclipticRadius, eclipticLongitude, eclipticLatitude, geocentricEclipticLongitude);
+
+        EquatorialCoordinates equatorialPos = eclipticToEquatorialConversion.apply(EclipticCoordinates.of(geocentricEclipticLongitude, geocentricEclipticLatitude));
+
+        double angularSize = calculateAngularSize(orbitRadius, orbitPlaneLongitude, eclipticLatitude);
+        double magnitude = calculateMagnitude(geocentricEclipticLongitude, orbitPlaneLongitude, orbitRadius);
+
+        return new Planet(frenchName, equatorialPos, (float)angularSize, (float)magnitude);
+
+    }
+
+    private boolean isInnerPlanet() {
+        return (semiMajorAxis < 1);
+    }
+
+    private double calculateMeanAnomaly(double daysSinceJ2010) {
+        return (Angle.TAU/TROPICAL_YEAR)*(daysSinceJ2010/orbitalPeriod) + J2010Longitude - perigeeLongitude;
+    }
+
+    private double calculateTrueAnomaly(double meanAnomaly) {
+        return meanAnomaly + 2*eccentricity*sin(meanAnomaly);
+    }
+
+    private double calculateOrbitRadius(double trueAnomaly) {
+        return (semiMajorAxis*(1-eccentricity*eccentricity)) / (1 + eccentricity*cos(trueAnomaly));
+    }
+
+    private double calculateOrbitPlaneLongitude(double trueAnomaly) {
+        return trueAnomaly + perigeeLongitude;
+    }
+
+    private double calculateEclipticLatitude(double orbitPlaneLongitude) {
+        return asin(sin(orbitPlaneLongitude - ascendingNodeLongitude)*sin(eclipticInclinaison));
+    }
+
+    private double calculateEclipticRadius(double radius, double eclipticLatitude) {
+        return radius*cos(eclipticLatitude);
+    }
+
+    private double calculateEclipticLongitude(double orbitPlaneLongitude) {
+        return atan2(sin(orbitPlaneLongitude - ascendingNodeLongitude) * cos(eclipticInclinaison),
+                cos(orbitPlaneLongitude - ascendingNodeLongitude)
+        ) + ascendingNodeLongitude;
+    }
+
+    private double calculateGeocentricEclipticLongitudeForInnerPlanets(double eclipticRadius, double eclipticLongitude) {
+        double L = 0; // TODO: les précalculer dans une constante
+        double R = 0; // TODO: les précalculer dans une constante
+        return PI + L + atan2(eclipticRadius*sin(L-eclipticLongitude),
+                            R - eclipticRadius*cos(L - eclipticLongitude));
+    }
+
+    private double calculateGeocentricEclipticLatitude(double eclipticRadius, double eclipticLongitude,
+                                                       double eclipticLatitude, double geocentricEclipticLongitude) {
+        double R = 0; // TODO: les précalculer dans une constante
+        double L = 0; // TODO: les précalculer dans une constante
+
+        return atan2(eclipticRadius*tan(eclipticLatitude)*sin(geocentricEclipticLongitude - eclipticLongitude),
+                R*sin(eclipticLongitude - L));
+    }
+
+    private double calculateGeocentricEclipticLongitudeForOuterPlanets(double eclipticRadius, double eclipticLongitude) {
+        double R = 0; // TODO: les précalculer dans une constante
+        double L = 0; // TODO: les précalculer dans une constante
+        return eclipticLongitude + atan2(R*sin(eclipticLongitude - L),
+                                    eclipticRadius - R*cos(eclipticLongitude - L));
+    }
+
+    private double calculateDistance(double orbitRadius, double orbitPlaneLongitude, double eclipticLatitude) {
+        double L = 0; // TODO: les précalculer dans une constante
+        double R = 0; // TODO: les précalculer dans une constante
+
+        double rhoSquare = Polynomial.of(1,
+                -2*R*cos(orbitPlaneLongitude - L)*cos(eclipticLatitude),
+                R*R).at(orbitRadius);
+        return sqrt(rhoSquare);
+    }
+
+    private double calculateAngularSize(double orbitRadius, double orbitPlaneLongitude, double eclipticLatitude) {
+        double rho = calculateDistance(orbitRadius, orbitPlaneLongitude, eclipticLatitude);
+        return angularSize/rho;
+    }
+
+    private double calculateMagnitude(double geocentricEclipticLongitude, double orbitPlaneLongitude, double orbitRadius) {
+        double F = (1 + cos(geocentricEclipticLongitude - orbitPlaneLongitude))/2;
+        return magnitude + 5*log10((orbitRadius*orbitPlaneLongitude)/sqrt(F));
     }
 }
