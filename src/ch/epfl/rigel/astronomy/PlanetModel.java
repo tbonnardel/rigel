@@ -99,35 +99,23 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      */
     @Override
     public Planet at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
-        System.out.println("Days: " + daysSinceJ2010);
         double meanAnomaly = calculateMeanAnomaly(daysSinceJ2010);
-        System.out.printf("Mean anomaly: %f°%n", Angle.toDeg(meanAnomaly));
         double trueAnomaly = calculateTrueAnomaly(meanAnomaly);
-        System.out.printf("True anomaly: %f°%n", Angle.toDeg(trueAnomaly));
 
         double orbitRadius = calculateOrbitRadius(trueAnomaly);
-        System.out.printf("r: %f AU%n", orbitRadius);
         double orbitPlaneLongitude = calculateOrbitPlaneLongitude(trueAnomaly);
-        System.out.printf("l: %f°%n", Angle.toDeg(orbitPlaneLongitude));
         double eclipticLatitude = calculateEclipticLatitude(orbitPlaneLongitude);
-        System.out.printf("psi: %f°%n", Angle.toDeg(eclipticLatitude));
 
         double eclipticRadius = calculateEclipticRadius(orbitRadius, eclipticLatitude);
-        System.out.printf("r': %f°%n", eclipticRadius);
         double eclipticLongitude = calculateEclipticLongitude(orbitPlaneLongitude);
-        System.out.printf("l': %f°%n", Angle.toDeg(eclipticLongitude));
 
         double geocentricEclipticLongitude;
         if (isInnerPlanet()) {
-            System.out.println("INNER PLANET");
             geocentricEclipticLongitude = calculateGeocentricEclipticLongitudeForInnerPlanets(daysSinceJ2010, eclipticRadius, eclipticLongitude);
         } else {
-            System.out.println("OUTER PLANET");
             geocentricEclipticLongitude = calculateGeocentricEclipticLongitudeForOuterPlanets(daysSinceJ2010, eclipticRadius, eclipticLongitude);
         }
-        System.out.printf("lambda: %f°%n", Angle.toDeg(geocentricEclipticLongitude));
         double geocentricEclipticLatitude = calculateGeocentricEclipticLatitude(daysSinceJ2010, eclipticRadius, eclipticLongitude, eclipticLatitude, geocentricEclipticLongitude);
-        System.out.printf("beta: %f°%n", Angle.toDeg(geocentricEclipticLatitude));
 
         EquatorialCoordinates equatorialPos = eclipticToEquatorialConversion.apply(EclipticCoordinates.of(geocentricEclipticLongitude, geocentricEclipticLatitude));
 
@@ -249,9 +237,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private double calculateGeocentricEclipticLatitude(double daysSinceJ2010, double eclipticRadius, double eclipticLongitude,
                                                        double eclipticLatitude, double geocentricEclipticLongitude) {
         double L = calculateEarthOrbitPlaneLongitude(daysSinceJ2010);
-        System.out.printf("L: %f°%n", Angle.toDeg(L));
         double R = calculateEarthOrbitRadius(daysSinceJ2010);
-        System.out.printf("R: %f AU%n", R);
 
         return atan(eclipticRadius*tan(eclipticLatitude)*sin(geocentricEclipticLongitude - eclipticLongitude)
                 /(R*sin(eclipticLongitude - L)));
@@ -288,7 +274,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double rhoSquare = Polynomial.of(1,
                 -2*R*cos(orbitPlaneLongitude - L)*cos(eclipticLatitude),
                 R*R).at(orbitRadius);
-        System.out.printf("rho2: %f UA2%n", rhoSquare);
+
         return sqrt(rhoSquare);
     }
 
@@ -303,7 +289,6 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      */
     private double calculateAngularSize(double daysSinceJ2010, double orbitRadius, double orbitPlaneLongitude, double eclipticLatitude) {
         double rho = calculateDistance(daysSinceJ2010, orbitRadius, orbitPlaneLongitude, eclipticLatitude);
-        System.out.printf("rho: %f UA%n", rho);
         return angularSize/rho;
     }
 
