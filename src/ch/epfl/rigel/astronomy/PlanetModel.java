@@ -12,6 +12,7 @@ import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.tan;
 import static java.lang.Math.asin;
+import static java.lang.Math.atan;
 import static java.lang.Math.atan2;
 import static java.lang.Math.PI;
 import static java.lang.Math.sqrt;
@@ -98,93 +99,191 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      */
     @Override
     public Planet at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {
+        System.out.println("Days: " + daysSinceJ2010);
         double meanAnomaly = calculateMeanAnomaly(daysSinceJ2010);
+        System.out.printf("Mean anomaly: %f°%n", Angle.toDeg(meanAnomaly));
         double trueAnomaly = calculateTrueAnomaly(meanAnomaly);
+        System.out.printf("True anomaly: %f°%n", Angle.toDeg(trueAnomaly));
 
         double orbitRadius = calculateOrbitRadius(trueAnomaly);
+        System.out.printf("r: %f AU%n", orbitRadius);
         double orbitPlaneLongitude = calculateOrbitPlaneLongitude(trueAnomaly);
+        System.out.printf("l: %f°%n", Angle.toDeg(orbitPlaneLongitude));
         double eclipticLatitude = calculateEclipticLatitude(orbitPlaneLongitude);
+        System.out.printf("psi: %f°%n", Angle.toDeg(eclipticLatitude));
 
         double eclipticRadius = calculateEclipticRadius(orbitRadius, eclipticLatitude);
+        System.out.printf("r': %f°%n", eclipticRadius);
         double eclipticLongitude = calculateEclipticLongitude(orbitPlaneLongitude);
+        System.out.printf("l': %f°%n", Angle.toDeg(eclipticLongitude));
 
         double geocentricEclipticLongitude;
         if (isInnerPlanet()) {
-            geocentricEclipticLongitude = calculateGeocentricEclipticLongitudeForInnerPlanets(eclipticRadius, eclipticLongitude);
+            System.out.println("INNER PLANET");
+            geocentricEclipticLongitude = calculateGeocentricEclipticLongitudeForInnerPlanets(daysSinceJ2010, eclipticRadius, eclipticLongitude);
         } else {
-            geocentricEclipticLongitude = calculateGeocentricEclipticLongitudeForOuterPlanets(eclipticRadius, eclipticLongitude);
+            System.out.println("OUTER PLANET");
+            geocentricEclipticLongitude = calculateGeocentricEclipticLongitudeForOuterPlanets(daysSinceJ2010, eclipticRadius, eclipticLongitude);
         }
-        double geocentricEclipticLatitude = calculateGeocentricEclipticLatitude(eclipticRadius, eclipticLongitude, eclipticLatitude, geocentricEclipticLongitude);
+        System.out.printf("lambda: %f°%n", Angle.toDeg(geocentricEclipticLongitude));
+        double geocentricEclipticLatitude = calculateGeocentricEclipticLatitude(daysSinceJ2010, eclipticRadius, eclipticLongitude, eclipticLatitude, geocentricEclipticLongitude);
+        System.out.printf("beta: %f°%n", Angle.toDeg(geocentricEclipticLatitude));
 
         EquatorialCoordinates equatorialPos = eclipticToEquatorialConversion.apply(EclipticCoordinates.of(geocentricEclipticLongitude, geocentricEclipticLatitude));
 
-        double angularSize = calculateAngularSize(orbitRadius, orbitPlaneLongitude, eclipticLatitude);
+        double angularSize = calculateAngularSize(daysSinceJ2010, orbitRadius, orbitPlaneLongitude, eclipticLatitude);
         double magnitude = calculateMagnitude(geocentricEclipticLongitude, orbitPlaneLongitude, orbitRadius);
 
         return new Planet(frenchName, equatorialPos, (float)angularSize, (float)magnitude);
 
     }
 
+
+    /**
+     * Méthode privée qui indique si la planète est inférieure ou non.
+     *
+     * @return true si la planète est inférieure
+     */
     private boolean isInnerPlanet() {
         return (semiMajorAxis < 1);
     }
 
+    /**
+     * Méthode privée qui calcule l'anomalie moyenne.
+     *
+     * @param daysSinceJ2010
+     * @return l'anomalie moyenne
+     */
     private double calculateMeanAnomaly(double daysSinceJ2010) {
-        return (Angle.TAU/TROPICAL_YEAR)*(daysSinceJ2010/orbitalPeriod) + J2010Longitude - perigeeLongitude;
+        return Angle.normalizePositive((Angle.TAU/TROPICAL_YEAR)*(daysSinceJ2010/orbitalPeriod) + J2010Longitude - perigeeLongitude);
     }
 
+    /**
+     * Méthode privée qui calcule l'anomalie vraie.
+     *
+     * @param meanAnomaly
+     * @return l'anomalie vraie
+     */
     private double calculateTrueAnomaly(double meanAnomaly) {
-        return meanAnomaly + 2*eccentricity*sin(meanAnomaly);
+        return Angle.normalizePositive(meanAnomaly + 2*eccentricity*sin(meanAnomaly));
     }
 
+    /**
+     * Méthode privée qui calcule le rayon de la planète dans le plan de son orbite.
+     *
+     * @param trueAnomaly
+     * @return le rayon de la planète dans le plan de son orbite
+     */
     private double calculateOrbitRadius(double trueAnomaly) {
         return (semiMajorAxis*(1-eccentricity*eccentricity)) / (1 + eccentricity*cos(trueAnomaly));
     }
 
+    /**
+     * Méthode privée qui calcule la longitude de la planète dans le plan de son orbite.
+     *
+     * @param trueAnomaly
+     * @return la longitude de la planète dans le plan de son orbite
+     */
     private double calculateOrbitPlaneLongitude(double trueAnomaly) {
-        return trueAnomaly + perigeeLongitude;
+        return Angle.normalizePositive(trueAnomaly + perigeeLongitude);
     }
 
+    /**
+     * Méthode privée qui calcule la latitude ecliptique héliocentrique de la planète.
+     *
+     * @param orbitPlaneLongitude
+     * @return la latitude ecliptique héliocentrique de la planète
+     */
     private double calculateEclipticLatitude(double orbitPlaneLongitude) {
         return asin(sin(orbitPlaneLongitude - ascendingNodeLongitude)*sin(eclipticInclinaison));
     }
 
+    /**
+     * Méthode privée qui calcule le rayon projeté sur le plan de l'écliptique.
+     *
+     * @param radius
+     * @param eclipticLatitude
+     * @return le rayon projeté sur le plan de l'écliptique
+     */
     private double calculateEclipticRadius(double radius, double eclipticLatitude) {
         return radius*cos(eclipticLatitude);
     }
 
+    /**
+     * Méthode privée qui calcule la longitude projetée sur le plan de l'écliptique.
+     *
+     * @param orbitPlaneLongitude
+     * @return la longitude projetée sur le plan de l'écliptique
+     */
     private double calculateEclipticLongitude(double orbitPlaneLongitude) {
-        return atan2(sin(orbitPlaneLongitude - ascendingNodeLongitude) * cos(eclipticInclinaison),
+        return Angle.normalizePositive(atan2(sin(orbitPlaneLongitude - ascendingNodeLongitude) * cos(eclipticInclinaison),
                 cos(orbitPlaneLongitude - ascendingNodeLongitude)
-        ) + ascendingNodeLongitude;
+        ) + ascendingNodeLongitude);
     }
 
-    private double calculateGeocentricEclipticLongitudeForInnerPlanets(double eclipticRadius, double eclipticLongitude) {
-        double L = 0; // TODO: les précalculer dans une constante
-        double R = 0; // TODO: les précalculer dans une constante
-        return PI + L + atan2(eclipticRadius*sin(L-eclipticLongitude),
-                            R - eclipticRadius*cos(L - eclipticLongitude));
+    /**
+     * Méthode privée qui calcule la longitude écliptique géocentrique pour les planètes inférieures.
+     *
+     * @param daysSinceJ2010
+     * @param eclipticRadius
+     * @param eclipticLongitude
+     * @return la longitude écliptique géocentrique pour les planètes inférieures
+     */
+    private double calculateGeocentricEclipticLongitudeForInnerPlanets(double daysSinceJ2010, double eclipticRadius, double eclipticLongitude) {
+        double L = calculateEarthOrbitPlaneLongitude(daysSinceJ2010);
+        double R = calculateEarthOrbitRadius(daysSinceJ2010);
+        return Angle.normalizePositive(PI + L + atan2(eclipticRadius*sin(L-eclipticLongitude),
+                            R - eclipticRadius*cos(L - eclipticLongitude)));
     }
 
-    private double calculateGeocentricEclipticLatitude(double eclipticRadius, double eclipticLongitude,
+    /**
+     * Méthode privée qui calcule la latitude écliptique géocentrique de la planète.
+     *
+     * @param daysSinceJ2010
+     * @param eclipticRadius
+     * @param eclipticLongitude
+     * @param eclipticLatitude
+     * @param geocentricEclipticLongitude
+     * @return la latitude écliptique géocentrique de la planète
+     */
+    private double calculateGeocentricEclipticLatitude(double daysSinceJ2010, double eclipticRadius, double eclipticLongitude,
                                                        double eclipticLatitude, double geocentricEclipticLongitude) {
-        double R = 0; // TODO: les précalculer dans une constante
-        double L = 0; // TODO: les précalculer dans une constante
+        double L = calculateEarthOrbitPlaneLongitude(daysSinceJ2010);
+        System.out.printf("L: %f°%n", Angle.toDeg(L));
+        double R = calculateEarthOrbitRadius(daysSinceJ2010);
+        System.out.printf("R: %f AU%n", R);
 
-        return atan2(eclipticRadius*tan(eclipticLatitude)*sin(geocentricEclipticLongitude - eclipticLongitude),
-                R*sin(eclipticLongitude - L));
+        return atan(eclipticRadius*tan(eclipticLatitude)*sin(geocentricEclipticLongitude - eclipticLongitude)
+                /(R*sin(eclipticLongitude - L)));
     }
 
-    private double calculateGeocentricEclipticLongitudeForOuterPlanets(double eclipticRadius, double eclipticLongitude) {
-        double R = 0; // TODO: les précalculer dans une constante
-        double L = 0; // TODO: les précalculer dans une constante
-        return eclipticLongitude + atan2(R*sin(eclipticLongitude - L),
-                                    eclipticRadius - R*cos(eclipticLongitude - L));
+    /**
+     * Méthode privée qui calcule la longitude écliptique géocentrique pour les planètes supérieures.
+     *
+     * @param daysSinceJ2010
+     * @param eclipticRadius
+     * @param eclipticLongitude
+     * @return la longitude écliptique géocentrique pour les planètes supérieures
+     */
+    private double calculateGeocentricEclipticLongitudeForOuterPlanets(double daysSinceJ2010, double eclipticRadius, double eclipticLongitude) {
+        double L = calculateEarthOrbitPlaneLongitude(daysSinceJ2010);
+        double R = calculateEarthOrbitRadius(daysSinceJ2010);
+        return Angle.normalizePositive(eclipticLongitude + atan2(R*sin(eclipticLongitude - L),
+                                    eclipticRadius - R*cos(eclipticLongitude - L)));
     }
 
-    private double calculateDistance(double orbitRadius, double orbitPlaneLongitude, double eclipticLatitude) {
-        double L = 0; // TODO: les précalculer dans une constante
-        double R = 0; // TODO: les précalculer dans une constante
+    /**
+     * Méthode privée qui calcule la distance séparant la Terre de la planète étudiée (en UA).
+     *
+     * @param daysSinceJ2010
+     * @param orbitRadius
+     * @param orbitPlaneLongitude
+     * @param eclipticLatitude
+     * @return la distance séparant la Terre de la planète étudiée (en UA)
+     */
+    private double calculateDistance(double daysSinceJ2010, double orbitRadius, double orbitPlaneLongitude, double eclipticLatitude) {
+        double L = calculateEarthOrbitPlaneLongitude(daysSinceJ2010);
+        double R = calculateEarthOrbitRadius(daysSinceJ2010);
 
         double rhoSquare = Polynomial.of(1,
                 -2*R*cos(orbitPlaneLongitude - L)*cos(eclipticLatitude),
@@ -192,13 +291,56 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         return sqrt(rhoSquare);
     }
 
-    private double calculateAngularSize(double orbitRadius, double orbitPlaneLongitude, double eclipticLatitude) {
-        double rho = calculateDistance(orbitRadius, orbitPlaneLongitude, eclipticLatitude);
+    /**
+     * Méthode privée qui calcule la taille angulaire de la planète.
+     *
+     * @param daysSinceJ2010
+     * @param orbitRadius
+     * @param orbitPlaneLongitude
+     * @param eclipticLatitude
+     * @return la taille angulaire de la planète
+     */
+    private double calculateAngularSize(double daysSinceJ2010, double orbitRadius, double orbitPlaneLongitude, double eclipticLatitude) {
+        double rho = calculateDistance(daysSinceJ2010, orbitRadius, orbitPlaneLongitude, eclipticLatitude);
         return angularSize/rho;
     }
 
+    /**
+     * Méthode privée qui calcule la magnitude de la planète.
+     *
+     * @param geocentricEclipticLongitude
+     * @param orbitPlaneLongitude
+     * @param orbitRadius
+     * @return la magnitude de la planète
+     */
     private double calculateMagnitude(double geocentricEclipticLongitude, double orbitPlaneLongitude, double orbitRadius) {
         double F = (1 + cos(geocentricEclipticLongitude - orbitPlaneLongitude))/2;
         return magnitude + 5*log10((orbitRadius*orbitPlaneLongitude)/sqrt(F));
+    }
+
+    /**
+     * Méthode privée qui calcule le rayon de la Terre dans le plan de son orbite.
+     *
+     * @param daysSinceJ2010
+     * @return le rayon de la Terre dans le plan de son orbite
+     */
+    private double calculateEarthOrbitRadius(double daysSinceJ2010) {
+        double meanAnomaly = EARTH.calculateMeanAnomaly(daysSinceJ2010);
+        double trueAnomay = EARTH.calculateTrueAnomaly(meanAnomaly);
+
+        return (EARTH.semiMajorAxis*(1-EARTH.eccentricity*EARTH.eccentricity)) / (1+EARTH.eccentricity*cos(trueAnomay));
+    }
+
+    /**
+     * Méthode privée qui calcule la longitude de la Terre dans le plan de son orbite.
+     *
+     * @param daysSinceJ2010
+     * @return la longitude de la Terre dans le plan de son orbite
+     */
+    private double calculateEarthOrbitPlaneLongitude(double daysSinceJ2010) {
+        double meanAnomaly = EARTH.calculateMeanAnomaly(daysSinceJ2010);
+        double trueAnomay = EARTH.calculateTrueAnomaly(meanAnomaly);
+
+        return Angle.normalizePositive(trueAnomay + EARTH.perigeeLongitude);
     }
 }
