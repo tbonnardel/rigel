@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.time.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static java.lang.Math.log10;
-import static java.lang.Math.sqrt;
 
 /**
  * @author Thomas Bonnardel (319827)

@@ -24,26 +24,60 @@ import static java.lang.Math.log10;
  * @author Thomas Bonnardel (319827)
  */
 public enum PlanetModel implements CelestialObjectModel<Planet> {
+    /**
+     * Objet représentant un modèle de Mercure.
+     */
     MERCURY("Mercure", 0.24085, 75.5671, 77.612, 0.205627,
             0.387098, 7.0051, 48.449, 6.74, -0.42),
+
+    /**
+     * Objet représentant un modèle de Vénus.
+     */
     VENUS("Vénus", 0.615207, 272.30044, 131.54, 0.006812,
             0.723329, 3.3947, 76.769, 16.92, -4.40),
+
+    /**
+     * Objet représentant un modèle de la Terre.
+     */
     EARTH("Terre", 0.999996, 99.556772, 103.2055, 0.016671,
             0.999985, 0, 0, 0, 0),
+
+    /**
+     * Objet représentant un modèle de Mars.
+     */
     MARS("Mars", 1.880765, 109.09646, 336.217, 0.093348,
             1.523689, 1.8497, 49.632, 9.36, -1.52),
+
+    /**
+     * Objet représentant un modèle de Jupiter.
+     */
     JUPITER("Jupiter", 11.857911, 337.917132, 14.6633, 0.048907,
             5.20278, 1.3035, 100.595, 196.74, -9.40),
+
+    /**
+     * Objet représentant un modèle de Saturne.
+     */
     SATURN("Saturne", 29.310579, 172.398316, 89.567, 0.053853,
             9.51134, 2.4873, 113.752, 165.60, -8.88),
+
+    /**
+     * Objet représentant un modèle de Uranus.
+     */
     URANUS("Uranus", 84.039492, 271.063148, 172.884833, 0.046321,
             19.21814, 0.773059, 73.926961, 65.80, -7.19),
+
+    /**
+     * Objet représentant un modèle de Neptune.
+     */
     NEPTUNE("Neptune", 165.84539, 326.895127, 23.07, 0.010483,
             30.1985, 1.7673, 131.879, 62.20, -6.87);
 
-
+    /**
+     * Liste représentant l'ensemble des planètes du système solaire.
+     */
     public static List<PlanetModel> ALL = List.of(MERCURY, VENUS, EARTH, MARS,
             JUPITER, SATURN, URANUS, NEPTUNE);
+
 
     private final static double TROPICAL_YEAR = 365.242191;
 
@@ -58,6 +92,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     private final double ascendingNodeLongitude;
     private final double angularSize;
     private final double magnitude;
+
 
     /**
      * Constructeur prenant en arguments le nom français de la planète suivi des paramètres suivants.
@@ -88,6 +123,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         this.angularSize = Angle.ofArcsec(angularSize);
         this.magnitude = magnitude;
     }
+
 
     /**
      * Méthode qui retourne la planète modélisé par le modèle en fonction des paramètres donnés.
