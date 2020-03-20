@@ -70,7 +70,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      * @param semiMajorAxis le demi-grand axe en UA
      * @param eclipticInclinaison l'inclinaison de l'orbite à l'écliptique en degrés
      * @param ascendingNodeLongitude la longitude du noeud ascendant en degrés
-     * @param angularSize la taille angulaire en UA
+     * @param angularSize la taille angulaire en arcsec
      * @param magnitude la magnitude en UA
      */
     PlanetModel(String frenchName,
@@ -85,7 +85,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         this.semiMajorAxis = semiMajorAxis;
         this.eclipticInclinaison = Angle.ofDeg(eclipticInclinaison);
         this.ascendingNodeLongitude = Angle.ofDeg(ascendingNodeLongitude);
-        this.angularSize = angularSize;
+        this.angularSize = Angle.ofArcsec(angularSize);
         this.magnitude = magnitude;
     }
 
@@ -132,7 +132,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         EquatorialCoordinates equatorialPos = eclipticToEquatorialConversion.apply(EclipticCoordinates.of(geocentricEclipticLongitude, geocentricEclipticLatitude));
 
         double angularSize = calculateAngularSize(daysSinceJ2010, orbitRadius, orbitPlaneLongitude, eclipticLatitude);
-        double magnitude = calculateMagnitude(geocentricEclipticLongitude, orbitPlaneLongitude, orbitRadius);
+        double magnitude = calculateMagnitude(daysSinceJ2010, geocentricEclipticLongitude, orbitPlaneLongitude, orbitRadius, eclipticLatitude);
 
         return new Planet(frenchName, equatorialPos, (float)angularSize, (float)magnitude);
 
@@ -288,6 +288,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
         double rhoSquare = Polynomial.of(1,
                 -2*R*cos(orbitPlaneLongitude - L)*cos(eclipticLatitude),
                 R*R).at(orbitRadius);
+        System.out.printf("rho2: %f UA2%n", rhoSquare);
         return sqrt(rhoSquare);
     }
 
@@ -302,20 +303,24 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      */
     private double calculateAngularSize(double daysSinceJ2010, double orbitRadius, double orbitPlaneLongitude, double eclipticLatitude) {
         double rho = calculateDistance(daysSinceJ2010, orbitRadius, orbitPlaneLongitude, eclipticLatitude);
+        System.out.printf("rho: %f UA%n", rho);
         return angularSize/rho;
     }
 
     /**
      * Méthode privée qui calcule la magnitude de la planète.
      *
+     * @param daysSinceJ2010
      * @param geocentricEclipticLongitude
      * @param orbitPlaneLongitude
      * @param orbitRadius
+     * @param eclipticLatitude
      * @return la magnitude de la planète
      */
-    private double calculateMagnitude(double geocentricEclipticLongitude, double orbitPlaneLongitude, double orbitRadius) {
+    private double calculateMagnitude(double daysSinceJ2010, double geocentricEclipticLongitude, double orbitPlaneLongitude, double orbitRadius, double eclipticLatitude) {
         double F = (1 + cos(geocentricEclipticLongitude - orbitPlaneLongitude))/2;
-        return magnitude + 5*log10((orbitRadius*orbitPlaneLongitude)/sqrt(F));
+        double rho = calculateDistance(daysSinceJ2010, orbitRadius, orbitPlaneLongitude, eclipticLatitude);
+        return magnitude + 5*log10((orbitRadius*rho)/sqrt(F));
     }
 
     /**

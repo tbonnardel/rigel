@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.time.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static java.lang.Math.log10;
+import static java.lang.Math.sqrt;
 
 /**
  * @author Thomas Bonnardel (319827)
@@ -61,5 +63,37 @@ public class MyPlanetModelTest {
 
         assertEquals(expected.ra(), jupiter.equatorialPos().ra(), DELTA);
         assertEquals(expected.dec(), jupiter.equatorialPos().dec(), DELTA);
+    }
+
+    @Test
+    void angularSizeWorksWithJupiterWithTheExampleOfTheBook() {
+        ZonedDateTime d = ZonedDateTime.of(
+                LocalDate.of(2003, Month.NOVEMBER, 22),
+                LocalTime.of(0, 0),
+                ZoneOffset.UTC
+        );
+
+        EclipticToEquatorialConversion conversion = new EclipticToEquatorialConversion(d);
+        Planet jupiter = PlanetModel.JUPITER.at(Epoch.J2010.daysUntil(d), conversion);
+
+        float expected = (float)Angle.ofArcsec(35.1);
+
+        assertEquals(expected, jupiter.angularSize(), 1e-6);
+    }
+
+    @Test
+    void magnitudeWorksWithJupiterWithTheExampleOfTheBook() {
+        ZonedDateTime d = ZonedDateTime.of(
+                LocalDate.of(2003, Month.NOVEMBER, 22),
+                LocalTime.of(0, 0),
+                ZoneOffset.UTC
+        );
+
+        EclipticToEquatorialConversion conversion = new EclipticToEquatorialConversion(d);
+        Planet jupiter = PlanetModel.JUPITER.at(Epoch.J2010.daysUntil(d), conversion);
+
+        float expected = -2f;
+
+        assertEquals(expected, jupiter.magnitude(), 1e-1);
     }
 }
