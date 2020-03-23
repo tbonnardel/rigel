@@ -126,7 +126,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
 
 
     /**
-     * Méthode qui retourne la planète modélisé par le modèle en fonction des paramètres donnés.
+     * Méthode qui retourne la planète modélisée par le modèle en fonction des paramètres donnés.
      *
      * @param daysSinceJ2010 nombre de jours après l'époque J2000
      * @param eclipticToEquatorialConversion la conversion pour obtenir ses coordonnées équatoriales
