@@ -8,7 +8,7 @@ import java.util.function.Function;
 import static java.lang.Math.sin;
 import static java.lang.Math.cos;
 import static java.lang.Math.tan;
-import static java.lang.Math.atan;
+import static java.lang.Math.atan2;
 import static java.lang.Math.asin;
 import static java.lang.Math.sqrt;
 
@@ -109,7 +109,7 @@ public class StereographicProjection implements Function<HorizontalCoordinates, 
         double sinc = (2*rho) / (rho*rho + 1);
         double cosc = (1 - rho*rho) / (rho*rho + 1);
 
-        double lambda = atan((x*sinc) / (rho*cosPhi1*cosc - y*sinPhi1*sinc)) + lambda0;
+        double lambda = atan2((x*sinc), (rho*cosPhi1*cosc - y*sinPhi1*sinc)) + lambda0;
         double phi = asin(cosc*sinPhi1 + (y*sinc*cosPhi1)/rho);
 
         return HorizontalCoordinates.of(Angle.normalizePositive(lambda), phi);
