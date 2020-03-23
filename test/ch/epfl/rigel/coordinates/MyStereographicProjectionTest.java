@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
+import static java.lang.Math.PI;
 
 /**
  * @author Thomas Bonnardel (319827)
@@ -119,7 +120,7 @@ public class MyStereographicProjectionTest {
         sinc = 0.8381404052
         cosc = -0.54545454545
          */
-        double lambda = Angle.normalizePositive(-0.880648981);
+        double lambda = Angle.normalizePositive(-0.880648981) - PI;
         double phi = -0.698339604;
         StereographicProjection sp = new StereographicProjection(HorizontalCoordinates.of(0.1, 0.2));
         HorizontalCoordinates value = sp.inverseApply(CartesianCoordinates.of(1.4, -1.2));
