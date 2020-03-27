@@ -166,10 +166,10 @@ public final class StarCatalogue {
          * dans le flot d'entrée
          * @throws IOException en cas d'erreur d'entrée/sortie
          */
-        //public Builder loadFrom(InputStream inputStream, Loader loader) throws IOException {
+        public Builder loadFrom(InputStream inputStream, Loader loader) throws IOException {
             //TODO: A implementer
-          //  throw new IOException("A implemeter");
-        //}
+            throw new IOException("A implemeter");
+        }
 
         /**
          * Méthode qui retourne le catalogue contenant les étoiles et astérismes ajoutés
@@ -180,5 +180,21 @@ public final class StarCatalogue {
         public StarCatalogue build() {
             return new StarCatalogue(this.stars, this.asterisms);
         }
+    }
+
+    /**
+     * Cette interface publique représente un chargeur de catalogue d'étoiles et d'astérismes.
+     */
+    public interface Loader {
+        /**
+         * Méthode qui charge les étoiles et/ou astérismes du flot d'entrée inputStream et les
+         * ajoute au catalogue en cours de construction du bâtisseur builder, ou lève IOException
+         * en cas d'erreur d'entrée/sortie.
+         *
+         * @param inputStream le flot d'entrée contenant les étoiles ou astérismes à charger
+         * @param builder le bâtisseur qui doit se voir ajouter les étoiles et astérismes du flot d'entrée
+         * @throws IOException en cas d'erreur d'entrée/sortie
+         */
+        public abstract void load(InputStream inputStream, Builder builder) throws IOException;
     }
 }
