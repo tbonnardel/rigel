@@ -5,6 +5,7 @@ import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,6 +59,14 @@ public class MyStarCatalogueBuilderTest {
 
     @Test
     void buildWorks() {
-        throw new IllegalArgumentException();
+        StarCatalogue.Builder b = new StarCatalogue.Builder();
+        Star s = new Star(1, "Etoile1", EquatorialCoordinates.of(0, 0), -1f, 1f);
+        Asterism a = new Asterism(List.of(s));
+        b.addStar(s);
+        b.addAsterism(a);
+
+        StarCatalogue catalogue = b.build();
+        assertEquals(List.of(s), catalogue.stars());
+        assertEquals(Set.of(a), catalogue.asterisms());
     }
 }

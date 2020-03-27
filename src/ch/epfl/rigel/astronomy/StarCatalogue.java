@@ -168,7 +168,7 @@ public final class StarCatalogue {
          */
         public Builder loadFrom(InputStream inputStream, Loader loader) throws IOException {
             //TODO: A implementer
-            throw new IOException("A implemeter");
+            throw new IOException("A implementer");
         }
 
         /**
