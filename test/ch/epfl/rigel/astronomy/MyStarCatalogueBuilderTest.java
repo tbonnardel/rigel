@@ -55,4 +55,9 @@ public class MyStarCatalogueBuilderTest {
     void loadFromWorks() {
         throw new IllegalArgumentException();
     }
+
+    @Test
+    void buildWorks() {
+        throw new IllegalArgumentException();
+    }
 }
