@@ -1,5 +1,7 @@
 package ch.epfl.rigel.astronomy;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -89,5 +91,94 @@ public final class StarCatalogue {
         }
 
         throw new IllegalArgumentException();
+    }
+
+    /**
+     * Cette classe imbriquée statique représente un bâtisseur de catalogue d'étoiles.
+     */
+    public final static class Builder {
+        private List<Asterism> asterisms;
+        private List<Star> stars;
+
+        /**
+         * Constructeur par défaut qui initialise le bâtisseur de manière à ce que
+         * le catalogue en construction soit initialement vide.
+         */
+        public Builder() {
+            this.asterisms = new ArrayList<>();
+            this.stars = new ArrayList<>();
+        }
+
+        /**
+         * Méthode qui ajoute l'étoile donnée au catalogue en cours de construction,
+         * et retourne le bâtisseur.
+         *
+         * @param star l'étoile à ajouter
+         * @return le bâtisseur
+         */
+        public Builder addStar(Star star) {
+            this.stars.add(star);
+            return this;
+        }
+
+        /**
+         * méthode d'accès qui retourne une vue non modifiable — mais pas immuable — 
+         * sur les étoiles du catalogue en cours de construction.
+         *
+         * @return une vue non modifiable — mais pas immuable - sur les étoiles
+         * du catalogue en cours de construction
+         */
+        public List<Star> stars() {
+            return Collections.unmodifiableList(this.stars);
+        }
+
+        /**
+         * Méthode qui ajoute l'astérisme donné au catalogue en cours de construction,
+         * et retourne le bâtisseur.
+         *
+         * @param asterism l'astérisme à ajouter
+         * @return le bâtisseur
+         */
+        public Builder addAsterism(Asterism asterism) {
+            this.asterisms.add(asterism);
+            return this;
+        }
+
+        /**
+         * Méthode qui retourne une vue non modifiable — mais pas immuable — sur les
+         * astérismes du catalogue en cours de construction.
+         *
+         * @return une vue non modifiable — mais pas immuable — sur les astérismes
+         * du catalogue en cours de construction
+         */
+        public List<Asterism> asterisms() {
+            return Collections.unmodifiableList(this.asterisms);
+        }
+
+        /**
+         * Méthode qui demande au chargeur loader d'ajouter au catalogue les étoiles
+         * et/ou astérismes qu'il obtient depuis le flot d'entrée inputStream,
+         * et retourne le bâtisseur, ou lève IOException en cas d'erreur d'entrée/sortie.
+         *
+         * @param inputStream le flot d'entrée
+         * @param loader le loader
+         * @return le bâtisseur du catalogue des étoiles et/ou astérismes contenus
+         * dans le flot d'entrée
+         * @throws IOException en cas d'erreur d'entrée/sortie
+         */
+        //public Builder loadFrom(InputStream inputStream, Loader loader) throws IOException {
+            //TODO: A implementer
+          //  throw new IOException("A implemeter");
+        //}
+
+        /**
+         * Méthode qui retourne le catalogue contenant les étoiles et astérismes ajoutés
+         * jusqu'alors au bâtisseur.
+         *
+         * @return le catalogue construit conformément au bâtisseur
+         */
+        public StarCatalogue build() {
+            return new StarCatalogue(this.stars, this.asterisms);
+        }
     }
 }
