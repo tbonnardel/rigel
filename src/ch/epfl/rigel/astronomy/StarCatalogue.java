@@ -1,9 +1,6 @@
 package ch.epfl.rigel.astronomy;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Cette classe représente un catalogue d'étoiles et d'astérismes.
@@ -38,6 +35,42 @@ public final class StarCatalogue {
         }
 
         this.catalogue = Map.copyOf(catalogue);
+    }
+
+    /**
+     * Méthode d'accès qui retourne la liste des étoiles du catalogue.
+     *
+     * @return la liste des étoiles du catalogue
+     */
+    public List<Star> stars() {
+        return stars;
+    }
+
+    /**
+     * Méthode d'accès qui retourne l'ensemble des astérismes du catalogue.
+     *
+     * @return l'ensemble des astérismes du catalogue
+     */
+    public Set<Asterism> asterisms() {
+        return catalogue.keySet();
+    }
+
+    /**
+     * Méthode d'accès qui retourne la liste des index — dans le catalogue — des étoiles
+     * constituant l'astérisme donné, ou lève IllegalArgumentException si l'astérisme
+     * donné ne fait pas partie du catalogue.
+     *
+     * @param asterism l'astérisme dont on souhaite avoir les étoiles
+     * @return la liste des index — dans le catalogue — des étoiles constituant
+     * l'astérisme donné
+     * @throws IllegalArgumentException si l'astérisme donné ne fait pas partie du catalogue
+     */
+    public List<Integer> asterismIndices(Asterism asterism) {
+        if (!catalogue.containsKey(asterism)) {
+            throw new IllegalArgumentException();
+        }
+
+        return catalogue.get(asterism);
     }
 
     /**
