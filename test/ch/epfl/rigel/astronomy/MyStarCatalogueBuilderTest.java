@@ -14,6 +14,9 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class MyStarCatalogueBuilderTest {
 
+    private static final String HYG_CATALOGUE_NAME =
+            "/hygdata_v3.csv";
+
     @Test
     void constructorWorks() {
         StarCatalogue.Builder b = new StarCatalogue.Builder();
@@ -50,11 +53,6 @@ public class MyStarCatalogueBuilderTest {
 
         assertEquals(1, b.asterisms().size());
         assertEquals("Etoile1", b.asterisms().get(0).stars().get(0).name());
-    }
-
-    @Test
-    void loadFromWorks() {
-        throw new IllegalArgumentException();
     }
 
     @Test

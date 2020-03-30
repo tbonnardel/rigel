@@ -1,13 +1,13 @@
 package ch.epfl.rigel.astronomy;
 
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
-import ch.epfl.rigel.math.Interval;
+import ch.epfl.rigel.math.Angle;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 /**
  * Ce type énuméré contient un seul élément nommé INSTANCE et représentant
@@ -40,11 +40,12 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
      */
     @Override
     public void load(InputStream inputStream, StarCatalogue.Builder builder) throws IOException {
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("US-ASCII")))) {
+            String line = bufferedReader.readLine(); // Lecture de la ligne d'en-tête
+
+            while ((line = bufferedReader.readLine()) != null && !line.isBlank()) {
                 String[] tab = line.split(",");
-                int hipparcosId = (tab[Columns.HIP.ordinal()] != "")
+                int hipparcosId = (!tab[Columns.HIP.ordinal()].isBlank())
                         ? Integer.parseInt(tab[Columns.HIP.ordinal()])
                         : 0;
 
@@ -62,16 +63,16 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
                     name = sb.toString();
                 }
 
-                double ra = Double.parseDouble(tab[Columns.RARAD.ordinal()]);
+                double ra = Angle.normalizePositive(Double.parseDouble(tab[Columns.RARAD.ordinal()]));
                 double dec = Double.parseDouble(tab[Columns.DECRAD.ordinal()]);
                 EquatorialCoordinates equatorialPos = EquatorialCoordinates.of(ra, dec);
 
-                double magnitude = (tab[Columns.MAG.ordinal()] != "")
+                double magnitude = (!tab[Columns.MAG.ordinal()].isBlank())
                         ? Double.parseDouble(tab[Columns.MAG.ordinal()])
                         : 0;
 
-                double colorIndex = (tab[Columns.CI.ordinal()] != "")
-                        ? Double.parseDouble(tab[Columns.MAG.ordinal()])
+                double colorIndex = (!tab[Columns.CI.ordinal()].isBlank())
+                        ? Double.parseDouble(tab[Columns.CI.ordinal()])
                         : 0;
 
                 builder.addStar(new Star(hipparcosId, name, equatorialPos, (float)magnitude, (float)colorIndex));

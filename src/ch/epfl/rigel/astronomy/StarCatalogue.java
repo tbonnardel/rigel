@@ -93,6 +93,9 @@ public final class StarCatalogue {
         throw new IllegalArgumentException();
     }
 
+
+
+
     /**
      * Cette classe imbriquée statique représente un bâtisseur de catalogue d'étoiles.
      */
@@ -167,8 +170,8 @@ public final class StarCatalogue {
          * @throws IOException en cas d'erreur d'entrée/sortie
          */
         public Builder loadFrom(InputStream inputStream, Loader loader) throws IOException {
-            //TODO: A implementer
-            throw new IOException("A implementer");
+            loader.load(inputStream, this);
+            return this;
         }
 
         /**
@@ -181,6 +184,8 @@ public final class StarCatalogue {
             return new StarCatalogue(this.stars, this.asterisms);
         }
     }
+
+
 
     /**
      * Cette interface publique représente un chargeur de catalogue d'étoiles et d'astérismes.
