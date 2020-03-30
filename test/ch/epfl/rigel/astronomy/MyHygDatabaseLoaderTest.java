@@ -56,7 +56,7 @@ public class MyHygDatabaseLoaderTest {
             }
             assertEquals("Rigel", rigel.name());
             assertEquals(24436, rigel.hipparcosId());
-            assertEquals(10516., rigel.colorTemperature());
+            assertEquals(10515., rigel.colorTemperature());
             assertEquals(0.18, rigel.magnitude(), DELTA);
             assertEquals(1.37243036 ,rigel.equatorialPos().ra(), DELTA);
             assertEquals(-0.14314563, rigel.equatorialPos().dec(), DELTA);

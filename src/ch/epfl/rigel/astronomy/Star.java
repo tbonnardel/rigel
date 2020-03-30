@@ -51,7 +51,7 @@ public final class Star extends CelestialObject {
      * @return la température de couleur de l'étoile
      */
     private int calculateColorTemperature(float colorIndex) {
-        return (int) round(4600*(1/(.92*colorIndex + 1.7 ) + 1/(.92*colorIndex + .62)));
+        return (int) (4600*(1/(.92*colorIndex + 1.7 ) + 1/(.92*colorIndex + .62)));
     }
 
     /**
