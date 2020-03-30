@@ -15,6 +15,7 @@ import static java.lang.Math.atan2;
  * @author Thomas Bonnardel (319827)
  */
 public enum MoonModel implements CelestialObjectModel<Moon> {
+
     /**
      * Objet représentant un modèle de la Lune
      */

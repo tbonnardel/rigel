@@ -16,6 +16,7 @@ import java.nio.charset.Charset;
  * @author Thomas Bonnardel (319827)
  */
 public enum HygDatabaseLoader implements StarCatalogue.Loader {
+
     /**
      * Objet représentant un chargeur de catalogue HYG.
      */
