@@ -36,7 +36,7 @@ public final class Star extends CelestialObject {
      */
     public Star(int hipparcosId, String name, EquatorialCoordinates equatorialPos, float magnitude, float colorIndex) {
         super(name, equatorialPos, STAR_ANGULAR_SIZE ,magnitude);
-        Preconditions.checkArgument(hipparcosId > 0);
+        Preconditions.checkArgument(hipparcosId >= 0);
         Preconditions.checkInInterval(ClosedInterval.of(-.5, 5.5), colorIndex);
 
         this.hipparcosId = hipparcosId;
@@ -51,7 +51,7 @@ public final class Star extends CelestialObject {
      * @return la température de couleur de l'étoile
      */
     private int calculateColorTemperature(float colorIndex) {
-        return (int) round(4600*(1/(.92*colorIndex + 1.7 ) + 1/(.92*colorIndex + .62)));
+        return (int) (4600*(1/(.92*colorIndex + 1.7 ) + 1/(.92*colorIndex + .62)));
     }
 
     /**
