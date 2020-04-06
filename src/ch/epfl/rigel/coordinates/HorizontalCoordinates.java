@@ -32,14 +32,7 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * @throws IllegalArgumentException si l'une des composantes n'est pas valide
      */
     public static HorizontalCoordinates of(double az, double alt) {
-        // az doit appartenir à l'intervalle [0°, 360°[
-        RightOpenInterval azRadInterval = RightOpenInterval.of(0, Angle.ofDeg(360.));
-        Preconditions.checkInInterval(azRadInterval, az);
-
-        // alt doit appartenir à l'intervalle [–90°, +90°]
-        ClosedInterval altInterval = ClosedInterval.symmetric(Angle.ofDeg(180.));
-        Preconditions.checkInInterval(altInterval, alt);
-
+        checkHorizontalCoordinatesValidity(az, alt);
         return new HorizontalCoordinates(az, alt);
     }
 
@@ -53,16 +46,31 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * @throws IllegalArgumentException si l'une des composantes n'est pas valide
      */
     public static HorizontalCoordinates ofDeg(double azDeg, double altDeg) {
+        double az = Angle.ofDeg(azDeg);
+        double alt = Angle.ofDeg(altDeg);
+        checkHorizontalCoordinatesValidity(az, alt);
+        return new HorizontalCoordinates(az, alt);
+    }
+
+
+    /**
+     * Méthode privée qui vérifie si les composantes des coordonnées horizontales
+     * sont valides, si ce n'est pas le cas, elle lève IllegalArgumentException.
+     *
+     * @param az l'azimut en radians
+     * @param alt la hauteur en radians
+     * @throws IllegalArgumentException si l'une des composantes n'est pas valide
+     */
+    private static void checkHorizontalCoordinatesValidity(double az, double alt) {
         // az doit appartenir à l'intervalle [0°, 360°[
-        RightOpenInterval azDegInterval = RightOpenInterval.of(0, 360.);
-        Preconditions.checkInInterval(azDegInterval, azDeg);
+        RightOpenInterval azInterval = RightOpenInterval.of(0, Angle.ofDeg(360.));
+        Preconditions.checkInInterval(azInterval, az);
 
         // alt doit appartenir à l'intervalle [–90°, +90°]
-        ClosedInterval altDegInterval = ClosedInterval.symmetric(180.);
-        Preconditions.checkInInterval(altDegInterval, altDeg);
-
-        return new HorizontalCoordinates(Angle.ofDeg(azDeg), Angle.ofDeg(altDeg));
+        ClosedInterval altInterval = ClosedInterval.symmetric(Angle.ofDeg(180.));
+        Preconditions.checkInInterval(altInterval, alt);
     }
+
 
     /**
      * Méthode qui retourne l'azimut en radians.
