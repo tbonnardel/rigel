@@ -78,6 +78,11 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     public static List<PlanetModel> ALL = List.of(MERCURY, VENUS, EARTH, MARS,
             JUPITER, SATURN, URANUS, NEPTUNE);
 
+    /**
+     * Liste représentant l'ensemble des planètes extraterrestres du système solaire.
+     */
+    public static List<PlanetModel> ALL_EXTRA_TERRESTRIAL = List.of(MERCURY, VENUS,
+            MARS, JUPITER, SATURN, URANUS, NEPTUNE);
 
     private final static double TROPICAL_YEAR = 365.242191;
 
