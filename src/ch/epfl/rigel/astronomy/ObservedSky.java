@@ -196,15 +196,14 @@ public final class ObservedSky {
      * Méthode qui, étant donné les coordonnées d'un point du plan et une distance maximale,
      * retourne l'objet céleste le plus proche de ce point, pour peu qu'il se trouve à une
      * distance inférieure à la distance maximale.
-     * Si aucun objet n'est trouvé, elle retourne null.
+     * Le type de retour est un optionel de CelestianObject.
      *
      * @param coordinates les coordonnées du point du plan à étudier
      * @param maxDistance la distance maximale autorisée
-     * @return l'objet céleste le plus proche du point spécifié ou null si aucun objet
-     * n'a été trouvé à la distance maximale autorisée spécifiée
+     * @return l'objet céleste le plus proche du point spécifié sous la forme d'un optionnel
      */
-    public CelestialObject objectClosestTo(CartesianCoordinates coordinates, double maxDistance) {
-        CelestialObject closestObject = null;
+    public Optional<CelestialObject> objectClosestTo(CartesianCoordinates coordinates, double maxDistance) {
+        Optional<CelestialObject> closestObject = Optional.empty();
         double minSquareDistance = maxDistance*maxDistance;
         double x = coordinates.x();
         double y = coordinates.y();
@@ -215,7 +214,7 @@ public final class ObservedSky {
                     + (objectCoord.y()-y)*(objectCoord.y()-y);
 
             if (distance < minSquareDistance) {
-                closestObject = object;
+                closestObject = Optional.of(object);
                 minSquareDistance = distance;
             }
         }

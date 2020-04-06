@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -110,15 +111,16 @@ public class MyObservedSkyTest {
         ObservedSky observedSky = new ObservedSky(d, where, stereographicProjection, catalogue);
         // Ici, sunPosition = (x=-0.5182, y=-0.9860)
         CartesianCoordinates point = CartesianCoordinates.of(-0.52, -0.99);
-        CelestialObject closestObject = observedSky.objectClosestTo(point, 0.1);
-        assertEquals("Soleil", closestObject.name());
+        Optional<CelestialObject> closestObject = observedSky.objectClosestTo(point, 0.1);
+        assertTrue(closestObject.isPresent());
+        assertEquals("Soleil", closestObject.get().name());
     }
 
     @Test
     void objectClosestToWorksWithANullReturn() {
         ObservedSky observedSky = new ObservedSky(d, where, stereographicProjection, catalogue);
         CartesianCoordinates point = CartesianCoordinates.of(-0.52, -0.1);
-        CelestialObject closestObject = observedSky.objectClosestTo(point, 0.01);
-        assertNull(closestObject);
+        Optional<CelestialObject> closestObject = observedSky.objectClosestTo(point, 0.01);
+        assertTrue(closestObject.isEmpty());
     }
 }
