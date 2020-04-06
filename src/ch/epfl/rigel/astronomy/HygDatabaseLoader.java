@@ -51,9 +51,9 @@ public enum HygDatabaseLoader implements StarCatalogue.Loader {
                         : 0;
 
                 String name = tab[Columns.PROPER.ordinal()];
-                if (name == "") {
+                if (name.isBlank()) {
                     StringBuilder sb = new StringBuilder();
-                    if (tab[Columns.BAYER.ordinal()] == "") {
+                    if (tab[Columns.BAYER.ordinal()].isBlank()) {
                         sb.append("?");
                     } else {
                         sb.append(tab[Columns.BAYER.ordinal()]);

@@ -76,7 +76,7 @@ public final class StarCatalogue {
     }
 
     /**
-     * Méthode qui retourne l'index de l'étoile donnée de la liste stars
+     * Méthode qui retourne l'index de l'étoile donnée de la liste stars.
      *
      * @param star l'étoile recherchée
      * @return l'index de l'étoile donnée en paramètre dans la liste stars
