@@ -43,6 +43,20 @@ public class MyAsterismLoaderTest {
     }
 
     @Test
+    void asterimDatabaseContainsAllAsterisms() throws IOException {
+        try (InputStream hygStream = getClass().getResourceAsStream(HYG_CATALOGUE_NAME)) {
+            StarCatalogue.Builder builder = new StarCatalogue.Builder();
+            builder.loadFrom(hygStream, HygDatabaseLoader.INSTANCE);
+
+            try (InputStream asterismStream = getClass().getResourceAsStream(ASTERISMS_CATALOGUE)) {
+                builder.loadFrom(asterismStream, AsterismLoader.INSTANCE);
+                StarCatalogue catalogue = builder.build();
+                assertEquals(153, catalogue.asterisms().size());
+            }
+        }
+    }
+
+    @Test
     void asterimDatabaseContainsOrion() throws IOException {
         try (InputStream hygStream = getClass().getResourceAsStream(HYG_CATALOGUE_NAME)) {
             StarCatalogue.Builder builder = new StarCatalogue.Builder();

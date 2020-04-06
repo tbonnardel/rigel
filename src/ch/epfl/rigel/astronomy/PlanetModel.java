@@ -131,7 +131,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
      * @param daysSinceJ2010 nombre de jours après l'époque J2000
      * @param eclipticToEquatorialConversion la conversion pour obtenir ses coordonnées équatoriales
      *                                       à partir de ses coordonnées écliptiques
-     * @return
+     * @return le modèle de la planète calculé
      */
     @Override
     public Planet at(double daysSinceJ2010, EclipticToEquatorialConversion eclipticToEquatorialConversion) {

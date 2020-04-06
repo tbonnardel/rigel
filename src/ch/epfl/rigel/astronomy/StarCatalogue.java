@@ -72,11 +72,11 @@ public final class StarCatalogue {
             throw new IllegalArgumentException();
         }
 
-        return catalogue.get(asterism);
+        return Collections.unmodifiableList(catalogue.get(asterism));
     }
 
     /**
-     * Méthode qui retourne l'index de l'étoile donnée de la liste stars
+     * Méthode qui retourne l'index de l'étoile donnée de la liste stars.
      *
      * @param star l'étoile recherchée
      * @return l'index de l'étoile donnée en paramètre dans la liste stars

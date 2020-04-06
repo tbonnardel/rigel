@@ -42,7 +42,18 @@ public class MyHygDatabaseLoaderTest {
     }
 
     @Test
-    void hyDatabaseContainsInfoOfRigel() throws IOException {
+    void hygDatabaseContainsAllStars() throws IOException {
+        try (InputStream hygStream = getClass()
+                .getResourceAsStream(HYG_CATALOGUE_NAME)) {
+            StarCatalogue catalogue = new StarCatalogue.Builder()
+                    .loadFrom(hygStream, HygDatabaseLoader.INSTANCE)
+                    .build();
+            assertEquals(5067, catalogue.stars().size());
+        }
+    }
+
+    @Test
+    void hygDatabaseContainsInfoOfRigel() throws IOException {
         try (InputStream hygStream = getClass()
                 .getResourceAsStream(HYG_CATALOGUE_NAME)) {
             StarCatalogue catalogue = new StarCatalogue.Builder()

@@ -4,8 +4,6 @@ import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 import ch.epfl.rigel.math.ClosedInterval;
 
-import static java.lang.Math.round;
-
 /**
  * Cette classe représente une étoile. Elle hérite de CelestialObject car,
  * dans le cadre de ce projet en tout cas, les étoiles sont fixes dans le

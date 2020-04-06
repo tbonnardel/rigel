@@ -95,6 +95,4 @@ public class MyEpochTest {
         double expected = 1. + 2./NB_DAYS_IN_CENTURY + 18./NB_HOURS_IN_CENTURY + 10./NB_MINUTES_IN_CENTURY;
         assertEquals(expected, Epoch.J2010.julianCenturiesUntil(d), 1e-10);
     }
-
-    // TODO: Faire un test avec des untils qui sont négatifs
 }

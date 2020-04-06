@@ -3,7 +3,6 @@ package ch.epfl.rigel.coordinates;
 import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
-import ch.epfl.rigel.math.Interval;
 import ch.epfl.rigel.math.RightOpenInterval;
 
 import java.util.Locale;
