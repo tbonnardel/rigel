@@ -2,8 +2,6 @@ package ch.epfl.rigel.coordinates;
 
 import ch.epfl.rigel.math.Angle;
 
-import java.util.Objects;
-
 /**
  * Classe mère à toutes les classes représentant des coordonnées sphériques.
  *

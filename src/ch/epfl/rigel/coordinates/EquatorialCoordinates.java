@@ -55,6 +55,7 @@ public final class EquatorialCoordinates extends SphericalCoordinates {
 
     /**
      * Méthode qui retourne l'ascension droite en heures.
+     *
      * @return l'ascension droite en heures
      */
     public double raHr() {
@@ -63,12 +64,18 @@ public final class EquatorialCoordinates extends SphericalCoordinates {
 
     /**
      * Méthode qui retourne la déclinaison en radians.
+     *
      * @return la déclinaison en radians
      */
     public double dec() {
         return lat();
     }
 
+    /**
+     * Méthode qui retourne la déclinaison en degrés.
+     *
+     * @return la déclinaison en degrés
+     */
     public double decDeg() {
         return latDeg();
     }
