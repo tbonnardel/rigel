@@ -3,8 +3,7 @@ package ch.epfl.rigel.astronomy;
 import ch.epfl.rigel.coordinates.*;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Cette classe représente un ensemble d'objets célestes projetés dans le plan
@@ -23,6 +22,9 @@ public final class ObservedSky {
     private final double[] planetPositions;
     private final List<Star> stars;
     private final double[] starPositions;
+
+    private final StarCatalogue catalogue;
+    private final Map<CelestialObject, CartesianCoordinates> celestialObjectsMap;
 
 
     /**
@@ -79,6 +81,9 @@ public final class ObservedSky {
         }
         this.stars = stars;
         this.starPositions = starPositions;
+
+        this.catalogue = catalogue;
+        this.celestialObjectsMap = getAllCelestialObjectsWithPosition();
     }
 
     /**
@@ -162,5 +167,84 @@ public final class ObservedSky {
      */
     public double[] starPositions() {
         return this.starPositions;
+    }
+
+    /**
+     * Méthode d'accès qui retourne l'ensemble des astérismes du catalogue.
+     *
+     * @return l'ensemble des astérismes du catalogue
+     */
+    public Set<Asterism> asterisms() {
+        return catalogue.asterisms();
+    }
+
+    /**
+     * Méthode d'accès qui retourne la liste des index — dans le catalogue — des étoiles
+     * constituant l'astérisme donné, ou lève IllegalArgumentException si l'astérisme
+     * donné ne fait pas partie du catalogue.
+     *
+     * @param asterism l'astérisme dont on souhaite avoir les étoiles
+     * @return la liste des index — dans le catalogue — des étoiles constituant
+     * l'astérisme donné
+     * @throws IllegalArgumentException si l'astérisme donné ne fait pas partie du catalogue
+     */
+    public List<Integer> asterismIndices(Asterism asterism) {
+        return catalogue.asterismIndices(asterism);
+    }
+
+    /**
+     * Méthode qui, étant donné les coordonnées d'un point du plan et une distance maximale,
+     * retourne l'objet céleste le plus proche de ce point, pour peu qu'il se trouve à une
+     * distance inférieure à la distance maximale.
+     * Si aucun objet n'est trouvé, elle retourne null.
+     *
+     * @param coordinates les coordonnées du point du plan à étudier
+     * @param maxDistance la distance maximale autorisée
+     * @return l'objet céleste le plus proche du point spécifié ou null si aucun objet
+     * n'a été trouvé à la distance maximale autorisée spécifiée
+     */
+    public CelestialObject objectClosestTo(CartesianCoordinates coordinates, double maxDistance) {
+        CelestialObject closestObject = null;
+        double minSquareDistance = maxDistance*maxDistance;
+        double x = coordinates.x();
+        double y = coordinates.y();
+
+        for (CelestialObject object: celestialObjectsMap.keySet()) {
+            CartesianCoordinates objectCoord = celestialObjectsMap.get(object);
+            double distance = (objectCoord.x()-x)*(objectCoord.x()-x)
+                    + (objectCoord.y()-y)*(objectCoord.y()-y);
+
+            if (distance < minSquareDistance) {
+                closestObject = object;
+                minSquareDistance = distance;
+            }
+        }
+        return closestObject;
+    }
+
+
+    /**
+     * Méthode privée qui retourne la table associative dont les clés
+     * sont les objets célestes et les valeurs sont leurs coordonnées.
+     *
+     * @return la table associative dont les clés sont les objets célestes
+     * et les valeurs sont leurs coordonnées
+     */
+    private Map<CelestialObject, CartesianCoordinates> getAllCelestialObjectsWithPosition() {
+        Map<CelestialObject, CartesianCoordinates> map = new HashMap<>();
+        map.put(sun, sunPosition);
+        map.put(moon, moonPosition);
+
+        for (int i = 0; i < planets.size(); i++) {
+            map.put(planets.get(i), CartesianCoordinates.of(
+                    planetPositions[2*i], planetPositions[2*i + 1]
+            ));
+        }
+        for (int i = 0; i < stars.size(); i++) {
+            map.put(stars.get(i), CartesianCoordinates.of(
+                    starPositions[2*i], starPositions[2*i + 1]
+            ));
+        }
+        return map;
     }
 }

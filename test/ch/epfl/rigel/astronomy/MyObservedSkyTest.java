@@ -1,5 +1,6 @@
 package ch.epfl.rigel.astronomy;
 
+import ch.epfl.rigel.coordinates.CartesianCoordinates;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import ch.epfl.rigel.coordinates.StereographicProjection;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.*;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -84,5 +86,39 @@ public class MyObservedSkyTest {
         ObservedSky observedSky = new ObservedSky(d, where, stereographicProjection, catalogue);
         List<Star> s = observedSky.stars();
         assertEquals(5067, s.size());
+    }
+
+    // TODO: Add tests of positions
+
+    @Test
+    void asterismsWorks() {
+        ObservedSky observedSky = new ObservedSky(d, where, stereographicProjection, catalogue);
+        Set<Asterism> asterisms = observedSky.asterisms();
+        assertTrue(catalogue.asterisms().containsAll(asterisms));
+    }
+
+    @Test
+    void asterismIndicesWorks() {
+        ObservedSky observedSky = new ObservedSky(d, where, stereographicProjection, catalogue);
+        Asterism asterism = catalogue.asterisms().iterator().next();
+        List<Integer> list = observedSky.asterismIndices(asterism);
+        assertTrue(catalogue.asterismIndices(asterism).containsAll(list));
+    }
+
+    @Test
+    void objectClosestToWorksWithANotNullReturn() {
+        ObservedSky observedSky = new ObservedSky(d, where, stereographicProjection, catalogue);
+        // Ici, sunPosition = (x=-0.5182, y=-0.9860)
+        CartesianCoordinates point = CartesianCoordinates.of(-0.52, -0.99);
+        CelestialObject closestObject = observedSky.objectClosestTo(point, 0.1);
+        assertEquals("Soleil", closestObject.name());
+    }
+
+    @Test
+    void objectClosestToWorksWithANullReturn() {
+        ObservedSky observedSky = new ObservedSky(d, where, stereographicProjection, catalogue);
+        CartesianCoordinates point = CartesianCoordinates.of(-0.52, -0.1);
+        CelestialObject closestObject = observedSky.objectClosestTo(point, 0.01);
+        assertNull(closestObject);
     }
 }
