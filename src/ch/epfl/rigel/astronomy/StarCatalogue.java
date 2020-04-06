@@ -72,7 +72,7 @@ public final class StarCatalogue {
             throw new IllegalArgumentException();
         }
 
-        return Collections.unmodifiableList(catalogue.get(asterism)); // TODO: Est-ce correct ?
+        return Collections.unmodifiableList(catalogue.get(asterism));
     }
 
     /**
