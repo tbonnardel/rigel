@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +49,18 @@ public final class BlackBodyColor {
         return TEMPERATURE_COLOR_MAP.get(temperature);
     }
 
+
+    /**
+     * Méthode privée et statique qui lit et extrait les données du fichier
+     * de référence concernant la couleur d'un corps noir via sa température.
+     * Cette méthode a pour but d'initialiser un tableau associatif qui est
+     * un attribut statique de classe, dont les clés sont les différentes
+     * températures et les valeurs la couleur associée.
+     *
+     * @return un tableau associatif dont les clés sont les différentes
+     * températures et les valeurs la couleur associée
+     * @throws UncheckedIOException en cas d'erreur entrée/sortie
+     */
     private static Map<Integer, Color> loadData() {
         Map<Integer, Color> map = new HashMap<>();
 
@@ -69,7 +82,7 @@ public final class BlackBodyColor {
                 map.put(temperature, Color.web(hexaColor));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new UncheckedIOException(e);
         }
         return map;
     }
