@@ -21,9 +21,7 @@ public final class BlackBodyColor {
     private final static String BBR_FILE_NAME = "/bbr_color.txt";
     private final static int MIN_TEMPERATURE = 1000;
     private final static int MAX_TEMPERATURE = 40000;
-    private final static int TEMPERATURE_ROW = 1;
-    private final static int DEG_ROW = 4;
-    private final static int HEX_COLOR_ROW = 21;
+    private final static Map<Integer, Color> TEMPERATURE_COLOR_MAP = loadData();
 
     private BlackBodyColor() {} // Constructeur privée rendant la classe non instantiable
 
@@ -40,16 +38,22 @@ public final class BlackBodyColor {
      */
     public static Color colorForTemperature(int temperature) {
         Preconditions.checkArgument(MIN_TEMPERATURE <= temperature
-                                        && temperature <= MAX_TEMPERATURE);
+                && temperature <= MAX_TEMPERATURE);
 
-        return null;
+        if (!(temperature%100 == 0)) {
+            temperature = (temperature % 100 < 50)
+                    ? (temperature / 100) * 100
+                    : (temperature / 100 + 1) * 100;
+        }
+        return TEMPERATURE_COLOR_MAP.get(temperature);
     }
 
-    private Map<Integer, Color> loadData() throws IOException {
+    private static Map<Integer, Color> loadData() {
         Map<Integer, Color> map = new HashMap<>();
 
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(getClass()
-                .getResourceAsStream(BBR_FILE_NAME), Charset.forName("US-ASCII")))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+                BlackBodyColor.class.getResourceAsStream(BBR_FILE_NAME),
+                Charset.forName("US-ASCII")))) {
 
             String line = "";
             while ((line = bufferedReader.readLine()) != null && !line.isBlank()) {
@@ -62,19 +66,11 @@ public final class BlackBodyColor {
                         .append('#')
                         .append(line.split("#")[1])
                         .toString();
-
                 map.put(temperature, Color.web(hexaColor));
             }
-        }
-        return map;
-    }
-
-    public static void main(String[] args) {
-        try {
-            Map<Integer, Color> m = new BlackBodyColor().loadData();
-            System.out.println(m.get(2000));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return map;
     }
 }
