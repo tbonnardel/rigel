@@ -62,6 +62,7 @@ public class SkyCanvasPainterTest extends Application {
 
             painter.clear();
             painter.drawStars(sky, projection, planeToCanvas);
+            painter.drawMoon(sky, projection, planeToCanvas);
 
             WritableImage fxImage =
                     canvas.snapshot(null, null);

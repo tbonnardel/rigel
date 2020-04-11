@@ -97,7 +97,11 @@ public class SkyCanvasPainter {
      */
     public void drawMoon(ObservedSky sky, StereographicProjection projection,
                          Transform planeToCanvas) {
-        // TODO: A implémenter
+        GraphicsContext ctx = canvas.getGraphicsContext2D();
+        ctx.setFill(MOON_COLOR);
+        double radius = size(sky.moon()) / 2;
+        ctx.fillOval(sky.moonPosition().x(), sky.moonPosition().y(),
+                radius, radius);
     }
 
     public void drawHorizon() {
