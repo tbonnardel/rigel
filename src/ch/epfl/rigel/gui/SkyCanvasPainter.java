@@ -7,6 +7,7 @@ import ch.epfl.rigel.math.ClosedInterval;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.transform.Transform;
 
 import static java.lang.Math.tan;
@@ -59,6 +60,21 @@ public class SkyCanvasPainter {
     public void drawStars(ObservedSky sky, StereographicProjection projection,
                           Transform planeToCanvas) {
         // TODO: A implémenter
+        GraphicsContext ctx = canvas.getGraphicsContext2D();
+        // TODO: Ajouter au canevas les astérismes
+
+        for (int i = 0; i < sky.stars().size(); i++) {
+            Star star = sky.stars().get(i);
+            ctx.setFill(BlackBodyColor.colorForTemperature(star.colorTemperature()));
+            double radius = size(star) / 2;
+            Circle circle = new Circle();
+            circle.setCenterX(sky.starPositions()[2*i]);
+            circle.setCenterY(sky.starPositions()[2*i+1]);
+            circle.setRadius(radius);
+            circle.getTransforms().add(planeToCanvas);
+        }
+        ctx.setFill(MOON_COLOR);
+        ctx.fillOval(1, 1, 3, 3);
     }
 
     /**
@@ -102,6 +118,7 @@ public class SkyCanvasPainter {
         double radius = size(sky.moon()) / 2;
         ctx.fillOval(sky.moonPosition().x(), sky.moonPosition().y(),
                 radius, radius);
+        // TODO: Ajouter la transformation
     }
 
     public void drawHorizon() {
