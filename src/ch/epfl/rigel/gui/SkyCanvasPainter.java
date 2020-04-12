@@ -60,16 +60,15 @@ public class SkyCanvasPainter {
      */
     public void drawStars(ObservedSky sky, StereographicProjection projection,
                           Transform planeToCanvas) {
-        // TODO: A implémenter
+
         GraphicsContext ctx = canvas.getGraphicsContext2D();
         // TODO: Ajouter au canevas les astérismes
 
         for (int i = 0; i < sky.stars().size(); i++) {
             Star star = sky.stars().get(i);
             ctx.setFill(BlackBodyColor.colorForTemperature(star.colorTemperature()));
-            double radius = size(star) / 2;
-            double width = radius*2*planeToCanvas.getMxx();
-            double height = radius*2*planeToCanvas.getMyy();
+            double width = size(star)*planeToCanvas.getMxx();
+            double height = size(star)*planeToCanvas.getMyy();
             Point2D upperLeftBound = planeToCanvas.transform(
                     sky.starPositions()[2*i],
                     sky.starPositions()[2*i+1]);
