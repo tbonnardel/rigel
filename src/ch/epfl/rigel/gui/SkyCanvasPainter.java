@@ -90,7 +90,21 @@ public class SkyCanvasPainter {
      */
     public void drawPlanets(ObservedSky sky, StereographicProjection projection,
                             Transform planeToCanvas) {
-        // TODO: A implémenter
+        GraphicsContext ctx = canvas.getGraphicsContext2D();
+        ctx.setFill(PLANETS_COLOR);
+        for (int i = 0; i < sky.planets().size(); i++) {
+            Planet planet = sky.planets().get(i);
+            double width = size(planet)*planeToCanvas.getMxx();
+            double height = size(planet)*planeToCanvas.getMyy();
+            Point2D upperLeftBound = planeToCanvas.transform(
+                    sky.planetPositions()[2*i],
+                    sky.planetPositions()[2*i+1]);
+            ctx.fillOval(
+                    upperLeftBound.getX() - width/2,
+                    upperLeftBound.getY() + height/2 ,
+                    abs(width),
+                    abs(height));
+        }
     }
 
     /**
@@ -118,10 +132,16 @@ public class SkyCanvasPainter {
                          Transform planeToCanvas) {
         GraphicsContext ctx = canvas.getGraphicsContext2D();
         ctx.setFill(MOON_COLOR);
-        double radius = size(sky.moon()) / 2;
-        ctx.fillOval(sky.moonPosition().x(), sky.moonPosition().y(),
-                radius, radius);
-        // TODO: Ajouter la transformation
+        double width = size(sky.moon())*planeToCanvas.getMxx();
+        double height = size(sky.moon())*planeToCanvas.getMyy();
+        Point2D upperLeftBound = planeToCanvas.transform(
+                sky.moonPosition().x(),
+                sky.moonPosition().y());
+        ctx.fillOval(
+                upperLeftBound.getX() - width/2,
+                upperLeftBound.getY() + height/2 ,
+                abs(width),
+                abs(height));
     }
 
     public void drawHorizon() {
