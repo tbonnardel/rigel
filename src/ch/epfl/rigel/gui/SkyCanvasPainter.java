@@ -221,15 +221,4 @@ public class SkyCanvasPainter {
         double f = (99 - 17*clipedMagnitude) / 140;
         return f*effectiveSize(Angle.ofDeg(.5));
     }
-
-
-    public static void main(String[] args) {
-        Transform t = Transform.translate(1, 0);
-        double[] src = {0, 0, 1, 1, 2, 0};
-        double[] dst = new double[6];
-        t.transform2DPoints(src, 0, dst, 0, 2);
-        for (int i = 0; i < dst.length/2; i++) {
-            System.out.printf("(x: %.2f, y: %.2f)%n", dst[2*i], dst[2*i+1]);
-        }
-    }
 }
