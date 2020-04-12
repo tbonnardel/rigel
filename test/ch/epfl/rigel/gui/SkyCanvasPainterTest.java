@@ -21,14 +21,14 @@ import java.io.File;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Librement inspiré de code fourni dans l'énoncé de l'étape 8 du projet.
  *
  * @author Thomas Bonnardel (319827)
  */
 public class SkyCanvasPainterTest extends Application {
+
+    @Test
     public static void main(String[] args) { launch(args); }
 
     private InputStream resourceStream(String resourceName) {
@@ -67,7 +67,7 @@ public class SkyCanvasPainterTest extends Application {
                     canvas.snapshot(null, null);
             BufferedImage swingImage =
                     SwingFXUtils.fromFXImage(fxImage, null);
-            ImageIO.write(swingImage, "png", new File("sky.png"));
+            ImageIO.write(swingImage, "png", new File("out/test/Rigel/img/sky.png"));
         }
         Platform.exit();
     }

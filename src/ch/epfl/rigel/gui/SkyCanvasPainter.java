@@ -4,12 +4,13 @@ import ch.epfl.rigel.astronomy.*;
 import ch.epfl.rigel.coordinates.StereographicProjection;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.transform.Transform;
 
+import static java.lang.Math.abs;
 import static java.lang.Math.tan;
 
 /**
@@ -67,14 +68,17 @@ public class SkyCanvasPainter {
             Star star = sky.stars().get(i);
             ctx.setFill(BlackBodyColor.colorForTemperature(star.colorTemperature()));
             double radius = size(star) / 2;
-            Circle circle = new Circle();
-            circle.setCenterX(sky.starPositions()[2*i]);
-            circle.setCenterY(sky.starPositions()[2*i+1]);
-            circle.setRadius(radius);
-            circle.getTransforms().add(planeToCanvas);
+            double width = radius*2*planeToCanvas.getMxx();
+            double height = radius*2*planeToCanvas.getMyy();
+            Point2D upperLeftBound = planeToCanvas.transform(
+                    sky.starPositions()[2*i],
+                    sky.starPositions()[2*i+1]);
+            ctx.fillOval(
+                    upperLeftBound.getX() - width/2,
+                    upperLeftBound.getY() + height/2 ,
+                    abs(width),
+                    abs(height));
         }
-        ctx.setFill(MOON_COLOR);
-        ctx.fillOval(1, 1, 3, 3);
     }
 
     /**
@@ -197,5 +201,16 @@ public class SkyCanvasPainter {
         double clipedMagnitude = ClosedInterval.of(-2, 5).clip(magnitude);
         double f = (99 - 17*clipedMagnitude) / 140;
         return f*effectiveSize(Angle.ofDeg(.5));
+    }
+
+
+    public static void main(String[] args) {
+        Transform t = Transform.translate(1, 0);
+        double[] src = {0, 0, 1, 1, 2, 0};
+        double[] dst = new double[6];
+        t.transform2DPoints(src, 0, dst, 0, 2);
+        for (int i = 0; i < dst.length/2; i++) {
+            System.out.printf("(x: %.2f, y: %.2f)%n", dst[2*i], dst[2*i+1]);
+        }
     }
 }

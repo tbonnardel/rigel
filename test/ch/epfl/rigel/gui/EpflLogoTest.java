@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.Test;
 
 /**
  * Code provenant de l'énoncé de l'étape 8 du projet.
@@ -18,6 +19,7 @@ import javafx.stage.Stage;
  * @author Thomas Bonnardel (319827)
  */
 public class EpflLogoTest extends Application {
+
     public static void main(String[] args) { launch(args); }
 
     @Override
