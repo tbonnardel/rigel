@@ -1,5 +1,6 @@
 package ch.epfl.rigel.gui;
 
+import ch.epfl.rigel.astronomy.AsterismLoader;
 import ch.epfl.rigel.astronomy.HygDatabaseLoader;
 import ch.epfl.rigel.astronomy.ObservedSky;
 import ch.epfl.rigel.astronomy.StarCatalogue;
@@ -21,8 +22,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
  * Librement inspiré de code fourni dans l'énoncé de l'étape 8 du projet.
  *
@@ -39,46 +38,49 @@ public class SkyCanvasPainterTest extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        try (InputStream hs = resourceStream("/hygdata_v3.csv")){
-            StarCatalogue catalogue = new StarCatalogue.Builder()
-                    .loadFrom(hs, HygDatabaseLoader.INSTANCE)
-                    .build();
+        try (InputStream hs = resourceStream("/hygdata_v3.csv")) {
+            try (InputStream hs2 = resourceStream("/asterisms.txt")) {
+                StarCatalogue catalogue = new StarCatalogue.Builder()
+                        .loadFrom(hs, HygDatabaseLoader.INSTANCE)
+                        .loadFrom(hs2, AsterismLoader.INSTANCE)
+                        .build();
 
-            ZonedDateTime when =
-                    ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
-            GeographicCoordinates where =
-                    GeographicCoordinates.ofDeg(6.57, 46.52);
-            HorizontalCoordinates projCenter =
-                    HorizontalCoordinates.ofDeg(180, 45);
-            StereographicProjection projection =
-                    new StereographicProjection(projCenter);
-            ObservedSky sky =
-                    new ObservedSky(when, where, projection, catalogue);
+                ZonedDateTime when =
+                        ZonedDateTime.parse("2020-02-17T20:15:00+01:00");
+                GeographicCoordinates where =
+                        GeographicCoordinates.ofDeg(6.57, 46.52);
+                HorizontalCoordinates projCenter =
+                        HorizontalCoordinates.ofDeg(180, 45);
+                StereographicProjection projection =
+                        new StereographicProjection(projCenter);
+                ObservedSky sky =
+                        new ObservedSky(when, where, projection, catalogue);
 
-            Canvas canvas =
-                    new Canvas(800, 600);
-            Transform planeToCanvas =
-                    Transform.affine(1300, 0, 0, -1300, 400, 300);
-            SkyCanvasPainter painter =
-                    new SkyCanvasPainter(canvas);
+                Canvas canvas =
+                        new Canvas(800, 600);
+                Transform planeToCanvas =
+                        Transform.affine(1300, 0, 0, -1300, 400, 300);
+                SkyCanvasPainter painter =
+                        new SkyCanvasPainter(canvas);
 
-            painter.clear();
-            painter.drawStars(sky, projection, planeToCanvas);
-            painter.drawPlanets(sky, projection, planeToCanvas);
-            painter.drawSun(sky, projection, planeToCanvas);
-            painter.drawMoon(sky, projection, planeToCanvas);
-            painter.drawHorizon();
+                painter.clear();
+                painter.drawStars(sky, projection, planeToCanvas);
+                painter.drawPlanets(sky, projection, planeToCanvas);
+                painter.drawSun(sky, projection, planeToCanvas);
+                painter.drawMoon(sky, projection, planeToCanvas);
+                painter.drawHorizon();
 
-            WritableImage fxImage =
-                    canvas.snapshot(null, null);
-            BufferedImage swingImage =
-                    SwingFXUtils.fromFXImage(fxImage, null);
-            ImageIO.write(swingImage, "png", new File("out/test/Rigel/img/sky.png"));
+                WritableImage fxImage =
+                        canvas.snapshot(null, null);
+                BufferedImage swingImage =
+                        SwingFXUtils.fromFXImage(fxImage, null);
+                ImageIO.write(swingImage, "png", new File("out/test/Rigel/img/sky.png"));
+            }
         }
         Platform.exit();
     }
 
-    @Test
+    //@Test
     void skyCanvasPainterWorks() {
         // TODO: Implémenter un test qui vérifie si l'image générée
         //  est la même que la correction.

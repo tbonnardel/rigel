@@ -4,11 +4,14 @@ import ch.epfl.rigel.astronomy.*;
 import ch.epfl.rigel.coordinates.StereographicProjection;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Transform;
+
+import java.util.List;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.tan;
@@ -68,7 +71,31 @@ public class SkyCanvasPainter {
                           Transform planeToCanvas) {
 
         GraphicsContext ctx = canvas.getGraphicsContext2D();
-        // TODO: Ajouter au canevas les astérismes
+
+        Bounds boundsCanvas = canvas.getBoundsInLocal();
+        ctx.setStroke(ASTERISMS_COLOR);
+        for (Asterism asterism : sky.asterisms()) {
+            ctx.beginPath();
+            List<Integer> starIndices = sky.asterismIndices(asterism);
+            for (int i = 0; i < starIndices.size() - 1; i++) {
+                Point2D star1 = planeToCanvas.transform(
+                        sky.starPositions()[2*starIndices.get(i)],
+                        sky.starPositions()[2*starIndices.get(i)+1]
+                        );
+                Point2D star2 = planeToCanvas.transform(
+                        sky.starPositions()[2*starIndices.get(i+1)],
+                        sky.starPositions()[2*starIndices.get(i+1)+1]
+                );
+
+                if (boundsCanvas.contains(star1) && boundsCanvas.contains(star2)) {
+
+                    ctx.moveTo(star1.getX(), star1.getY());
+                    ctx.lineTo(star2.getX(), star2.getY());
+                    System.out.println("Star1: " + star1.toString() + " - star2: " + star2.toString());
+                }
+            }
+            ctx.stroke();
+        }
 
         for (int i = 0; i < sky.stars().size(); i++) {
             Star star = sky.stars().get(i);
