@@ -27,6 +27,12 @@ public class SkyCanvasPainter {
     private final static Color ASTERISMS_COLOR = Color.BLUE;
     private final static Color PLANETS_COLOR = Color.LIGHTGRAY;
     private final static Color MOON_COLOR = Color.WHITE;
+    private final static Color SUN_CENTER_COLOR = Color.WHITE;
+    private final static Color SUN_MIDDLE_COLOR = Color.YELLOW;
+    private final static Color SUN_HALO_COLOR = Color.color(Color.YELLOW.getRed(),
+                                                            Color.YELLOW.getGreen(),
+                                                            Color.YELLOW.getBlue(),
+                                                    0.25);
     private final static Color ANNOTATIONS_COLOR = Color.RED;
 
     /**
@@ -117,7 +123,35 @@ public class SkyCanvasPainter {
      */
     public void drawSun(ObservedSky sky, StereographicProjection projection,
                         Transform planeToCanvas) {
-        // TODO: A implémenter
+        GraphicsContext ctx = canvas.getGraphicsContext2D();
+        Sun sun = sky.sun();
+        double width = size(sun)*planeToCanvas.getMxx();
+        double height = size(sun)*planeToCanvas.getMyy();
+        Point2D center = planeToCanvas.transform(
+          sky.sunPosition().x(),
+          sky.moonPosition().y());
+
+        ctx.setFill(SUN_HALO_COLOR);
+        double coef = 2.2;
+        ctx.fillOval(
+                center.getX() - width*coef/2,
+                center.getY() + height*coef/2 ,
+                abs(width*coef),
+                abs(height*coef));
+
+        ctx.setFill(SUN_MIDDLE_COLOR);
+        ctx.fillOval(
+                center.getX() - (width+2)/2,
+                center.getY() + (height+2)/2 ,
+                abs(width)+2,
+                abs(height)+2);
+
+        ctx.setFill(SUN_CENTER_COLOR);
+        ctx.fillOval(
+                center.getX() - width/2,
+                center.getY() + height/2 ,
+                abs(width),
+                abs(height));
     }
 
     /**
