@@ -1,6 +1,8 @@
 package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.*;
+import ch.epfl.rigel.coordinates.CartesianCoordinates;
+import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import ch.epfl.rigel.coordinates.StereographicProjection;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
@@ -202,8 +204,33 @@ public class SkyCanvasPainter {
                 abs(height));
     }
 
-    public void drawHorizon() {
-        // TODO A implémenter
+    /**
+     * Méthode qui dessine l'horizon et les points cardinaux et intercardinaux.
+     *
+     * @param sky le ciel observé
+     * @param projection la projection stéréographique utilisée
+     * @param planeToCanvas la transformation entre le repère de la
+     *                      projection et celui du canevas
+     */
+    public void drawHorizon(ObservedSky sky, StereographicProjection projection,
+                            Transform planeToCanvas) {
+        GraphicsContext ctx = canvas.getGraphicsContext2D();
+        ctx.setStroke(ANNOTATIONS_COLOR);
+
+        // Dessin de l'horizon
+        CartesianCoordinates absoluteCenterCoordinates =
+                projection.circleCenterForParallel(HorizontalCoordinates.of(0, 0)); // TODO: A vérifier !
+        Point2D center = planeToCanvas.transform(
+                absoluteCenterCoordinates.x(),
+                absoluteCenterCoordinates.y());
+        double radius = projection.circleRadiusForParallel(HorizontalCoordinates.of(0, 0)); // TODO: A vérifier !
+        double width = radius*2*planeToCanvas.getMxx();
+        double height = radius*2*planeToCanvas.getMyy();
+        ctx.strokeOval(
+                center.getX() - width/2,
+                center.getY() + height/2 ,
+                abs(width),
+                abs(height));
     }
 
 

@@ -68,7 +68,7 @@ public class SkyCanvasPainterTest extends Application {
                 painter.drawPlanets(sky, projection, planeToCanvas);
                 painter.drawSun(sky, projection, planeToCanvas);
                 painter.drawMoon(sky, projection, planeToCanvas);
-                painter.drawHorizon();
+                painter.drawHorizon(sky, projection, planeToCanvas);
 
                 WritableImage fxImage =
                         canvas.snapshot(null, null);
