@@ -69,12 +69,12 @@ public class SkyCanvasPainter {
             ctx.setFill(BlackBodyColor.colorForTemperature(star.colorTemperature()));
             double width = size(star)*planeToCanvas.getMxx();
             double height = size(star)*planeToCanvas.getMyy();
-            Point2D upperLeftBound = planeToCanvas.transform(
+            Point2D center = planeToCanvas.transform(
                     sky.starPositions()[2*i],
                     sky.starPositions()[2*i+1]);
             ctx.fillOval(
-                    upperLeftBound.getX() - width/2,
-                    upperLeftBound.getY() + height/2 ,
+                    center.getX() - width/2,
+                    center.getY() + height/2 ,
                     abs(width),
                     abs(height));
         }
@@ -96,12 +96,12 @@ public class SkyCanvasPainter {
             Planet planet = sky.planets().get(i);
             double width = size(planet)*planeToCanvas.getMxx();
             double height = size(planet)*planeToCanvas.getMyy();
-            Point2D upperLeftBound = planeToCanvas.transform(
+            Point2D center = planeToCanvas.transform(
                     sky.planetPositions()[2*i],
                     sky.planetPositions()[2*i+1]);
             ctx.fillOval(
-                    upperLeftBound.getX() - width/2,
-                    upperLeftBound.getY() + height/2 ,
+                    center.getX() - width/2,
+                    center.getY() + height/2 ,
                     abs(width),
                     abs(height));
         }
@@ -134,12 +134,12 @@ public class SkyCanvasPainter {
         ctx.setFill(MOON_COLOR);
         double width = size(sky.moon())*planeToCanvas.getMxx();
         double height = size(sky.moon())*planeToCanvas.getMyy();
-        Point2D upperLeftBound = planeToCanvas.transform(
+        Point2D center = planeToCanvas.transform(
                 sky.moonPosition().x(),
                 sky.moonPosition().y());
         ctx.fillOval(
-                upperLeftBound.getX() - width/2,
-                upperLeftBound.getY() + height/2 ,
+                center.getX() - width/2,
+                center.getY() + height/2 ,
                 abs(width),
                 abs(height));
     }
