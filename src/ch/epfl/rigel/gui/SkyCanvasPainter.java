@@ -32,10 +32,7 @@ public class SkyCanvasPainter {
     private final static Color MOON_COLOR = Color.WHITE;
     private final static Color SUN_CENTER_COLOR = Color.WHITE;
     private final static Color SUN_MIDDLE_COLOR = Color.YELLOW;
-    private final static Color SUN_HALO_COLOR = Color.color(Color.YELLOW.getRed(),
-                                                            Color.YELLOW.getGreen(),
-                                                            Color.YELLOW.getBlue(),
-                                                    0.25);
+    private final static Color SUN_HALO_COLOR = Color.YELLOW.deriveColor(0, 0, 0, 0.25);
     private final static Color ANNOTATIONS_COLOR = Color.RED;
 
     /**
