@@ -63,7 +63,7 @@ public enum PlanetModel implements CelestialObjectModel<Planet> {
     /**
      * Objet représentant un modèle de Uranus.
      */
-    URANUS("Uranus", 84.039492, 271.063148, 172.884833, 0.046321,
+    URANUS("Uranus", 84.039492, 356.135400, 172.884833, 0.046321,
             19.21814, 0.773059, 73.926961, 65.80, -7.19),
 
     /**
