@@ -13,9 +13,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Transform;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.tan;
@@ -36,13 +34,13 @@ public class SkyCanvasPainter {
     private final static Color MOON_COLOR = Color.WHITE;
     private final static Color SUN_CENTER_COLOR = Color.WHITE;
     private final static Color SUN_MIDDLE_COLOR = Color.YELLOW;
-    private final static Color SUN_HALO_COLOR = Color.YELLOW.deriveColor(0, 0, 0, 0.25);
+    private final static Color SUN_HALO_COLOR = Color.YELLOW.deriveColor(1, 1, 1, 0.25);
     private final static Color ANNOTATIONS_COLOR = Color.RED;
 
     private final static String NORTH_LABEL = "N";
     private final static String EAST_LABEL = "E";
     private final static String SOUTH_LABEL = "S";
-    private final static String WEST_LABEL = "W";
+    private final static String WEST_LABEL = "O";
     private final static double OCTANT_LABEL_ALT_DEG_OFFSET = 0.5;
     private final static HorizontalCoordinates OCTANT_LABEL_COORDS[] = initOctantLabelCoords();
 
@@ -169,15 +167,15 @@ public class SkyCanvasPainter {
         ctx.setFill(SUN_HALO_COLOR);
         double coef = 2.2;
         ctx.fillOval(
-                center.getX() - width*coef/2,
-                center.getY() + height*coef/2 ,
+                center.getX() - (width*coef)/2,
+                center.getY() + (height*coef)/2 ,
                 abs(width*coef),
                 abs(height*coef));
 
         ctx.setFill(SUN_MIDDLE_COLOR);
         ctx.fillOval(
                 center.getX() - (width+2)/2,
-                center.getY() + (height+2)/2 ,
+                center.getY() + (height-2)/2 ,
                 abs(width)+2,
                 abs(height)+2);
 
