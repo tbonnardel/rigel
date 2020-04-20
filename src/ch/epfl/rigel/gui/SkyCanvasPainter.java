@@ -26,7 +26,7 @@ import static java.lang.Math.tan;
  */
 public class SkyCanvasPainter {
 
-    private final Canvas canvas; // TODO: Remove final ?
+    private final Canvas canvas;
 
     private final static Color BACKGROUND_COLOR = Color.BLACK;
     private final static Color ASTERISMS_COLOR = Color.BLUE;
@@ -70,12 +70,10 @@ public class SkyCanvasPainter {
      * Méthode qui dessine les astérismes et les étoiles sur le canevas.
      *
      * @param sky le ciel observé
-     * @param projection la projection stéréographique utilisée
      * @param planeToCanvas la transformation entre le repère de la
      *                      projection et celui du canevas
      */
-    public void drawStars(ObservedSky sky, StereographicProjection projection,
-                          Transform planeToCanvas) {
+    public void drawStars(ObservedSky sky, Transform planeToCanvas) {
 
         drawVisibleAsterisms(sky, planeToCanvas);
 
@@ -95,12 +93,10 @@ public class SkyCanvasPainter {
      * Méthode qui dessine les planètes sur le canevas.
      *
      * @param sky le ciel observé
-     * @param projection la projection stéréographique utilisée
      * @param planeToCanvas la transformation entre le repère de la
      *                      projection et celui du canevas
      */
-    public void drawPlanets(ObservedSky sky, StereographicProjection projection,
-                            Transform planeToCanvas) {
+    public void drawPlanets(ObservedSky sky, Transform planeToCanvas) {
         for (int i = 0; i < sky.planets().size(); i++) {
             drawDisk(
                     CartesianCoordinates.of(
@@ -117,12 +113,10 @@ public class SkyCanvasPainter {
      * Méthode qui dessine le Soleil sur le canevas.
      *
      * @param sky le ciel observé
-     * @param projection la projection stéréographique utilisée
      * @param planeToCanvas la transformation entre le repère de la
      *                      projection et celui du canevas
      */
-    public void drawSun(ObservedSky sky, StereographicProjection projection,
-                        Transform planeToCanvas) {
+    public void drawSun(ObservedSky sky, Transform planeToCanvas) {
         Sun sun = sky.sun();
         CartesianCoordinates absCenter = sky.sunPosition();
         double sunSize = size(sun);
@@ -152,12 +146,10 @@ public class SkyCanvasPainter {
      * Méthode qui dessine la Lune sur le canevas.
      *
      * @param sky le ciel observé
-     * @param projection la projection stéréographique utilisée
      * @param planeToCanvas la transformation entre le repère de la
      *                      projection et celui du canevas
      */
-    public void drawMoon(ObservedSky sky, StereographicProjection projection,
-                         Transform planeToCanvas) {
+    public void drawMoon(ObservedSky sky, Transform planeToCanvas) {
         drawDisk(
                 sky.moonPosition(),
                 size(sky.moon()),
@@ -169,15 +161,12 @@ public class SkyCanvasPainter {
     /**
      * Méthode qui dessine l'horizon et les points cardinaux et intercardinaux.
      *
-     * @param sky le ciel observé
      * @param projection la projection stéréographique utilisée
      * @param planeToCanvas la transformation entre le repère de la
      *                      projection et celui du canevas
      */
-    public void drawHorizon(ObservedSky sky, StereographicProjection projection,
+    public void drawHorizon(StereographicProjection projection,
                             Transform planeToCanvas) {
-        GraphicsContext ctx = canvas.getGraphicsContext2D();
-
         drawHorizonLine(projection, planeToCanvas);
         drawOctantLabels(projection, planeToCanvas);
     }
@@ -366,7 +355,6 @@ public class SkyCanvasPainter {
     private double size(Star star) {
         return basedOnMagnitudeSize(star.magnitude());
     }
-
 
     /**
      * Méthode privée qui calcule la taille effective de l'objet celeste
