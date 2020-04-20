@@ -117,6 +117,17 @@ class StereographicProjectionTest {
     }
 
     @Test
+    void inverseApplyWorksOnOrigin() {
+        var c = HorizontalCoordinates.of(2.3, -1.2);
+        var p = new StereographicProjection(c);
+
+        var c1 = CartesianCoordinates.of(0, 0);
+
+        assertEquals(c.az(), p.inverseApply(c1).az(), 1e-8);
+        assertEquals(c.alt(), p.inverseApply(c1).alt(), 1e-8);
+    }
+
+    @Test
     void centerIsProjectedToOrigin() {
         var rng = TestRandomizer.newRandom();
         for (int i = 0; i < TestRandomizer.RANDOM_ITERATIONS; i++) {
