@@ -51,6 +51,13 @@ public class AngleTest {
     }
 
     @Test
+    void ofDMSFailsWithInvalidDegrees() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            Angle.ofDMS(-3, 1, 2.4);
+        });
+    }
+
+    @Test
     void ofDMSFailsWithInvalidMinutes() {
         assertThrows(IllegalArgumentException.class, () -> {
             Angle.ofDMS(3, -1, 2.4);
