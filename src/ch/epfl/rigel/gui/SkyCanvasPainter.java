@@ -77,45 +77,17 @@ public class SkyCanvasPainter {
     public void drawStars(ObservedSky sky, StereographicProjection projection,
                           Transform planeToCanvas) {
 
-        GraphicsContext ctx = canvas.getGraphicsContext2D();
-
-        Bounds boundsCanvas = canvas.getBoundsInLocal();
-        ctx.setStroke(ASTERISMS_COLOR);
-        for (Asterism asterism : sky.asterisms()) {
-            ctx.beginPath();
-            List<Integer> starIndices = sky.asterismIndices(asterism);
-            for (int i = 0; i < starIndices.size() - 1; i++) {
-                Point2D star1 = planeToCanvas.transform(
-                        sky.starPositions()[2*starIndices.get(i)],
-                        sky.starPositions()[2*starIndices.get(i)+1]
-                        );
-                Point2D star2 = planeToCanvas.transform(
-                        sky.starPositions()[2*starIndices.get(i+1)],
-                        sky.starPositions()[2*starIndices.get(i+1)+1]
-                );
-
-                if (boundsCanvas.contains(star1) && boundsCanvas.contains(star2)) {
-
-                    ctx.moveTo(star1.getX(), star1.getY());
-                    ctx.lineTo(star2.getX(), star2.getY());
-                }
-            }
-            ctx.stroke();
-        }
+        drawVisibleAsterisms(sky, planeToCanvas);
 
         for (int i = 0; i < sky.stars().size(); i++) {
             Star star = sky.stars().get(i);
-            ctx.setFill(BlackBodyColor.colorForTemperature(star.colorTemperature()));
-            double width = size(star)*planeToCanvas.getMxx();
-            double height = size(star)*planeToCanvas.getMyy();
-            Point2D center = planeToCanvas.transform(
-                    sky.starPositions()[2*i],
-                    sky.starPositions()[2*i+1]);
-            ctx.fillOval(
-                    center.getX() - width/2,
-                    center.getY() + height/2 ,
-                    abs(width),
-                    abs(height));
+            drawDisk(
+                    CartesianCoordinates.of(
+                            sky.starPositions()[2*i],
+                            sky.starPositions()[2*i+1]),
+                    size(star),
+                    BlackBodyColor.colorForTemperature(star.colorTemperature()),
+                    planeToCanvas);
         }
     }
 
@@ -129,20 +101,15 @@ public class SkyCanvasPainter {
      */
     public void drawPlanets(ObservedSky sky, StereographicProjection projection,
                             Transform planeToCanvas) {
-        GraphicsContext ctx = canvas.getGraphicsContext2D();
-        ctx.setFill(PLANETS_COLOR);
         for (int i = 0; i < sky.planets().size(); i++) {
-            Planet planet = sky.planets().get(i);
-            double width = size(planet)*planeToCanvas.getMxx();
-            double height = size(planet)*planeToCanvas.getMyy();
-            Point2D center = planeToCanvas.transform(
-                    sky.planetPositions()[2*i],
-                    sky.planetPositions()[2*i+1]);
-            ctx.fillOval(
-                    center.getX() - width/2,
-                    center.getY() + height/2 ,
-                    abs(width),
-                    abs(height));
+            drawDisk(
+                    CartesianCoordinates.of(
+                            sky.planetPositions()[2*i],
+                            sky.planetPositions()[2*i+1]),
+                    size(sky.planets().get(i)),
+                    PLANETS_COLOR,
+                    planeToCanvas
+                    );
         }
     }
 
@@ -156,35 +123,29 @@ public class SkyCanvasPainter {
      */
     public void drawSun(ObservedSky sky, StereographicProjection projection,
                         Transform planeToCanvas) {
-        GraphicsContext ctx = canvas.getGraphicsContext2D();
         Sun sun = sky.sun();
-        double width = size(sun)*planeToCanvas.getMxx();
-        double height = size(sun)*planeToCanvas.getMyy();
-        Point2D center = planeToCanvas.transform(
-          sky.sunPosition().x(),
-          sky.moonPosition().y());
+        CartesianCoordinates absCenter = sky.sunPosition();
+        double sunSize = size(sun);
 
-        ctx.setFill(SUN_HALO_COLOR);
-        double coef = 2.2;
-        ctx.fillOval(
-                center.getX() - (width*coef)/2,
-                center.getY() + (height*coef)/2 ,
-                abs(width*coef),
-                abs(height*coef));
-
-        ctx.setFill(SUN_MIDDLE_COLOR);
-        ctx.fillOval(
-                center.getX() - (width+2)/2,
-                center.getY() + (height-2)/2 ,
-                abs(width)+2,
-                abs(height)+2);
-
-        ctx.setFill(SUN_CENTER_COLOR);
-        ctx.fillOval(
-                center.getX() - width/2,
-                center.getY() + height/2 ,
-                abs(width),
-                abs(height));
+        final double HALO_COEF = 2.2;
+        drawDisk(
+                absCenter,
+                sunSize*HALO_COEF,
+                SUN_HALO_COLOR,
+                planeToCanvas
+        );
+        drawDisk(
+                absCenter,
+                sunSize + abs(2/planeToCanvas.getMxx()),
+                SUN_MIDDLE_COLOR,
+                planeToCanvas
+        );
+        drawDisk(
+                absCenter,
+                size(sun),
+                SUN_CENTER_COLOR,
+                planeToCanvas
+        );
     }
 
     /**
@@ -197,18 +158,12 @@ public class SkyCanvasPainter {
      */
     public void drawMoon(ObservedSky sky, StereographicProjection projection,
                          Transform planeToCanvas) {
-        GraphicsContext ctx = canvas.getGraphicsContext2D();
-        ctx.setFill(MOON_COLOR);
-        double width = size(sky.moon())*planeToCanvas.getMxx(); // TODO: Utiliser plutôt deltaTransform ?
-        double height = size(sky.moon())*planeToCanvas.getMyy();
-        Point2D center = planeToCanvas.transform(
-                sky.moonPosition().x(),
-                sky.moonPosition().y());
-        ctx.fillOval(
-                center.getX() - width/2,
-                center.getY() + height/2 ,
-                abs(width),
-                abs(height));
+        drawDisk(
+                sky.moonPosition(),
+                size(sky.moon()),
+                MOON_COLOR,
+                planeToCanvas
+        );
     }
 
     /**
@@ -223,12 +178,92 @@ public class SkyCanvasPainter {
                             Transform planeToCanvas) {
         GraphicsContext ctx = canvas.getGraphicsContext2D();
 
-        // Dessin de l'horizon
+        drawHorizonLine(projection, planeToCanvas);
+        drawOctantLabels(projection, planeToCanvas);
+    }
+
+    /**
+     * Méthode privée qui dessine à l'écran un disque à la position et
+     * le diamètre spécifiés. Notez bien que des coordonnées et le diamètre
+     * doivent être donné en absolu, c'est-à-dire que la transformation
+     * de planeToCanvas n'a pas encore été appliquée.
+     *
+     * @param absCenter le centre du disque (coordonnées non transformées)
+     * @param absSize le diamètre du disque (valeur non transformée)
+     * @param color la couleur du disque
+     * @param planeToCanvas la transformation entre le repère de la
+     *                      projection et celui du canevas
+     */
+    private void drawDisk(CartesianCoordinates absCenter, double absSize,
+                          Color color, Transform planeToCanvas) {
+        GraphicsContext ctx = canvas.getGraphicsContext2D();
+        ctx.setFill(color);
+
+        Point2D center = planeToCanvas.transform(
+                absCenter.x(),
+                absCenter.y());
+        Point2D dimension = planeToCanvas.deltaTransform(absSize, absSize);
+        ctx.fillOval(
+                center.getX() - dimension.getX()/2,
+                center.getY() + dimension.getY()/2,
+                abs(dimension.getX()),
+                abs(dimension.getY()));
+    }
+
+    /**
+     * Méthode privée qui dessine les astérismes visibles, c'est-à-dire relier
+     * par un trait les étoiles d'un même astérismes si ces deux étoiles sont
+     * visibles.
+     *
+     * @param sky le ciel observé
+     * @param planeToCanvas la transformation entre le repère de la
+     *                      projection et celui du canevas
+     */
+    private void drawVisibleAsterisms(ObservedSky sky,
+                                      Transform planeToCanvas) {
+        GraphicsContext ctx = canvas.getGraphicsContext2D();
+        ctx.setStroke(ASTERISMS_COLOR);
+        ctx.setLineWidth(1);
+
+        Bounds boundsCanvas = canvas.getBoundsInLocal();
+        for (Asterism asterism : sky.asterisms()) {
+            ctx.beginPath();
+            List<Integer> starIndices = sky.asterismIndices(asterism);
+            for (int i = 0; i < starIndices.size() - 1; i++) {
+                Point2D star1 = planeToCanvas.transform(
+                        sky.starPositions()[2*starIndices.get(i)],
+                        sky.starPositions()[2*starIndices.get(i)+1]
+                );
+                Point2D star2 = planeToCanvas.transform(
+                        sky.starPositions()[2*starIndices.get(i+1)],
+                        sky.starPositions()[2*starIndices.get(i+1)+1]
+                );
+
+                if (boundsCanvas.contains(star1) && boundsCanvas.contains(star2)) {
+                    ctx.moveTo(star1.getX(), star1.getY());
+                    ctx.lineTo(star2.getX(), star2.getY());
+                }
+            }
+            ctx.stroke();
+        }
+    }
+
+    /**
+     * Méthode privée qui dessine la ligne d'horizon
+     *
+     * @param projection la projection stéréographique utilisée
+     * @param planeToCanvas la transformation entre le repère de la
+     *                      projection et celui du canevas
+     */
+    private void drawHorizonLine(StereographicProjection projection,
+                                 Transform planeToCanvas) {
+        GraphicsContext ctx = canvas.getGraphicsContext2D();
+        ctx.setStroke(ANNOTATIONS_COLOR);
+        ctx.setLineWidth(2);
+
         CartesianCoordinates absoluteCenterCoordinates =
                 projection.circleCenterForParallel(HorizontalCoordinates.of(0, 0));
 
-        ctx.setStroke(ANNOTATIONS_COLOR);
-        ctx.setLineWidth(2);
         if (abs(absoluteCenterCoordinates.y()) < Double.POSITIVE_INFINITY) {
             Point2D center = planeToCanvas.transform(
                     absoluteCenterCoordinates.x(),
@@ -247,10 +282,21 @@ public class SkyCanvasPainter {
                     0, centerY,
                     canvas.getWidth(), centerY);
         }
+    }
 
-
-        // Dessin des points cardinaux
+    /**
+     * Méthode privée qui dessine les différents libellés désignant
+     * les points cardinaux.
+     *
+     * @param projection la projection stéréographique utilisée
+     * @param planeToCanvas la transformation entre le repère de la
+     *                      projection et celui du canevas
+     */
+    private void drawOctantLabels(StereographicProjection projection,
+                                  Transform planeToCanvas) {
+        GraphicsContext ctx = canvas.getGraphicsContext2D();
         ctx.setFill(ANNOTATIONS_COLOR);
+
         for (HorizontalCoordinates hc : OCTANT_LABEL_COORDS) {
             String text = hc.azOctantName(NORTH_LABEL, EAST_LABEL, SOUTH_LABEL, WEST_LABEL);
             CartesianCoordinates coords = projection.apply(hc);
@@ -261,6 +307,21 @@ public class SkyCanvasPainter {
         }
     }
 
+    /**
+     * Méthode statique et privée qui retourne le tableau des coordonnées horizontales
+     * des labels des points cardinaux.
+     *
+     * @return le tableau des coordonnées horizontales des labels des points cardinaux
+     */
+    private static HorizontalCoordinates[] initOctantLabelCoords() {
+        final int NB_OCTANTS = 8;
+        final double DEG_STEP = 45;
+        HorizontalCoordinates[] coords = new HorizontalCoordinates[NB_OCTANTS];
+        for (int i = 0; i < NB_OCTANTS; i++) {
+            coords[i] = HorizontalCoordinates.ofDeg(DEG_STEP*i, OCTANT_LABEL_ALT_DEG_OFFSET);
+        }
+        return  coords;
+    }
 
     /**
      * Méthode qui retourne le diamètre du disque représentant
@@ -333,21 +394,5 @@ public class SkyCanvasPainter {
         double clipedMagnitude = ClosedInterval.of(-2, 5).clip(magnitude);
         double f = (99 - 17*clipedMagnitude) / 140;
         return f*effectiveSize(Angle.ofDeg(.5));
-    }
-
-    /**
-     * Méthode statique et privée qui retourne le tableau des coordonnées horizontales
-     * des labels des points cardinaux.
-     *
-     * @return le tableau des coordonnées horizontales des labels des points cardinaux
-     */
-    private static HorizontalCoordinates[] initOctantLabelCoords() {
-        final int NB_OCTANTS = 8;
-        final double DEG_STEP = 45;
-        HorizontalCoordinates[] coords = new HorizontalCoordinates[NB_OCTANTS];
-        for (int i = 0; i < NB_OCTANTS; i++) {
-            coords[i] = HorizontalCoordinates.ofDeg(DEG_STEP*i, OCTANT_LABEL_ALT_DEG_OFFSET);
-        }
-        return  coords;
     }
 }
