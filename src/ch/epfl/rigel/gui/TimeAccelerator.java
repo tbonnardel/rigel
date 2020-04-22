@@ -2,7 +2,6 @@ package ch.epfl.rigel.gui;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.time.temporal.TemporalUnit;
 
 import static java.lang.Math.floor;
 
