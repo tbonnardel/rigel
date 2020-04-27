@@ -49,9 +49,9 @@ public final class DateTimeBean {
 
 
     /**
-     * Méthode d'accès retournant la propriété de date.
+     * Méthode d'accès retournant la propriété date.
      *
-     * @return la propriété de date
+     * @return la propriété date
      */
     public ObjectProperty<LocalDate> dateProperty() { return date; }
 
@@ -71,9 +71,9 @@ public final class DateTimeBean {
 
 
     /**
-     * Méthode d'accès retournant la propriété de time.
+     * Méthode d'accès retournant la propriété time.
      *
-     * @return la propriété de time
+     * @return la propriété time
      */
     public ObjectProperty<LocalTime> timeProperty() { return time; }
 
@@ -93,9 +93,9 @@ public final class DateTimeBean {
 
 
     /**
-     * Méthode d'accès retournant la propriété de zone.
+     * Méthode d'accès retournant la propriété zone.
      *
-     * @return la propriété de zone
+     * @return la propriété zone
      */
     public ObjectProperty<ZoneId> zoneProperty() { return zone; }
 
