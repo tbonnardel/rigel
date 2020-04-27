@@ -56,9 +56,10 @@ public final class Angle {
      * @param sec le nombre de secondes d'arc
      * @return la valeur en radians de l'angle donné
      * @throws IllegalArgumentException si l'angle fournit en paramètre ne respecte pas
-     * la norme deg​° min​′ sec​″
+     * la norme deg​° min​′ sec​″ ou bien si deg est strictement négatif
      */
     public static double ofDMS(int deg, int min, double sec) {
+        Preconditions.checkArgument(0 <= deg);
         Preconditions.checkArgument((0 <= min && min< 60));
         Preconditions.checkArgument((0 <= sec && sec < 60));
 

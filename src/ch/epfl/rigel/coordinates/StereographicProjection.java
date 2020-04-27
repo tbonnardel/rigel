@@ -103,6 +103,10 @@ public class StereographicProjection implements Function<HorizontalCoordinates, 
      * de coordonnées cartésiennes xy
      */
     public HorizontalCoordinates inverseApply(CartesianCoordinates xy) {
+        if (xy.x() == 0 && xy.y() == 0) { // Cas limite de l'origine (cf. étape 9)
+            return HorizontalCoordinates.of(lambda0, phi1);
+        }
+
         double x = xy.x();
         double y = xy.y();
         double rho = sqrt(x*x+ y*y);
