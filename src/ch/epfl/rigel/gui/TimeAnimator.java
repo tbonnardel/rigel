@@ -3,7 +3,7 @@ package ch.epfl.rigel.gui;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.*;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 /**
  * Cette classe représente un « animateur de temps ».
@@ -15,7 +15,8 @@ import java.time.LocalDate;
 public final class TimeAnimator extends AnimationTimer {
 
     private final DateTimeBean dateTimeBean;
-    private long startTime;
+    private long startNsTime;
+    private ZonedDateTime initialZonedDateTime;
     private boolean isFirstFrame;
 
     private ObjectProperty<TimeAccelerator> accelerator = new SimpleObjectProperty<>();
@@ -36,18 +37,21 @@ public final class TimeAnimator extends AnimationTimer {
     /**
      * Définition de la méthode handle de la classe abstraite AnimationTimer.
      *
-     * @param now le timestamp de l'appl actuel en nanosecondes
+     * @param now le timestamp de l'appel actuel en nanosecondes
      */
     @Override
     public void handle(long now) {
         if (isFirstFrame) {
-            startTime = now;
+            startNsTime = now;
+            initialZonedDateTime = dateTimeBean.getZonedDateTime();
             isFirstFrame = false;
         }
+
+        long nsFromStart = now - startNsTime;
         dateTimeBean.setZonedDateTime(
                 getAccelerator().adjust(
-                        dateTimeBean.getZonedDateTime(),
-                        now - startTime)
+                        initialZonedDateTime,
+                        nsFromStart)
         );
 
 
