@@ -36,6 +36,8 @@ public final class TimeAnimator extends AnimationTimer {
 
     /**
      * Définition de la méthode handle de la classe abstraite AnimationTimer.
+     * Actualise la valeur de l'instant de l'observation en fonction de
+     * l'accélérateur donné.
      *
      * @param now le timestamp de l'appel actuel en nanosecondes
      */
@@ -59,7 +61,7 @@ public final class TimeAnimator extends AnimationTimer {
 
     /**
      * Redéfinition de la méthode start de AnimationTimer.
-     * Méthode qui permet de commencer l'animation.
+     * Méthode qui permet de démarrer l'animation.
      */
     @Override
     public void start() {

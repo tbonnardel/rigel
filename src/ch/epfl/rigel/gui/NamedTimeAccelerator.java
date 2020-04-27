@@ -60,7 +60,7 @@ public enum NamedTimeAccelerator {
     }
 
     /**
-     * méthode d'accès qui retourne l'accélérateur.
+     * Méthode d'accès qui retourne l'accélérateur.
      *
      * @return l'accélérateur
      */
