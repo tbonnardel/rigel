@@ -4,7 +4,6 @@ import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
 /**
@@ -20,6 +19,11 @@ public final class ObserverLocationBean {
     private ObjectBinding<GeographicCoordinates> coordinates;
 
 
+    /**
+     * Constructeur de la classe, qui permet de créé le lien entre
+     * les propriétés de longitude et latitude et l'objet contenant
+     * les coordonnées de la position de l'observateur.
+     */
     public ObserverLocationBean() {
         this.coordinates = Bindings.createObjectBinding(
                 () -> GeographicCoordinates.ofDeg(lonDeg.get(), latDeg.get()),
