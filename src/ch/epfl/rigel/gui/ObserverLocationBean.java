@@ -1,8 +1,6 @@
 package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
-import ch.epfl.rigel.math.ClosedInterval;
-import ch.epfl.rigel.math.RightOpenInterval;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.DoubleProperty;
@@ -20,11 +18,6 @@ public final class ObserverLocationBean {
     private DoubleProperty latDeg = new SimpleDoubleProperty();
     private ObjectBinding<GeographicCoordinates> coordinates;
 
-    private final static double MIN_AZIMUTH_DEG = 0d;
-    private final static double MAX_AZIMUTH_DEG = 360d;
-    private final static double MIN_ALTITUDE_DEG_FOR_OBSERVATION = 5d;
-    private final static double MAX_ALTITUDE_DEG_FOR_OBSERVATION = 90d;
-
 
     /**
      * Constructeur de la classe, qui permet de créé le lien entre
@@ -36,35 +29,6 @@ public final class ObserverLocationBean {
                 () -> GeographicCoordinates.ofDeg(lonDeg.get(), latDeg.get()),
                 lonDeg, latDeg
         );
-    }
-
-    /**
-     * Méthode qui ajoute azDeg degrés à l'azimut de la
-     * position de l'observateur, en suivant les conventions
-     * d'angles (azimut dans l'intervalle [0, 360[ ).
-     *
-     * @param azDeg l'angle en degrés à ajouter à l'azimut
-     */
-    public void addDegToAzimuth(double azDeg) {
-        setLonDeg(
-                RightOpenInterval.of(MIN_AZIMUTH_DEG, MAX_AZIMUTH_DEG)
-                .reduce(getLonDeg() + azDeg));
-    }
-
-    /**
-     * Méthode qui ajoute altDeg degrés à la hauteur de la
-     * position de l'observateur, en suivant les conventions
-     * d'angles pour l'observation (hauteur dans
-     * l'intervalle [5, 90] ).
-     *
-     * @param altDeg l'angle en degrés à ajouter à la hauteur
-     */
-    public void addDegToAltitude(double altDeg) {
-        setLatDeg(
-                ClosedInterval.of(
-                        MIN_ALTITUDE_DEG_FOR_OBSERVATION,
-                        MAX_ALTITUDE_DEG_FOR_OBSERVATION)
-                .clip(getLatDeg() + altDeg));
     }
 
 

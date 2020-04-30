@@ -145,24 +145,25 @@ public final class SkyCanvasManager {
         canvas().setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case LEFT:
-                    observerLocationB.addDegToAzimuth(-AZIMUTH_DEG_OFFSET);
+                    viewingParametersB.addDegToAzimuth(-AZIMUTH_DEG_OFFSET);
                     event.consume();
                     break;
                 case RIGHT:
-                    observerLocationB.addDegToAzimuth(AZIMUTH_DEG_OFFSET);
+                    viewingParametersB.addDegToAzimuth(AZIMUTH_DEG_OFFSET);
                     event.consume();
                     break;
                 case UP:
-                    observerLocationB.addDegToAltitude(ALTITUDE_DEG_OFFSET);
+                    viewingParametersB.addDegToAltitude(ALTITUDE_DEG_OFFSET);
                     event.consume();
                     break;
                 case DOWN:
-                    observerLocationB.addDegToAltitude(-ALTITUDE_DEG_OFFSET);
+                    viewingParametersB.addDegToAltitude(-ALTITUDE_DEG_OFFSET);
                     event.consume();
                     break;
                 default:
                     break;
             }
+            System.out.println(viewingParametersB.getCenter());
         });
 
         // 6. installe des auditeurs pour être informé des changements des liens et propriétés ayant un impact sur le dessin du ciel, et demander dans ce cas au peintre de le redessiner

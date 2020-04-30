@@ -3,6 +3,7 @@ package ch.epfl.rigel.gui;
 import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import ch.epfl.rigel.math.Angle;
 import ch.epfl.rigel.math.ClosedInterval;
+import ch.epfl.rigel.math.RightOpenInterval;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -23,6 +24,10 @@ public final class ViewingParametersBean {
 
     private final static double MIN_FIELD_OF_VIEW_DEG = 30d;
     private final static double MAX_FIELD_OF_VIEW_DEG = 150d;
+    private final static double MIN_AZIMUTH_DEG = 0d;
+    private final static double MAX_AZIMUTH_DEG = 360d;
+    private final static double MIN_ALTITUDE_DEG = 5d;
+    private final static double MAX_ALTITUDE_DEG = 90d;
 
 
     /**
@@ -75,6 +80,34 @@ public final class ViewingParametersBean {
      * @param fieldOfViewDeg le nouveau champ de vue en degrés
      */
     public void setFieldOfViewDeg(double fieldOfViewDeg) { this.fieldOfViewDeg.setValue(fieldOfViewDeg); }
+
+
+    /**
+     * Méthode qui ajoute azDeg degrés à l'azimut de la
+     * direction du regard, en suivant les conventions
+     * d'angles (azimut dans l'intervalle [0, 360[ ).
+     *
+     * @param azDeg l'angle en degrés à ajouter à l'azimut
+     */
+    public void addDegToAzimuth(double azDeg) {
+        double newAzDeg = RightOpenInterval.of(MIN_AZIMUTH_DEG, MAX_AZIMUTH_DEG)
+                .reduce(getCenter().azDeg() + azDeg);
+        setCenter(HorizontalCoordinates.ofDeg(newAzDeg, getCenter().altDeg()));
+    }
+
+    /**
+     * Méthode qui ajoute altDeg degrés à la hauteur de la
+     * direction du regard, en suivant les conventions
+     * d'angles pour l'observation (hauteur dans
+     * l'intervalle [5, 90] ).
+     *
+     * @param altDeg l'angle en degrés à ajouter à la hauteur
+     */
+    public void addDegToAltitude(double altDeg) {
+        double newAltDeg =  ClosedInterval.of(MIN_ALTITUDE_DEG, MAX_ALTITUDE_DEG)
+                        .clip(getCenter().altDeg() + altDeg);
+        setCenter(HorizontalCoordinates.ofDeg(getCenter().azDeg(), newAltDeg));
+    }
 
 
     /**
