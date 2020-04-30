@@ -62,7 +62,8 @@ abstract class SphericalCoordinates {
      */
     @Override
     public boolean equals(Object o) {
-        throw new UnsupportedOperationException();
+        return false;   // TODO: Temporaire car ne fonctionne pas sans (cf @314 de piazza)
+        //throw new UnsupportedOperationException();
     }
 
     /**

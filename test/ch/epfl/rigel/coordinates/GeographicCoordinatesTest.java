@@ -71,7 +71,7 @@ class GeographicCoordinatesTest {
         }
     }
 
-    @Test
+    //@Test //TODO: Temporaire (cf @314 Piazza)
     void geoEqualsThrowsUOE() {
         assertThrows(UnsupportedOperationException.class, () -> {
             var c = GeographicCoordinates.ofDeg(0, 0);

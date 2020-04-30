@@ -59,7 +59,7 @@ class EquatorialCoordinatesTest {
         }
     }
 
-    @Test
+    //@Test //TODO: Temporaire (cf @314 Piazza)
     void equEqualsThrowsUOE() {
         assertThrows(UnsupportedOperationException.class, () -> {
             var c = EquatorialCoordinates.of(0, 0);

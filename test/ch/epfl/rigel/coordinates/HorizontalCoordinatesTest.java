@@ -160,7 +160,7 @@ class HorizontalCoordinatesTest {
         assertEquals(0.7160252718946277, c1.angularDistanceTo(c2), 1e-8);
     }
 
-    @Test
+    //@Test //TODO: Temporaire (cf @314 Piazza)
     void horEqualsThrowsUOE() {
         assertThrows(UnsupportedOperationException.class, () -> {
             var c = HorizontalCoordinates.ofDeg(0, 0);

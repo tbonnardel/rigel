@@ -12,6 +12,8 @@ import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.transform.Transform;
 
 import java.util.Optional;
@@ -95,7 +97,8 @@ public final class SkyCanvasManager {
                         -viewingParametersB.getDilationFactor(canvas().getWidth()), // TODO : sur de cette ligne (et le -)
                         canvas.get().getWidth() / 2,
                         canvas.get().getHeight() / 2),
-                projection, canvas, viewingParametersB.fieldOfViewDegProperty()); // TODO: problème je n'ai pas à utiliser projection ici alors que l'énoncé dit oui ...
+                projection, canvas().widthProperty(), canvas().heightProperty(),
+                viewingParametersB.fieldOfViewDegProperty()); // TODO: problème je n'ai pas à utiliser projection ici alors que l'énoncé dit oui ...
         objectUnderMouse = Bindings.createObjectBinding(
                 () -> {
                     Optional<CelestialObject> closestObject = observedSky.get().objectClosestTo(
@@ -108,17 +111,16 @@ public final class SkyCanvasManager {
                         return null; // TODO: Utiliser ici un ternaire () ? :
                     // TODO: problème, je n'utilise pas le planeToCanvas ici ...
                 },
-                observedSky, mousePosition);
+                observedSky, mousePosition, planeToCanvas);
         mouseHorizontalPosition = Bindings.createObjectBinding(
                 () -> projection.get().inverseApply(mousePosition.get()),
-                projection, planeToCanvas); // TODO: problème je n'ai pas à utiliser projection ici alors que l'énoncé dit oui ...
+                mousePosition, projection, planeToCanvas); // TODO: problème je n'ai pas à utiliser projection ici alors que l'énoncé dit oui ...
         mouseAzDeg = Bindings.createDoubleBinding(
                 () -> mouseHorizontalPosition.get().azDeg(),
                 mouseHorizontalPosition);
         mouseAltDeg = Bindings.createDoubleBinding(
                 () -> mouseHorizontalPosition.get().altDeg(),
                 mouseHorizontalPosition);
-
 
         // 2. installe un auditeur (listener) pour être informé des mouvements du curseur de la souris, et stocker sa position dans une propriété
         canvas().setOnMouseMoved(event -> setMousePosition(
@@ -163,12 +165,36 @@ public final class SkyCanvasManager {
                 default:
                     break;
             }
-            System.out.println(viewingParametersB.getCenter());
         });
 
         // 6. installe des auditeurs pour être informé des changements des liens et propriétés ayant un impact sur le dessin du ciel, et demander dans ce cas au peintre de le redessiner
+        observerLocationB.lonDegProperty().addListener((p, o, n) -> drawSky());
+        observerLocationB.latDegProperty().addListener((p, o, n) -> drawSky());
+        dateTimeB.dateProperty().addListener((p, o, n) -> drawSky());
+        dateTimeB.timeProperty().addListener((p, o, n) -> drawSky());
+        dateTimeB.zoneProperty().addListener((p, o, n) -> drawSky());
+        viewingParametersB.centerProperty().addListener((p, o, n) -> drawSky());
+        viewingParametersB.fieldOfViewDegProperty().addListener((p, o, n) -> drawSky());
+        canvas().widthProperty().addListener((p, o, n) -> drawSky());
+        canvas().heightProperty().addListener((p, o, n) -> drawSky());
     }
 
+    /**
+     * Méthode privée qui dessine le ciel sur le canevas.
+     */
+    private void drawSky() {
+        SkyCanvasPainter painter = new SkyCanvasPainter(canvas());
+        ObservedSky sky = getObservedSky();
+        StereographicProjection projection = getProjection();
+        Transform planeToCanvas = getPlaneToCanvas();
+
+        painter.clear();
+        painter.drawStars(sky, planeToCanvas);
+        painter.drawPlanets(sky, planeToCanvas);
+        painter.drawSun(sky, planeToCanvas);
+        painter.drawMoon(sky, planeToCanvas);
+        painter.drawHorizon(projection, planeToCanvas);
+    }
 
     /**
      * Méthode d'accès qui retourne le canevas.
