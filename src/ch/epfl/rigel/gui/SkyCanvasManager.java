@@ -130,6 +130,18 @@ public final class SkyCanvasManager {
             if (event.isPrimaryButtonDown())
                 canvas.get().requestFocus();
         });
+
+
+        // 4. installe un auditeur pour réagir aux mouvements de la molette de la souris et/ou du trackpad et changer le champ de vue en fonction
+        canvas().setOnScroll(event -> {
+            double absDelta = max(abs(event.getDeltaX()), abs(event.getDeltaY()));
+            viewingParametersB.addFieldOfViewDeg(absDelta*signum(-event.getDeltaY())); // TODO: Pas très propre
+            // TODO: On ne parle pas ici de bien la valeur signée qui doit être ajoutée
+            //  au champ de vue, afin de permettre le zoom dans les deux sens.
+        });
+
+        // 5. installe un auditeur pour réagir aux pressions sur les touches du curseur et changer le centre de projection en fonction
+
         canvas().setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case LEFT:
@@ -153,16 +165,6 @@ public final class SkyCanvasManager {
             }
         });
 
-
-        // 4. installe un auditeur pour réagir aux mouvements de la molette de la souris et/ou du trackpad et changer le champ de vue en fonction
-        canvas().setOnScroll(event -> {
-            double absDelta = max(abs(event.getDeltaX()), abs(event.getDeltaY()));
-            viewingParametersB.addFieldOfViewDeg(absDelta*signum(-event.getDeltaY())); // TODO: Pas très propre
-            // TODO: On ne parle pas ici de bien la valeur signée qui doit être ajoutée
-            //  au champ de vue, afin de permettre le zoom dans les deux sens.
-        });
-
-        // 5. installe un auditeur pour réagir aux pressions sur les touches du curseur et changer le centre de projection en fonction
         // 6. installe des auditeurs pour être informé des changements des liens et propriétés ayant un impact sur le dessin du ciel, et demander dans ce cas au peintre de le redessiner
     }
 
