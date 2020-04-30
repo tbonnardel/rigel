@@ -35,6 +35,8 @@ public final class SkyCanvasManager {
     private final double MAX_DISTANCE_OBJECT_UNDER_MOUSE = 10d;
     private final double STANDARD_X_DILATATION_FACTOR = 1300d;
     private final double STANDARD_Y_DILATATION_FACTOR = -1300d;
+    private final double AZIMUTH_DEG_OFFSET = 10d;
+    private final double ALTITUDE_DEG_OFFSET = 5d;
 
     // Liens externes
     private final DoubleBinding mouseAzDeg;
@@ -125,6 +127,34 @@ public final class SkyCanvasManager {
 
 
         // 3. installe un auditeur pour détecter les clics de la souris sur le canevas et en faire alors le destinataire des événements clavier
+        canvas.get().setOnMousePressed(event -> {
+            if (event.isPrimaryButtonDown())
+                canvas.get().requestFocus();
+        });
+        canvas.get().setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case LEFT:
+                    observerLocationB.addDegToAzimuth(-AZIMUTH_DEG_OFFSET);
+                    event.consume();
+                    break;
+                case RIGHT:
+                    observerLocationB.addDegToAzimuth(AZIMUTH_DEG_OFFSET);
+                    event.consume();
+                    break;
+                case UP:
+                    observerLocationB.addDegToAltitude(ALTITUDE_DEG_OFFSET);
+                    event.consume();
+                    break;
+                case DOWN:
+                    observerLocationB.addDegToAltitude(-ALTITUDE_DEG_OFFSET);
+                    event.consume();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+
         // 4. installe un auditeur pour réagir aux mouvements de la molette de la souris et/ou du trackpad et changer le champ de vue en fonction
         // 5. installe un auditeur pour réagir aux pressions sur les touches du curseur et changer le centre de projection en fonction
         // 6. installe des auditeurs pour être informé des changements des liens et propriétés ayant un impact sur le dessin du ciel, et demander dans ce cas au peintre de le redessiner
