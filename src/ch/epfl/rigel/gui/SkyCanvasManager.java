@@ -9,13 +9,14 @@ import ch.epfl.rigel.coordinates.StereographicProjection;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.ObjectBinding;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.transform.Transform;
 
 import java.util.Optional;
+
+import static java.lang.Math.*;
 
 /**
  * Cette classe est un gestionnaire de canevas sur lequel
@@ -32,11 +33,9 @@ public final class SkyCanvasManager {
 
     private final ObjectProperty<Canvas> canvas;
 
-    private final double MAX_DISTANCE_OBJECT_UNDER_MOUSE = 10d;
-    private final double STANDARD_X_DILATATION_FACTOR = 1300d;
-    private final double STANDARD_Y_DILATATION_FACTOR = -1300d;
-    private final double AZIMUTH_DEG_OFFSET = 10d;
-    private final double ALTITUDE_DEG_OFFSET = 5d;
+    private final static double MAX_DISTANCE_OBJECT_UNDER_MOUSE = 10d;
+    private final static double AZIMUTH_DEG_OFFSET = 10d;
+    private final static double ALTITUDE_DEG_OFFSET = 5d;
 
     // Liens externes
     private final DoubleBinding mouseAzDeg;
@@ -90,13 +89,13 @@ public final class SkyCanvasManager {
         mousePosition.setValue(CartesianCoordinates.of(0, 0)); // TODO: utiliser un attribut final
         planeToCanvas = Bindings.createObjectBinding(
                 () -> Transform.affine(
-                        STANDARD_X_DILATATION_FACTOR,
+                        viewingParametersB.getDilationFactor(canvas().getWidth()),
                         0,
                         0,
-                        STANDARD_Y_DILATATION_FACTOR,
+                        -viewingParametersB.getDilationFactor(canvas().getWidth()), // TODO : sur de cette ligne (et le -)
                         canvas.get().getWidth() / 2,
                         canvas.get().getHeight() / 2),
-                projection, canvas); // TODO: problème je n'ai pas à utiliser projection ici alors que l'énoncé dit oui ...
+                projection, canvas, viewingParametersB.fieldOfViewDegProperty()); // TODO: problème je n'ai pas à utiliser projection ici alors que l'énoncé dit oui ...
         objectUnderMouse = Bindings.createObjectBinding(
                 () -> {
                     Optional<CelestialObject> closestObject = observedSky.get().objectClosestTo(
@@ -122,16 +121,16 @@ public final class SkyCanvasManager {
 
 
         // 2. installe un auditeur (listener) pour être informé des mouvements du curseur de la souris, et stocker sa position dans une propriété
-        canvas.get().setOnMouseMoved(event -> setMousePosition(
+        canvas().setOnMouseMoved(event -> setMousePosition(
                 CartesianCoordinates.of(event.getX(), event.getY())));
 
 
         // 3. installe un auditeur pour détecter les clics de la souris sur le canevas et en faire alors le destinataire des événements clavier
-        canvas.get().setOnMousePressed(event -> {
+        canvas().setOnMousePressed(event -> {
             if (event.isPrimaryButtonDown())
                 canvas.get().requestFocus();
         });
-        canvas.get().setOnKeyPressed(event -> {
+        canvas().setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case LEFT:
                     observerLocationB.addDegToAzimuth(-AZIMUTH_DEG_OFFSET);
@@ -156,6 +155,13 @@ public final class SkyCanvasManager {
 
 
         // 4. installe un auditeur pour réagir aux mouvements de la molette de la souris et/ou du trackpad et changer le champ de vue en fonction
+        canvas().setOnScroll(event -> {
+            double absDelta = max(abs(event.getDeltaX()), abs(event.getDeltaY()));
+            viewingParametersB.addFieldOfViewDeg(absDelta*signum(-event.getDeltaY())); // TODO: Pas très propre
+            // TODO: On ne parle pas ici de bien la valeur signée qui doit être ajoutée
+            //  au champ de vue, afin de permettre le zoom dans les deux sens.
+        });
+
         // 5. installe un auditeur pour réagir aux pressions sur les touches du curseur et changer le centre de projection en fonction
         // 6. installe des auditeurs pour être informé des changements des liens et propriétés ayant un impact sur le dessin du ciel, et demander dans ce cas au peintre de le redessiner
     }
