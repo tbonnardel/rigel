@@ -11,9 +11,8 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import javafx.scene.transform.Transform;
 
 import java.util.Optional;
@@ -35,6 +34,8 @@ public final class SkyCanvasManager {
 
     private final ObjectProperty<Canvas> canvas;
 
+    private final static double DEFAULT_CANVAS_WIDTH = 800;
+    private final static double DEFAULT_CANVAS_HEIGHT = 600;
     private final static double MAX_DISTANCE_OBJECT_UNDER_MOUSE = 10d;
     private final static double AZIMUTH_DEG_OFFSET = 10d;
     private final static double ALTITUDE_DEG_OFFSET = 5d;
@@ -72,7 +73,7 @@ public final class SkyCanvasManager {
         this.observerLocationB = observerLocationB;
 
         this.canvas = new SimpleObjectProperty<>();
-        this.canvas.setValue(new Canvas(800, 600)); // TODO: utiliser un attribut final
+        this.canvas.setValue(new Canvas(DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT));
 
         // 1. crée un certain nombre de propriétés et liens
         projection = Bindings.createObjectBinding(
@@ -101,8 +102,9 @@ public final class SkyCanvasManager {
                 viewingParametersB.fieldOfViewDegProperty()); // TODO: problème je n'ai pas à utiliser projection ici alors que l'énoncé dit oui ...
         objectUnderMouse = Bindings.createObjectBinding(
                 () -> {
-                    Optional<CelestialObject> closestObject = observedSky.get().objectClosestTo(
-                            mousePosition.get(),
+                    Point2D point2D = getPlaneToCanvas().inverseTransform(getMousePosition().x(), getMousePosition().y());
+                    Optional<CelestialObject> closestObject = getObservedSky().objectClosestTo(
+                            CartesianCoordinates.of(point2D.getX(), point2D.getY()),
                             MAX_DISTANCE_OBJECT_UNDER_MOUSE);
 
                     if (closestObject.isPresent())
@@ -113,8 +115,18 @@ public final class SkyCanvasManager {
                 },
                 observedSky, mousePosition, planeToCanvas);
         mouseHorizontalPosition = Bindings.createObjectBinding(
-                () -> projection.get().inverseApply(mousePosition.get()),
-                mousePosition, projection, planeToCanvas); // TODO: problème je n'ai pas à utiliser projection ici alors que l'énoncé dit oui ...
+                () -> {
+                    Point2D mousePosInPlane =
+                            getPlaneToCanvas()
+                                    .inverseTransform(
+                                            getMousePosition().x(),
+                                            getMousePosition().y());
+                    return getProjection().inverseApply(CartesianCoordinates.of(
+                            mousePosInPlane.getX(),
+                            mousePosInPlane.getY()
+                    ));
+                },
+                mousePosition, projection, planeToCanvas);
         mouseAzDeg = Bindings.createDoubleBinding(
                 () -> mouseHorizontalPosition.get().azDeg(),
                 mouseHorizontalPosition);
@@ -143,7 +155,6 @@ public final class SkyCanvasManager {
         });
 
         // 5. installe un auditeur pour réagir aux pressions sur les touches du curseur et changer le centre de projection en fonction
-
         canvas().setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case LEFT:
