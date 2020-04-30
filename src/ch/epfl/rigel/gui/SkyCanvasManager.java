@@ -69,11 +69,9 @@ public final class SkyCanvasManager {
         this.observerLocationB = observerLocationB;
 
         this.canvas = new SimpleObjectProperty<>();
-        this.canvas.setValue(new Canvas());
+        this.canvas.setValue(new Canvas(800, 600)); // TODO: utiliser un attribut final
 
         // 1. crée un certain nombre de propriétés et liens
-        // TODO: A faire
-
         projection = Bindings.createObjectBinding(
                 () -> new StereographicProjection(viewingParametersB.getCenter()),
                 viewingParametersB.centerProperty());
