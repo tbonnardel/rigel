@@ -89,29 +89,28 @@ public final class SkyCanvasManager {
                 observerLocationB.lonDegProperty(), observerLocationB.latDegProperty(),
                 projection);
         mousePosition = new SimpleObjectProperty<>();
-        mousePosition.setValue(CartesianCoordinates.of(0, 0)); // TODO: utiliser un attribut final
+        mousePosition.setValue(CartesianCoordinates.of(0, 0)); // Par défaut
         planeToCanvas = Bindings.createObjectBinding(
                 () -> Transform.affine(
                         viewingParametersB.getDilationFactor(canvas().getWidth()),
                         0,
                         0,
-                        -viewingParametersB.getDilationFactor(canvas().getWidth()), // TODO : sur de cette ligne (et le -)
+                        -viewingParametersB.getDilationFactor(canvas().getWidth()),
                         canvas.get().getWidth() / 2,
                         canvas.get().getHeight() / 2),
                 projection, canvas().widthProperty(), canvas().heightProperty(),
-                viewingParametersB.fieldOfViewDegProperty()); // TODO: problème je n'ai pas à utiliser projection ici alors que l'énoncé dit oui ...
+                viewingParametersB.fieldOfViewDegProperty());
         objectUnderMouse = Bindings.createObjectBinding(
                 () -> {
-                    Point2D point2D = getPlaneToCanvas().inverseTransform(getMousePosition().x(), getMousePosition().y());
+                    Point2D point2D = getPlaneToCanvas().inverseTransform(
+                            getMousePosition().x(), getMousePosition().y());
                     Optional<CelestialObject> closestObject = getObservedSky().objectClosestTo(
                             CartesianCoordinates.of(point2D.getX(), point2D.getY()),
                             MAX_DISTANCE_OBJECT_UNDER_MOUSE);
 
-                    if (closestObject.isPresent())
-                        return closestObject.get();
-                    else
-                        return null; // TODO: Utiliser ici un ternaire () ? :
-                    // TODO: problème, je n'utilise pas le planeToCanvas ici ...
+                    return (closestObject.isPresent())
+                            ? closestObject.get()
+                            : null;
                 },
                 observedSky, mousePosition, planeToCanvas);
         mouseHorizontalPosition = Bindings.createObjectBinding(
@@ -149,9 +148,7 @@ public final class SkyCanvasManager {
         // 4. installe un auditeur pour réagir aux mouvements de la molette de la souris et/ou du trackpad et changer le champ de vue en fonction
         canvas().setOnScroll(event -> {
             double absDelta = max(abs(event.getDeltaX()), abs(event.getDeltaY()));
-            viewingParametersB.addFieldOfViewDeg(absDelta*signum(-event.getDeltaY())); // TODO: Pas très propre
-            // TODO: On ne parle pas ici de bien la valeur signée qui doit être ajoutée
-            //  au champ de vue, afin de permettre le zoom dans les deux sens.
+            viewingParametersB.addFieldOfViewDeg(absDelta * signum(-event.getDeltaY()));
         });
 
         // 5. installe un auditeur pour réagir aux pressions sur les touches du curseur et changer le centre de projection en fonction
@@ -189,6 +186,7 @@ public final class SkyCanvasManager {
         canvas().widthProperty().addListener((p, o, n) -> drawSky());
         canvas().heightProperty().addListener((p, o, n) -> drawSky());
     }
+
 
     /**
      * Méthode privée qui dessine le ciel sur le canevas.
