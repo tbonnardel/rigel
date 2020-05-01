@@ -89,7 +89,7 @@ public final class SkyCanvasManager {
                 observerLocationB.lonDegProperty(), observerLocationB.latDegProperty(),
                 projection);
         mousePosition = new SimpleObjectProperty<>();
-        mousePosition.setValue(CartesianCoordinates.of(0, 0)); // Par défaut
+        mousePosition.setValue(CartesianCoordinates.of(0, 0)); // TODO:  Par défaut
         planeToCanvas = Bindings.createObjectBinding(
                 () -> Transform.affine(
                         viewingParametersB.getDilationFactor(canvas().getWidth()),
