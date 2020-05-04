@@ -1,6 +1,7 @@
 package ch.epfl.rigel.gui;
 
 import java.time.Duration;
+import java.util.List;
 
 /**
  * Ce type énuméré représente un accélérateur de temps nommé,
@@ -40,6 +41,12 @@ public enum NamedTimeAccelerator {
      */
     SIDERAL_DAY("jour sidéral", TimeAccelerator.discrete(
             60, Duration.parse("PT23H56M4S")));
+
+    /**
+     * Liste représentant l'ensemble des accélérateurs disponibles.
+     */
+    public static List<NamedTimeAccelerator> ALL =
+            List.of(TIMES_1, TIMES_30, TIMES_300, TIMES_3000, DAY, SIDERAL_DAY);
 
     private final String name;
     private final TimeAccelerator accelerator;

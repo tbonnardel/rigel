@@ -2,15 +2,18 @@ package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
+import java.io.InputStream;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.UnaryOperator;
@@ -27,6 +30,9 @@ public class Main extends Application {
     private final static double MIN_HEIGHT = 600;
     private final static String FIELD_STYLE = "-fx-pref-width: 60; -fx-alignment: baseline-right;";
     private final static String CONTROL_BAR_HBOX_CHILDREN_STYLE = "-fx-spacing: inherit; -fx-alignment: baseline-left;";
+    private final static String UNDO_ICON = "\uf0e2";
+    private final static String PLAY_ICON = "\uf04b";
+    private final static String PAUSE_ICON = "\uf04c";
 
     /**
      * Méthode main du projet. Elle lance l'interface graphique
@@ -103,7 +109,24 @@ public class Main extends Application {
         observedDateTimeHBox.setStyle(CONTROL_BAR_HBOX_CHILDREN_STYLE);
 
 
-        HBox timeAnimatorHBox = new HBox();
+        ChoiceBox acceleratorChoiceBox = new ChoiceBox();
+        acceleratorChoiceBox.setItems(FXCollections.observableList(NamedTimeAccelerator.ALL));
+        // TODO: lier la propriété avec Bindings.select au bean associé
+
+        // TODO: Améliorer la lisibilité
+        InputStream fontStream = getClass()
+                .getResourceAsStream("/Font Awesome 5 Free-Solid-900.otf");
+        Font fontAwesome = Font.loadFont(fontStream, 15);
+        Button resetButton = new Button(UNDO_ICON);
+        resetButton.setFont(fontAwesome);
+        // TODO: lier le bouton au bean associé
+        Button playPauseButton = new Button(PLAY_ICON);
+        playPauseButton.setFont(fontAwesome);
+        // TODO: lier le bouton au bean associé
+        // TODO: changer l'icone si nécessaire
+
+        HBox timeAnimatorHBox = new HBox(acceleratorChoiceBox, resetButton, playPauseButton);
+        timeAnimatorHBox.setStyle("-fx-spacing: inherit;");
 
         HBox controlBar = new HBox(
                 observedLocationHBox, new Separator(Orientation.VERTICAL),
