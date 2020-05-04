@@ -257,8 +257,8 @@ public final class SkyCanvasManager {
     }
 
     /**
-     *  Méthode d'accès retournant le contenu de la hauteur
-     *  en degrés de la position du curseur de la souris.
+     * Méthode d'accès retournant le contenu de la hauteur
+     * en degrés de la position du curseur de la souris.
      *
      * @return le contenu de la hauteur de la souris
      */
@@ -277,7 +277,7 @@ public final class SkyCanvasManager {
     }
 
     /**
-     * Méthode d'accès retournant le contenu de la prorpiété
+     * Méthode d'accès retournant le contenu de la propriété
      * de l'objet céleste le plus proche du curseur de la souris,
      * à moins de 10 unités dans le repère du canevas.
      *

@@ -93,7 +93,7 @@ public final class ObserverLocationBean {
     public GeographicCoordinates getCoordinates() { return coordinates.get(); }
 
     /**
-     * Méthode qui permet de modifier les coordonéées de
+     * Méthode qui permet de modifier les coordonnées de
      * la position de l'observateur.
      *
      * @param coordinates les nouvelles coordonnées
