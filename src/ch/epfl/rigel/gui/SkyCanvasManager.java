@@ -16,7 +16,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.Math.*;
@@ -91,7 +90,6 @@ public final class SkyCanvasManager {
                 observerLocationB.lonDegProperty(), observerLocationB.latDegProperty(),
                 projection);
         mousePosition = new SimpleObjectProperty<>();
-        mousePosition.setValue(CartesianCoordinates.of(0, 0)); // TODO A enlever ?
         planeToCanvas = Bindings.createObjectBinding(
                 () -> Transform.affine(
                         viewingParametersB.getDilationFactor(canvas().getWidth()),
@@ -104,8 +102,6 @@ public final class SkyCanvasManager {
                 viewingParametersB.fieldOfViewDegProperty());
         objectUnderMouse = Bindings.createObjectBinding(
                 () -> {
-                    Objects.requireNonNull(getPlaneToCanvas(), "PlaneToCanvas is null"); // TODO: à enlever
-                    Objects.requireNonNull(getMousePosition(), "MousePosition is null"); // TODO: à enlever
                     try {
                         Point2D point2D = getPlaneToCanvas().inverseTransform(
                                 getMousePosition().x(), getMousePosition().y());
@@ -116,23 +112,28 @@ public final class SkyCanvasManager {
                         return (closestObject.isPresent())
                                 ? closestObject.get()
                                 : null;
-                    } catch (NonInvertibleTransformException e) { // TODO faut-il le conserver ?
-                        // Ceci est pour contrer les messages d'avertissements au lancement du programme
+                    } catch (NonInvertibleTransformException | NullPointerException e) {
+                        // Bloc try catch pour contrer les messages d'avertissements au lancement du programme par JavaFX
                         return null;
                     }
                 },
                 observedSky, mousePosition, planeToCanvas);
         mouseHorizontalPosition = Bindings.createObjectBinding(
                 () -> {
-                    Point2D mousePosInPlane =
-                            getPlaneToCanvas()
-                                    .inverseTransform(
-                                            getMousePosition().x(),
-                                            getMousePosition().y());
-                    return getProjection().inverseApply(CartesianCoordinates.of(
-                            mousePosInPlane.getX(),
-                            mousePosInPlane.getY()
-                    ));
+                    try {
+                        Point2D mousePosInPlane =
+                                getPlaneToCanvas()
+                                        .inverseTransform(
+                                                getMousePosition().x(),
+                                                getMousePosition().y());
+                        return getProjection().inverseApply(CartesianCoordinates.of(
+                                mousePosInPlane.getX(),
+                                mousePosInPlane.getY()
+                        ));
+                    } catch(NullPointerException e) {
+                        // Bloc try catch pour contrer l'initialisation de la souris de JavaFX
+                        return null;
+                    }
                 },
                 mousePosition, projection, planeToCanvas);
         mouseAzDeg = Bindings.createDoubleBinding(
@@ -165,7 +166,7 @@ public final class SkyCanvasManager {
     }
 
     /**
-     * Méthode privée qui ajoute tous les auditeurs utiles.
+     * Méthode privée qui ajoute les auditeurs utiles.
      */
     private void addAllListeners() {
         // 2. installe un auditeur (listener) pour être informé des

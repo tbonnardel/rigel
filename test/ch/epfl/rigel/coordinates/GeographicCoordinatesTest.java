@@ -79,7 +79,7 @@ class GeographicCoordinatesTest {
         });
     }
 
-    @Test
+    //@Test //TODO: Temporaire (cf @314 Piazza)
     void geoHashCodeThrowsUOE() {
         assertThrows(UnsupportedOperationException.class, () -> {
             GeographicCoordinates.ofDeg(0, 0).hashCode();
