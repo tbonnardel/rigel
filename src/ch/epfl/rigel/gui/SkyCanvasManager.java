@@ -212,7 +212,8 @@ public final class SkyCanvasManager {
             }
         });
 
-        // 6. installe des auditeurs pour être informé des changements des liens et propriétés ayant un impact sur le dessin du ciel, et demander dans ce cas au peintre de le redessiner
+        // 6. installe des auditeurs pour être informé des changements des liens et propriétés
+        // ayant un impact sur le dessin du ciel, et demander dans ce cas au peintre de le redessiner
         observerLocationB.lonDegProperty().addListener((p, o, n) -> drawSky());
         observerLocationB.latDegProperty().addListener((p, o, n) -> drawSky());
         dateTimeB.dateProperty().addListener((p, o, n) -> drawSky());
@@ -223,6 +224,7 @@ public final class SkyCanvasManager {
         canvas().widthProperty().addListener((p, o, n) -> drawSky());
         canvas().heightProperty().addListener((p, o, n) -> drawSky());
     }
+
 
     /**
      * Méthode d'accès qui retourne le canevas.
