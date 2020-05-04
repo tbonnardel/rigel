@@ -4,15 +4,15 @@ import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import javafx.application.Application;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.function.UnaryOperator;
 
 /**
@@ -26,7 +26,7 @@ public class Main extends Application {
     private final static double MIN_WIDTH = 800;
     private final static double MIN_HEIGHT = 600;
     private final static String FIELD_STYLE = "-fx-pref-width: 60; -fx-alignment: baseline-right;";
-    private final static String CONTROL_BAR_CHILDREN_STYLE = "-fx-spacing: inherit; -fx-alignment: baseline-left;";
+    private final static String CONTROL_BAR_HBOX_CHILDREN_STYLE = "-fx-spacing: inherit; -fx-alignment: baseline-left;";
 
     /**
      * Méthode main du projet. Elle lance l'interface graphique
@@ -63,21 +63,46 @@ public class Main extends Application {
     private HBox createControlBar() {
         Label lonLabel = new Label("Longitude (°) :");
         TextField lonTextField = new TextField();
-        lonTextField.setTextFormatter(createTextFormatterForLon());
+        TextFormatter<Number> lonTextFormatter = createTextFormatterForLon();
+        // TODO: lier sa propriété value au bean associé
+        lonTextField.setTextFormatter(lonTextFormatter);
         lonTextField.setStyle(FIELD_STYLE);
 
         Label latLabel = new Label("Latitude (°) :");
         TextField latTextField = new TextField();
-        latTextField.setTextFormatter(createTextFormatterForLat());
+        TextFormatter<Number> latTextFormatter = createTextFormatterForLat();
+        // TODO: lier sa propriété value au bean associé
+        latTextField.setTextFormatter(latTextFormatter);
         latTextField.setStyle(FIELD_STYLE);
 
         HBox observedLocationHBox = new HBox(
                 lonLabel, lonTextField, latLabel, latTextField);
-        observedLocationHBox.setStyle(CONTROL_BAR_CHILDREN_STYLE);
+        observedLocationHBox.setStyle(CONTROL_BAR_HBOX_CHILDREN_STYLE);
 
 
+        Label dateLabel = new Label("Date :");
+        DatePicker datePicker = new DatePicker();
+        // TODO: lier sa propriété date au bean associé
+        datePicker.setStyle("-fx-pref-width: 120;");
 
-        HBox observedDateTimeHBox = new HBox();
+        Label timeLabel = new Label("Heure :");
+        TextField timeTextField = new TextField();
+        TextFormatter<LocalTime> timeTextFormatter = createLocalTimeFormatter();
+        // TODO: lier sa propriété value au bean associé
+        timeTextField.setTextFormatter(timeTextFormatter);
+        timeTextField.setStyle("-fx-pref-width: 75; -fx-alignment: baseline-right;");
+
+        ComboBox timeZoneComboBox = new ComboBox();
+        timeZoneComboBox.setStyle("-fx-pref-width: 180;");
+        // TODO lier la propriété value au bean associé
+        // TODO: noms provenant de getAvailableZoneIds, triés par ordre alphabétique
+
+        // TODO: Désactiver la saisie de données quand une animation est en cours
+
+        HBox observedDateTimeHBox = new HBox(dateLabel, datePicker, timeLabel, timeTextField, timeZoneComboBox);
+        observedDateTimeHBox.setStyle(CONTROL_BAR_HBOX_CHILDREN_STYLE);
+
+
         HBox timeAnimatorHBox = new HBox();
 
         HBox controlBar = new HBox(
@@ -130,5 +155,19 @@ public class Main extends Application {
         });
 
         return new TextFormatter<>(stringConverter, 0, filter);
+    }
+
+    /**
+     * Méthode privée qui retourne un formateur de texte pour
+     * la gestion du temps.
+     *
+     * @return un formateur de texte pour le temps
+     */
+    private TextFormatter<LocalTime> createLocalTimeFormatter() {
+        DateTimeFormatter hmsFormatter =
+                DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalTimeStringConverter stringConverter =
+                new LocalTimeStringConverter(hmsFormatter, hmsFormatter);
+        return new TextFormatter<>(stringConverter);
     }
 }
