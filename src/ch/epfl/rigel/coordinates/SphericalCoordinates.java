@@ -53,6 +53,7 @@ abstract class SphericalCoordinates {
         return Angle.toDeg(lat);
     }
 
+    // TODO: Temporaire car ne fonctionne pas sans (cf @314 de piazza)
     /**
      * Redéfinition de equal de Object en levant l'exception UnsupportedOperationException.
      *
@@ -60,10 +61,12 @@ abstract class SphericalCoordinates {
      * @return la valeur de l'égalité des deux objets (jamais retourné)
      * @throws UnsupportedOperationException dans tous les cas
      */
+    /*
     @Override
     public boolean equals(Object o) {
         throw new UnsupportedOperationException();
     }
+    */
 
     /**
      * Redéfinition de hashCode de Object en levant l'exception UnsupportedOperationException.
@@ -71,8 +74,10 @@ abstract class SphericalCoordinates {
      * @return le hashCode (jamais retourné)
      * @throws UnsupportedOperationException dans tous les cas
      */
+    /*
     @Override
     public int hashCode() {
         throw new UnsupportedOperationException();
     }
+    */
 }
