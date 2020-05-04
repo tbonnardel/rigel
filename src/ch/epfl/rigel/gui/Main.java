@@ -1,22 +1,29 @@
 package ch.epfl.rigel.gui;
 
+import ch.epfl.rigel.astronomy.HygDatabaseLoader;
+import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
+import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.UnaryOperator;
 
@@ -27,19 +34,29 @@ import java.util.function.UnaryOperator;
  */
 public class Main extends Application {
 
-    private ObserverLocationBean observerLocationBean = new ObserverLocationBean();
-    private ViewingParametersBean viewingParametersBean = new ViewingParametersBean();
-    private DateTimeBean dateTimeBean = new DateTimeBean();
-    private TimeAnimator timeAnimator = new TimeAnimator(dateTimeBean);
-
     private final static String APPLICATION_NAME = "Rigel";
     private final static double MIN_WIDTH = 800;
     private final static double MIN_HEIGHT = 600;
+    private final static GeographicCoordinates DEFAULT_LOCATION =
+            GeographicCoordinates.ofDeg(6.57, 46.52);
+    private final static ZonedDateTime DEFAULT_ZONED_DATE_TIME =
+            ZonedDateTime.now();
+    private final static HorizontalCoordinates DEFAULT_VIEWING_CENTER =
+            HorizontalCoordinates.ofDeg(180.000000000001, 15);
+    private final static double DEFAULT_DEG_FIELD_OF_VIEW = 70;
     private final static String FIELD_STYLE = "-fx-pref-width: 60; -fx-alignment: baseline-right;";
     private final static String CONTROL_BAR_HBOX_CHILDREN_STYLE = "-fx-spacing: inherit; -fx-alignment: baseline-left;";
     private final static String UNDO_ICON = "\uf0e2";
     private final static String PLAY_ICON = "\uf04b";
     private final static String PAUSE_ICON = "\uf04c";
+
+    private ObserverLocationBean observerLocationBean = new ObserverLocationBean();
+    private ViewingParametersBean viewingParametersBean = new ViewingParametersBean();
+    private DateTimeBean dateTimeBean = new DateTimeBean();
+    private TimeAnimator timeAnimator = new TimeAnimator(dateTimeBean);
+
+
+    private SkyCanvasManager skyCanvasManager;
 
     /**
      * Méthode main du projet. Elle lance l'interface graphique
@@ -59,11 +76,16 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        BorderPane root = new BorderPane(createControlBar());
+        BorderPane root = new BorderPane(createSky(), createControlBar(), null, createInfoBar(), null);
 
         primaryStage.setTitle(APPLICATION_NAME);
         primaryStage.setMinWidth(MIN_WIDTH);
         primaryStage.setMinHeight(MIN_HEIGHT);
+
+        observerLocationBean.setCoordinates(DEFAULT_LOCATION);
+        dateTimeBean.setZonedDateTime(DEFAULT_ZONED_DATE_TIME);
+        viewingParametersBean.setCenter(DEFAULT_VIEWING_CENTER);
+        viewingParametersBean.setFieldOfViewDeg(DEFAULT_DEG_FIELD_OF_VIEW);
 
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
@@ -151,6 +173,78 @@ public class Main extends Application {
                 timeAnimationHBox);
         controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
         return controlBar;
+    }
+
+
+    /**
+     * Méthode privée qui retourne le stream contenu dans le dossier
+     * resources avec le nom spécifié.
+     * Cette méthode a été reprise de l'énoncé de l'étape 10 du projet,
+     * dans la classe UseSkyCanvasManager.
+     *
+     * @param resourceName le nom de la ressource
+     * @return le stream associé
+     */
+    private InputStream resourceStream(String resourceName) {
+        return getClass().getResourceAsStream(resourceName);
+    }
+
+    /**
+     * Méthode privée qui retourne le panneau du ciel.
+     *
+     * @return le panneau du ciel
+     */
+    private Pane createSky() throws IOException {
+        Pane skyPane = null;
+        try (InputStream hs = resourceStream("/hygdata_v3.csv")) {
+            StarCatalogue catalogue = new StarCatalogue.Builder()
+                    .loadFrom(hs, HygDatabaseLoader.INSTANCE)
+                    .build();
+
+            // TEMPORTAIRE
+            observerLocationBean.setCoordinates(
+                    GeographicCoordinates.ofDeg(6.57, 46.52));
+            viewingParametersBean.setCenter(
+                    HorizontalCoordinates.ofDeg(180.000001, 42));
+            viewingParametersBean.setFieldOfViewDeg(70);
+            dateTimeBean.setZonedDateTime(ZonedDateTime.parse("2020-02-17T20:15:00+01:00"));
+            // FIN TEMPORAIRE
+
+            skyCanvasManager =
+                    new SkyCanvasManager(catalogue,
+                            dateTimeBean, observerLocationBean, viewingParametersBean);
+            Canvas skyCanvas = skyCanvasManager.canvas();
+            skyPane = new Pane(skyCanvas);
+            skyCanvas.widthProperty().bind(skyPane.widthProperty());
+            skyCanvas.heightProperty().bind(skyPane.heightProperty());
+            skyCanvas.requestFocus(); // TODO: Faire cet appel après la méthode show ...
+        }
+        return skyPane;
+    }
+
+    /**
+     * Méthode privée qui crée et retourne la barre d'information.
+     *
+     * @return le panneau de la barre d'information
+     */
+    private BorderPane createInfoBar() {
+        Label fieldOfViewLabel = new Label("Champ de vue : %.1f°");
+        Label closestObjectLabel = new Label();
+        Label horizontalPositionLabel = new Label("Azimut : <az>°, hauteur : <alt>°");
+
+        fieldOfViewLabel.textProperty().bind(Bindings.format(
+                "Champ de vue : %.1f°", viewingParametersBean.fieldOfViewDegProperty()));
+        skyCanvasManager.objectUnderMouseProperty().addListener( // TODO: Faire autrement (plus propre) ?
+                (p, o, n) -> {if (n != null) closestObjectLabel.setText(n.info());}
+        );
+        horizontalPositionLabel.textProperty().bind(Bindings.format(
+                "Azimut : %.2f°, hauteur : %.2f°", skyCanvasManager.mouseAzDegProperty(), skyCanvasManager.mouseAltDegProperty()
+        ));
+
+        BorderPane infoBar = new BorderPane(closestObjectLabel,
+                null, horizontalPositionLabel, null, fieldOfViewLabel);
+        infoBar.setStyle("-fx-padding: 4; -fx-background-color: white;");
+        return infoBar;
     }
 
     //TODO: Refactoriser les deux méthodes suivantes et changer son nom en nom unique
