@@ -2,6 +2,7 @@ package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.coordinates.GeographicCoordinates;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
@@ -15,6 +16,7 @@ import javafx.util.converter.NumberStringConverter;
 
 import java.io.InputStream;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.function.UnaryOperator;
 
@@ -24,6 +26,11 @@ import java.util.function.UnaryOperator;
  * @author Thomas Bonnardel (319827)
  */
 public class Main extends Application {
+
+    private ObserverLocationBean observerLocationBean = new ObserverLocationBean();
+    private ViewingParametersBean viewingParametersBean = new ViewingParametersBean();
+    private DateTimeBean dateTimeBean = new DateTimeBean();
+    private TimeAnimator timeAnimator = new TimeAnimator(dateTimeBean);
 
     private final static String APPLICATION_NAME = "Rigel";
     private final static double MIN_WIDTH = 800;
@@ -51,6 +58,7 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
+
         BorderPane root = new BorderPane(createControlBar());
 
         primaryStage.setTitle(APPLICATION_NAME);
@@ -70,14 +78,16 @@ public class Main extends Application {
         Label lonLabel = new Label("Longitude (°) :");
         TextField lonTextField = new TextField();
         TextFormatter<Number> lonTextFormatter = createTextFormatterForLon();
-        // TODO: lier sa propriété value au bean associé
+        lonTextFormatter.valueProperty().addListener(
+                (p, o, n) -> observerLocationBean.setLonDeg(n.doubleValue())); // TODO A vérifier
         lonTextField.setTextFormatter(lonTextFormatter);
         lonTextField.setStyle(FIELD_STYLE);
 
         Label latLabel = new Label("Latitude (°) :");
         TextField latTextField = new TextField();
         TextFormatter<Number> latTextFormatter = createTextFormatterForLat();
-        // TODO: lier sa propriété value au bean associé
+        latTextFormatter.valueProperty().addListener(
+                (p, o, n) -> observerLocationBean.setLatDeg(n.doubleValue())); // TODO: A vérifier
         latTextField.setTextFormatter(latTextFormatter);
         latTextField.setStyle(FIELD_STYLE);
 
@@ -88,20 +98,24 @@ public class Main extends Application {
 
         Label dateLabel = new Label("Date :");
         DatePicker datePicker = new DatePicker();
-        // TODO: lier sa propriété date au bean associé
+        datePicker.valueProperty().addListener(
+                (p, o, n) -> dateTimeBean.setDate(n)); // TODO: A vérifier
         datePicker.setStyle("-fx-pref-width: 120;");
 
         Label timeLabel = new Label("Heure :");
         TextField timeTextField = new TextField();
         TextFormatter<LocalTime> timeTextFormatter = createLocalTimeFormatter();
-        // TODO: lier sa propriété value au bean associé
+        timeTextFormatter.valueProperty().addListener(
+                (p, o, n) -> dateTimeBean.setTime(n)); // TODO: A vérifier
         timeTextField.setTextFormatter(timeTextFormatter);
         timeTextField.setStyle("-fx-pref-width: 75; -fx-alignment: baseline-right;");
 
         ComboBox timeZoneComboBox = new ComboBox();
         timeZoneComboBox.setStyle("-fx-pref-width: 180;");
-        // TODO lier la propriété value au bean associé
-        // TODO: noms provenant de getAvailableZoneIds, triés par ordre alphabétique
+        timeZoneComboBox.setItems(FXCollections.observableArrayList(
+                ZoneId.getAvailableZoneIds()).sorted());
+        timeZoneComboBox.valueProperty().addListener(
+                (p, o, n) -> dateTimeBean.setZone(ZoneId.of(n.toString()))); // TODO: A vérifier
 
         // TODO: Désactiver la saisie de données quand une animation est en cours
 
@@ -111,12 +125,15 @@ public class Main extends Application {
 
         ChoiceBox acceleratorChoiceBox = new ChoiceBox();
         acceleratorChoiceBox.setItems(FXCollections.observableList(NamedTimeAccelerator.ALL));
-        // TODO: lier la propriété avec Bindings.select au bean associé
+        //acceleratorChoiceBox.valueProperty().bind(Bindings.select(timeAnimator.acceleratorProperty(), "name")); // TODO: A vérifier
+        // timeAnimator.set // TODO: A vérifier
 
         // TODO: Améliorer la lisibilité
+        // TODO: fermer le flot correctement
         InputStream fontStream = getClass()
                 .getResourceAsStream("/Font Awesome 5 Free-Solid-900.otf");
         Font fontAwesome = Font.loadFont(fontStream, 15);
+
         Button resetButton = new Button(UNDO_ICON);
         resetButton.setFont(fontAwesome);
         // TODO: lier le bouton au bean associé
@@ -125,13 +142,13 @@ public class Main extends Application {
         // TODO: lier le bouton au bean associé
         // TODO: changer l'icone si nécessaire
 
-        HBox timeAnimatorHBox = new HBox(acceleratorChoiceBox, resetButton, playPauseButton);
-        timeAnimatorHBox.setStyle("-fx-spacing: inherit;");
+        HBox timeAnimationHBox = new HBox(acceleratorChoiceBox, resetButton, playPauseButton);
+        timeAnimationHBox.setStyle("-fx-spacing: inherit;");
 
         HBox controlBar = new HBox(
                 observedLocationHBox, new Separator(Orientation.VERTICAL),
                 observedDateTimeHBox, new Separator(Orientation.VERTICAL),
-                timeAnimatorHBox);
+                timeAnimationHBox);
         controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
         return controlBar;
     }
