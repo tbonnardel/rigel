@@ -142,25 +142,53 @@ public final class SkyCanvasManager {
                 () -> mouseHorizontalPosition.get().altDeg(),
                 mouseHorizontalPosition);
 
-        // 2. installe un auditeur (listener) pour être informé des mouvements du curseur de la souris, et stocker sa position dans une propriété
+
+        addAllListeners();
+    }
+
+
+    /**
+     * Méthode privée qui dessine le ciel sur le canevas.
+     */
+    private void drawSky() {
+        SkyCanvasPainter painter = new SkyCanvasPainter(canvas());
+        ObservedSky sky = getObservedSky();
+        StereographicProjection projection = getProjection();
+        Transform planeToCanvas = getPlaneToCanvas();
+
+        painter.clear();
+        painter.drawStars(sky, planeToCanvas);
+        painter.drawPlanets(sky, planeToCanvas);
+        painter.drawSun(sky, planeToCanvas);
+        painter.drawMoon(sky, planeToCanvas);
+        painter.drawHorizon(projection, planeToCanvas);
+    }
+
+    /**
+     * Méthode privée qui ajoute tous les auditeurs utiles.
+     */
+    private void addAllListeners() {
+        // 2. installe un auditeur (listener) pour être informé des
+        // mouvements du curseur de la souris, et stocker sa position dans une propriété
         canvas().setOnMouseMoved(event -> setMousePosition(
                 CartesianCoordinates.of(event.getX(), event.getY())));
 
-
-        // 3. installe un auditeur pour détecter les clics de la souris sur le canevas et en faire alors le destinataire des événements clavier
+        // 3. installe un auditeur pour détecter les clics de la souris
+        // sur le canevas et en faire alors le destinataire des événements clavier
         canvas().setOnMousePressed(event -> {
             if (event.isPrimaryButtonDown())
                 canvas.get().requestFocus();
         });
 
-
-        // 4. installe un auditeur pour réagir aux mouvements de la molette de la souris et/ou du trackpad et changer le champ de vue en fonction
+        // 4. installe un auditeur pour réagir aux mouvements de la molette
+        // de la souris et/ou du trackpad et changer le champ de vue en fonction
         canvas().setOnScroll(event -> {
             double absDelta = max(abs(event.getDeltaX()), abs(event.getDeltaY()));
             viewingParametersB.addFieldOfViewDeg(absDelta * signum(-event.getDeltaY()));
         });
 
-        // 5. installe un auditeur pour réagir aux pressions sur les touches du curseur et changer le centre de projection en fonction
+        // 5. installe un auditeur pour réagir aux pressions sur les touches
+        // du curseur et changer le centre de projection en fonction
         canvas().setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case LEFT:
@@ -194,24 +222,6 @@ public final class SkyCanvasManager {
         viewingParametersB.fieldOfViewDegProperty().addListener((p, o, n) -> drawSky());
         canvas().widthProperty().addListener((p, o, n) -> drawSky());
         canvas().heightProperty().addListener((p, o, n) -> drawSky());
-    }
-
-
-    /**
-     * Méthode privée qui dessine le ciel sur le canevas.
-     */
-    private void drawSky() {
-        SkyCanvasPainter painter = new SkyCanvasPainter(canvas());
-        ObservedSky sky = getObservedSky();
-        StereographicProjection projection = getProjection();
-        Transform planeToCanvas = getPlaneToCanvas();
-
-        painter.clear();
-        painter.drawStars(sky, planeToCanvas);
-        painter.drawPlanets(sky, planeToCanvas);
-        painter.drawSun(sky, planeToCanvas);
-        painter.drawMoon(sky, planeToCanvas);
-        painter.drawHorizon(projection, planeToCanvas);
     }
 
     /**
