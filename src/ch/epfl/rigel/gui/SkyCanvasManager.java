@@ -13,8 +13,10 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.Math.*;
@@ -89,7 +91,7 @@ public final class SkyCanvasManager {
                 observerLocationB.lonDegProperty(), observerLocationB.latDegProperty(),
                 projection);
         mousePosition = new SimpleObjectProperty<>();
-        mousePosition.setValue(CartesianCoordinates.of(0, 0)); // TODO:  Par défaut
+        mousePosition.setValue(CartesianCoordinates.of(0, 0)); // TODO A enlever ?
         planeToCanvas = Bindings.createObjectBinding(
                 () -> Transform.affine(
                         viewingParametersB.getDilationFactor(canvas().getWidth()),
@@ -102,15 +104,22 @@ public final class SkyCanvasManager {
                 viewingParametersB.fieldOfViewDegProperty());
         objectUnderMouse = Bindings.createObjectBinding(
                 () -> {
-                    Point2D point2D = getPlaneToCanvas().inverseTransform(
-                            getMousePosition().x(), getMousePosition().y());
-                    Optional<CelestialObject> closestObject = getObservedSky().objectClosestTo(
-                            CartesianCoordinates.of(point2D.getX(), point2D.getY()),
-                            MAX_DISTANCE_OBJECT_UNDER_MOUSE);
+                    Objects.requireNonNull(getPlaneToCanvas(), "PlaneToCanvas is null"); // TODO: à enlever
+                    Objects.requireNonNull(getMousePosition(), "MousePosition is null"); // TODO: à enlever
+                    try {
+                        Point2D point2D = getPlaneToCanvas().inverseTransform(
+                                getMousePosition().x(), getMousePosition().y());
+                        Optional<CelestialObject> closestObject = getObservedSky().objectClosestTo(
+                                CartesianCoordinates.of(point2D.getX(), point2D.getY()),
+                                MAX_DISTANCE_OBJECT_UNDER_MOUSE);
 
-                    return (closestObject.isPresent())
-                            ? closestObject.get()
-                            : null;
+                        return (closestObject.isPresent())
+                                ? closestObject.get()
+                                : null;
+                    } catch (NonInvertibleTransformException e) { // TODO faut-il le conserver ?
+                        // Ceci est pour contrer les messages d'avertissements au lancement du programme
+                        return null;
+                    }
                 },
                 observedSky, mousePosition, planeToCanvas);
         mouseHorizontalPosition = Bindings.createObjectBinding(
