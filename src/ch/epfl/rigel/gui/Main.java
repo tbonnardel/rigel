@@ -26,6 +26,7 @@ public class Main extends Application {
     private final static double MIN_WIDTH = 800;
     private final static double MIN_HEIGHT = 600;
     private final static String FIELD_STYLE = "-fx-pref-width: 60; -fx-alignment: baseline-right;";
+    private final static String CONTROL_BAR_CHILDREN_STYLE = "-fx-spacing: inherit; -fx-alignment: baseline-left;";
 
     /**
      * Méthode main du projet. Elle lance l'interface graphique
@@ -72,6 +73,8 @@ public class Main extends Application {
 
         HBox observedLocationHBox = new HBox(
                 lonLabel, lonTextField, latLabel, latTextField);
+        observedLocationHBox.setStyle(CONTROL_BAR_CHILDREN_STYLE);
+
 
 
         HBox observedDateTimeHBox = new HBox();
