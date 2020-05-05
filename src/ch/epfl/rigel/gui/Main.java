@@ -91,6 +91,8 @@ public class Main extends Application {
 
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+
+        skyCanvasManager.canvas().requestFocus();
     }
 
     /**
@@ -124,20 +126,16 @@ public class Main extends Application {
         Label lonLabel = new Label("Longitude (°) :");
         TextField lonTextField = new TextField();
         TextFormatter<Number> lonTextFormatter = createTextFormatterForLon();
-        lonTextFormatter.valueProperty().addListener(
-                (p, o, n) -> observerLocationBean.setLonDeg(n.doubleValue())); // TODO: A vérifier / Faire un lien bidirectionnel ?
+        lonTextFormatter.valueProperty().bindBidirectional(observerLocationBean.lonDegProperty());
         lonTextField.setTextFormatter(lonTextFormatter);
         lonTextField.setStyle(FIELD_STYLE);
-        lonTextField.textProperty().bind(observerLocationBean.lonDegProperty().asString()); // TODO: Modifier format pour afficher les décimales (cf au démarrage)
 
         Label latLabel = new Label("Latitude (°) :");
         TextField latTextField = new TextField();
         TextFormatter<Number> latTextFormatter = createTextFormatterForLat();
-        latTextFormatter.valueProperty().addListener(
-                (p, o, n) -> observerLocationBean.setLatDeg(n.doubleValue())); // TODO: A vérifier / Faire un lien bidirectionnel ?
+        latTextFormatter.valueProperty().bindBidirectional(observerLocationBean.latDegProperty());
         latTextField.setTextFormatter(latTextFormatter);
         latTextField.setStyle(FIELD_STYLE);
-        latTextField.textProperty().bind(observerLocationBean.latDegProperty().asString()); // TODO: Modifier format pour afficher les décimales
 
         HBox observedLocationHBox = new HBox(
                 lonLabel, lonTextField, latLabel, latTextField);
@@ -155,24 +153,15 @@ public class Main extends Application {
     private HBox createObservedDateTimeHBox() {
         Label dateLabel = new Label("Date :");
         DatePicker datePicker = new DatePicker();
-        datePicker.valueProperty().addListener(
-                (p, o, n) -> dateTimeBean.setDate(n)); // TODO: A vérifier / Faire un lien bidirectionnel ?
+        datePicker.valueProperty().bindBidirectional(dateTimeBean.dateProperty());
         datePicker.setStyle("-fx-pref-width: 120;");
-        datePicker.valueProperty().bind(dateTimeBean.dateProperty());
 
         Label timeLabel = new Label("Heure :");
         TextField timeTextField = new TextField();
         TextFormatter<LocalTime> timeTextFormatter = createLocalTimeFormatter();
-        timeTextFormatter.valueProperty().addListener(
-                (p, o, n) -> dateTimeBean.setTime(n)); // TODO: A vérifier / Faire un lien bidirectionnel ?
+        timeTextFormatter.valueProperty().bindBidirectional(dateTimeBean.timeProperty());
         timeTextField.setTextFormatter(timeTextFormatter);
         timeTextField.setStyle("-fx-pref-width: 75; -fx-alignment: baseline-right;");
-        dateTimeBean.timeProperty().addListener(
-                (p, o, n) -> timeTextField.setText(
-                        String.format("%02d:%02d:%02d",
-                                dateTimeBean.getTime().getHour(),
-                                dateTimeBean.getTime().getMinute(),
-                                dateTimeBean.getTime().getSecond()))); // TODO: Faire plus propre ?
 
 
         ComboBox timeZoneComboBox = new ComboBox();
@@ -180,7 +169,7 @@ public class Main extends Application {
         timeZoneComboBox.setItems(FXCollections.observableArrayList(
                 ZoneId.getAvailableZoneIds()).sorted());
         timeZoneComboBox.valueProperty().addListener(
-                (p, o, n) -> dateTimeBean.setZone(ZoneId.of(n.toString()))); // TODO: A vérifier / Faire un lien bidirectionnel ?
+                (p, o, n) -> dateTimeBean.setZone(ZoneId.of(n.toString()))); // TODO: A vérifier car ne marche pas
         timeZoneComboBox.valueProperty().bind(dateTimeBean.zoneProperty());
 
 
@@ -218,8 +207,7 @@ public class Main extends Application {
     private HBox createTimeAnimationHBox() throws IOException {
         ChoiceBox acceleratorChoiceBox = new ChoiceBox();
         acceleratorChoiceBox.setItems(FXCollections.observableList(NamedTimeAccelerator.ALL));
-        acceleratorChoiceBox.valueProperty().bind(Bindings.select(timeAnimator.acceleratorProperty(), "name"));// TODO: A vérifier
-        acceleratorChoiceBox.valueProperty().bind(timeAnimator.acceleratorProperty());
+        //acceleratorChoiceBox.valueProperty().bind(Bindings.select(namedTimeAccelerator, "name"));// TODO: A faire
 
         Button resetButton = new Button(UNDO_ICON);
         // TODO: lier le bouton au bean associé
@@ -270,7 +258,6 @@ public class Main extends Application {
                 skyPane = new Pane(skyCanvas);
                 skyCanvas.widthProperty().bind(skyPane.widthProperty());
                 skyCanvas.heightProperty().bind(skyPane.heightProperty());
-                skyCanvas.requestFocus(); // TODO: Faire cet appel après la méthode show ...
             }
         }
         return skyPane;
