@@ -77,17 +77,17 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        BorderPane root = new BorderPane(createSky(), createControlBar(), null, createInfoBar(), null);
-
-        primaryStage.setTitle(APPLICATION_NAME);
-        primaryStage.setMinWidth(MIN_WIDTH);
-        primaryStage.setMinHeight(MIN_HEIGHT);
-
         observerLocationBean.setCoordinates(DEFAULT_LOCATION);
         dateTimeBean.setZonedDateTime(DEFAULT_ZONED_DATE_TIME);
         viewingParametersBean.setCenter(DEFAULT_VIEWING_CENTER);
         viewingParametersBean.setFieldOfViewDeg(DEFAULT_DEG_FIELD_OF_VIEW);
         timeAnimator.setAccelerator(NamedTimeAccelerator.TIMES_300.getAccelerator());
+
+        BorderPane root = new BorderPane(createSky(), createControlBar(), null, createInfoBar(), null);
+
+        primaryStage.setTitle(APPLICATION_NAME);
+        primaryStage.setMinWidth(MIN_WIDTH);
+        primaryStage.setMinHeight(MIN_HEIGHT);
 
         primaryStage.setScene(new Scene(root));
         primaryStage.show();

@@ -137,10 +137,22 @@ public final class SkyCanvasManager {
                 },
                 mousePosition, projection, planeToCanvas);
         mouseAzDeg = Bindings.createDoubleBinding(
-                () -> mouseHorizontalPosition.get().azDeg(),
+                () -> {
+                    try {
+                        return mouseHorizontalPosition.get().azDeg();
+                    } catch (NullPointerException e) {
+                        // Bloc try catch pour contrer l'initialisation de la souris de JavaFX
+                        return 0d;
+                    }},
                 mouseHorizontalPosition);
         mouseAltDeg = Bindings.createDoubleBinding(
-                () -> mouseHorizontalPosition.get().altDeg(),
+                () -> {
+                    try {
+                        return mouseHorizontalPosition.get().altDeg();
+                    } catch (NullPointerException e) {
+                        // Bloc try catch pour contrer l'initialisation de la souris de JavaFX
+                        return 0d;
+                    }},
                 mouseHorizontalPosition);
 
 
