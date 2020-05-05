@@ -46,7 +46,6 @@ public class Main extends Application {
             HorizontalCoordinates.ofDeg(180.000000000001, 15);
     private final static double DEFAULT_DEG_FIELD_OF_VIEW = 70;
     private final static NamedTimeAccelerator DEFAULT_TIME_ANIMATOR = NamedTimeAccelerator.TIMES_300;
-    private final static String FIELD_STYLE = "-fx-pref-width: 60; -fx-alignment: baseline-right;";
     private final static String CONTROL_BAR_HBOX_CHILDREN_STYLE = "-fx-spacing: inherit; -fx-alignment: baseline-left;";
     private final static String UNDO_ICON = "\uf0e2";
     private final static String PLAY_ICON = "\uf04b";
@@ -124,6 +123,8 @@ public class Main extends Application {
      * @return le panneau de la position d'observation
      */
     private HBox createObservedLocationHBox() {
+        final String FIELD_STYLE = "-fx-pref-width: 60; -fx-alignment: baseline-right;";
+
         Label lonLabel = new Label("Longitude (°) :");
         TextField lonTextField = new TextField();
         TextFormatter<Number> lonTextFormatter = createTextFormatterForLon();
