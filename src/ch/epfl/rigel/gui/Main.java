@@ -44,7 +44,7 @@ public class Main extends Application {
             ZonedDateTime.now();
     private final static HorizontalCoordinates DEFAULT_VIEWING_CENTER =
             HorizontalCoordinates.ofDeg(180.000000000001, 15);
-    private final static double DEFAULT_DEG_FIELD_OF_VIEW = 70;
+    private final static double DEFAULT_DEG_FIELD_OF_VIEW = 100;
     private final static NamedTimeAccelerator DEFAULT_TIME_ANIMATOR = NamedTimeAccelerator.TIMES_300;
 
     private final static String CONTROL_BAR_HBOX_CHILDREN_STYLE = "-fx-spacing: inherit; -fx-alignment: baseline-left;";
