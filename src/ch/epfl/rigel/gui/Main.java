@@ -207,7 +207,10 @@ public class Main extends Application {
     private HBox createTimeAnimationHBox() throws IOException {
         ChoiceBox acceleratorChoiceBox = new ChoiceBox();
         acceleratorChoiceBox.setItems(FXCollections.observableList(NamedTimeAccelerator.ALL));
-        //acceleratorChoiceBox.valueProperty().bind(Bindings.select(namedTimeAccelerator, "name"));// TODO: A faire
+
+        acceleratorChoiceBox.valueProperty().addListener( // TODO: A vérifier et utiliser getOrDefault pour éviter les erreurs
+                (p, o, n) -> timeAnimator.setAccelerator( NamedTimeAccelerator.ACCELERATOR_NAME_MAP.get(n.toString()))
+        ); // TODO: Au démarrage faire que ça affiche 300x (certainement via un lien biderctionnel ou dans l'autre sens
 
         Button resetButton = new Button(UNDO_ICON);
         // TODO: lier le bouton au bean associé

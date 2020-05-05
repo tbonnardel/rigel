@@ -2,6 +2,7 @@ package ch.epfl.rigel.gui;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Ce type énuméré représente un accélérateur de temps nommé,
@@ -47,6 +48,19 @@ public enum NamedTimeAccelerator {
      */
     public static List<NamedTimeAccelerator> ALL =
             List.of(TIMES_1, TIMES_30, TIMES_300, TIMES_3000, DAY, SIDERAL_DAY);
+
+
+    /**
+     * Table associative qui lie les noms aux accélérateurs de temps associé.
+     */
+    public static Map<String, TimeAccelerator> ACCELERATOR_NAME_MAP =
+            Map.of(
+                    TIMES_1.name, TIMES_1.accelerator,
+                    TIMES_30.name, TIMES_30.accelerator,
+                    TIMES_300.name, TIMES_300.accelerator,
+                    TIMES_3000.name, TIMES_3000.accelerator,
+                    DAY.name, DAY.accelerator,
+                    SIDERAL_DAY.name, SIDERAL_DAY.accelerator);
 
     private final String name;
     private final TimeAccelerator accelerator;
