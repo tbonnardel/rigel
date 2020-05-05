@@ -45,6 +45,7 @@ public class Main extends Application {
     private final static HorizontalCoordinates DEFAULT_VIEWING_CENTER =
             HorizontalCoordinates.ofDeg(180.000000000001, 15);
     private final static double DEFAULT_DEG_FIELD_OF_VIEW = 70;
+    private final static NamedTimeAccelerator DEFAULT_TIME_ANIMATOR = NamedTimeAccelerator.TIMES_300;
     private final static String FIELD_STYLE = "-fx-pref-width: 60; -fx-alignment: baseline-right;";
     private final static String CONTROL_BAR_HBOX_CHILDREN_STYLE = "-fx-spacing: inherit; -fx-alignment: baseline-left;";
     private final static String UNDO_ICON = "\uf0e2";
@@ -169,8 +170,8 @@ public class Main extends Application {
         timeZoneComboBox.setItems(FXCollections.observableArrayList(
                 ZoneId.getAvailableZoneIds()).sorted());
         timeZoneComboBox.valueProperty().addListener(
-                (p, o, n) -> dateTimeBean.setZone(ZoneId.of(n.toString()))); // TODO: A vérifier car ne marche pas
-        timeZoneComboBox.valueProperty().bind(dateTimeBean.zoneProperty());
+                (p, o, n) -> dateTimeBean.setZone(ZoneId.of(n.toString())));
+        timeZoneComboBox.setValue(DEFAULT_ZONED_DATE_TIME.getZone().toString()); // Initialisation au lancement
 
 
         // Désactivation des champs lors d'une animation
@@ -209,8 +210,9 @@ public class Main extends Application {
         acceleratorChoiceBox.setItems(FXCollections.observableList(NamedTimeAccelerator.ALL));
 
         acceleratorChoiceBox.valueProperty().addListener( // TODO: A vérifier et utiliser getOrDefault pour éviter les erreurs
-                (p, o, n) -> timeAnimator.setAccelerator( NamedTimeAccelerator.ACCELERATOR_NAME_MAP.get(n.toString()))
-        ); // TODO: Au démarrage faire que ça affiche 300x (certainement via un lien biderctionnel ou dans l'autre sens
+                (p, o, n) -> timeAnimator.setAccelerator( NamedTimeAccelerator.ACCELERATOR_NAME_MAP.getOrDefault(n.toString(), DEFAULT_TIME_ANIMATOR.getAccelerator()))
+        );
+        acceleratorChoiceBox.setValue(DEFAULT_TIME_ANIMATOR); // Initialisation au lancement
 
         Button resetButton = new Button(UNDO_ICON);
         // TODO: lier le bouton au bean associé
