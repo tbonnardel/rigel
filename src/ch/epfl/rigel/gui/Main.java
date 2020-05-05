@@ -46,6 +46,7 @@ public class Main extends Application {
             HorizontalCoordinates.ofDeg(180.000000000001, 15);
     private final static double DEFAULT_DEG_FIELD_OF_VIEW = 70;
     private final static NamedTimeAccelerator DEFAULT_TIME_ANIMATOR = NamedTimeAccelerator.TIMES_300;
+
     private final static String CONTROL_BAR_HBOX_CHILDREN_STYLE = "-fx-spacing: inherit; -fx-alignment: baseline-left;";
     private final static String UNDO_ICON = "\uf0e2";
     private final static String PLAY_ICON = "\uf04b";
@@ -171,7 +172,8 @@ public class Main extends Application {
         timeZoneComboBox.setItems(FXCollections.observableArrayList(
                 ZoneId.getAvailableZoneIds()).sorted());
         timeZoneComboBox.valueProperty().addListener(
-                (p, o, n) -> dateTimeBean.setZone(ZoneId.of(n.toString())));
+                (p, o, n) -> dateTimeBean.setZone(ZoneId.of(n.toString()))); // TODO: Plus propre que deux auditeurs ?
+        dateTimeBean.zoneProperty().addListener((p, o, n) -> timeZoneComboBox.setValue(dateTimeBean.getZone().toString()));
         timeZoneComboBox.setValue(DEFAULT_ZONED_DATE_TIME.getZone().toString()); // Initialisation au lancement
 
 
@@ -210,21 +212,29 @@ public class Main extends Application {
         ChoiceBox acceleratorChoiceBox = new ChoiceBox();
         acceleratorChoiceBox.setItems(FXCollections.observableList(NamedTimeAccelerator.ALL));
 
-        acceleratorChoiceBox.valueProperty().addListener( // TODO: A vérifier et utiliser getOrDefault pour éviter les erreurs
-                (p, o, n) -> timeAnimator.setAccelerator( NamedTimeAccelerator.ACCELERATOR_NAME_MAP.getOrDefault(n.toString(), DEFAULT_TIME_ANIMATOR.getAccelerator()))
-        );
+        acceleratorChoiceBox.valueProperty().addListener(
+                (p, o, n) -> timeAnimator.setAccelerator(
+                        NamedTimeAccelerator.ACCELERATOR_NAME_MAP.getOrDefault(
+                                n.toString(), DEFAULT_TIME_ANIMATOR.getAccelerator())));
         acceleratorChoiceBox.setValue(DEFAULT_TIME_ANIMATOR); // Initialisation au lancement
 
         Button resetButton = new Button(UNDO_ICON);
-        // TODO: lier le bouton au bean associé
         Button playPauseButton = new Button(PLAY_ICON);
 
-        try (InputStream fontStream = resourceStream("/Font Awesome 5 Free-Solid-900.otf")) {
+        try (InputStream fontStream = resourceStream(
+                "/Font Awesome 5 Free-Solid-900.otf")) {
             Font fontAwesome = Font.loadFont(fontStream, 15);
             resetButton.setFont(fontAwesome);
             playPauseButton.setFont(fontAwesome);
         }
 
+        resetButton.setOnMousePressed(e -> {
+            dateTimeBean.setZonedDateTime(ZonedDateTime.now());
+            if (timeAnimator.getRunning()) {
+                timeAnimator.stop();
+                playPauseButton.setText(PLAY_ICON);
+            }
+        });
 
         playPauseButton.setOnMousePressed(e -> {
             if (! timeAnimator.getRunning()) {
@@ -281,9 +291,8 @@ public class Main extends Application {
 
         fieldOfViewLabel.textProperty().bind(Bindings.format(
                 "Champ de vue : %.1f°", viewingParametersBean.fieldOfViewDegProperty()));
-        skyCanvasManager.objectUnderMouseProperty().addListener( // TODO: Faire autrement (plus propre) ?
-                (p, o, n) -> {if (n != null) closestObjectLabel.setText(n.info());}
-        );
+        skyCanvasManager.objectUnderMouseProperty().addListener(
+                (p, o, n) -> {if (n != null) closestObjectLabel.setText(n.info());});
         horizontalPositionLabel.textProperty().bind(Bindings.format(
                 "Azimut : %.2f°, hauteur : %.2f°", skyCanvasManager.mouseAzDegProperty(), skyCanvasManager.mouseAltDegProperty()
         ));
