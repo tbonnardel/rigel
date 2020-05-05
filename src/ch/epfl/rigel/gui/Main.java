@@ -232,7 +232,7 @@ public class Main extends Application {
             dateTimeBean.setZonedDateTime(ZonedDateTime.now());
             if (timeAnimator.getRunning()) {
                 timeAnimator.stop();
-                playPauseButton.setText(PLAY_ICON);
+                playPauseButton.setText(PLAY_ICON); // TODO: éviter la répétition
             }
         });
 
