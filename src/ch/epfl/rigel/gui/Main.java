@@ -131,14 +131,14 @@ public class Main extends Application {
 
         Label lonLabel = new Label("Longitude (°) :");
         TextField lonTextField = new TextField();
-        TextFormatter<Number> lonTextFormatter = createTextFormatter(LONGITUDE_FORMATTER);
+        TextFormatter<Number> lonTextFormatter = createNumberTextFormatter(LONGITUDE_FORMATTER);
         lonTextFormatter.valueProperty().bindBidirectional(observerLocationBean.lonDegProperty());
         lonTextField.setTextFormatter(lonTextFormatter);
         lonTextField.setStyle(FIELD_STYLE);
 
         Label latLabel = new Label("Latitude (°) :");
         TextField latTextField = new TextField();
-        TextFormatter<Number> latTextFormatter = createTextFormatter(LATITUDE_FORMATTER);
+        TextFormatter<Number> latTextFormatter = createNumberTextFormatter(LATITUDE_FORMATTER);
         latTextFormatter.valueProperty().bindBidirectional(observerLocationBean.latDegProperty());
         latTextField.setTextFormatter(latTextFormatter);
         latTextField.setStyle(FIELD_STYLE);
@@ -235,7 +235,7 @@ public class Main extends Application {
             dateTimeBean.setZonedDateTime(ZonedDateTime.now());
             if (timeAnimator.getRunning()) {
                 timeAnimator.stop();
-                playPauseButton.setText(PLAY_ICON); // TODO: éviter la répétition
+                playPauseButton.setText(PLAY_ICON);
             }
         });
 
@@ -263,21 +263,20 @@ public class Main extends Application {
      */
     private Pane createSky() throws IOException {
         Pane skyPane = null;
-        try (InputStream hs1 = resourceStream("/hygdata_v3.csv")) {
-            try (InputStream hs2 = resourceStream("/asterisms.txt")) { // TODO: Eviter ce double bloc try
-                StarCatalogue catalogue = new StarCatalogue.Builder()
-                        .loadFrom(hs1, HygDatabaseLoader.INSTANCE)
-                        .loadFrom(hs2, AsterismLoader.INSTANCE)
-                        .build();
+        try (InputStream hs1 = resourceStream("/hygdata_v3.csv");
+         InputStream hs2 = resourceStream("/asterisms.txt")) {
+            StarCatalogue catalogue = new StarCatalogue.Builder()
+                    .loadFrom(hs1, HygDatabaseLoader.INSTANCE)
+                    .loadFrom(hs2, AsterismLoader.INSTANCE)
+                    .build();
 
-                skyCanvasManager =
-                        new SkyCanvasManager(catalogue,
-                                dateTimeBean, observerLocationBean, viewingParametersBean);
-                Canvas skyCanvas = skyCanvasManager.canvas();
-                skyPane = new Pane(skyCanvas);
-                skyCanvas.widthProperty().bind(skyPane.widthProperty());
-                skyCanvas.heightProperty().bind(skyPane.heightProperty());
-            }
+            skyCanvasManager =
+                    new SkyCanvasManager(catalogue,
+                            dateTimeBean, observerLocationBean, viewingParametersBean);
+            Canvas skyCanvas = skyCanvasManager.canvas();
+            skyPane = new Pane(skyCanvas);
+            skyCanvas.widthProperty().bind(skyPane.widthProperty());
+            skyCanvas.heightProperty().bind(skyPane.heightProperty());
         }
         return skyPane;
     }
@@ -312,7 +311,7 @@ public class Main extends Application {
      * @param formatterType le type de formateur (longitude ou latitude)
      * @return un formateur de texte adapté au type donné
      */
-    private TextFormatter<Number> createTextFormatter(int formatterType) {
+    private TextFormatter<Number> createNumberTextFormatter(int formatterType) {
         NumberStringConverter stringConverter =
                 new NumberStringConverter("#0.00");
 
