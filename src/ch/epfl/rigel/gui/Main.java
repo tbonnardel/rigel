@@ -175,7 +175,7 @@ public class Main extends Application {
         timeZoneComboBox.setItems(FXCollections.observableArrayList(
                 ZoneId.getAvailableZoneIds()).sorted());
         timeZoneComboBox.valueProperty().addListener(
-                (p, o, n) -> dateTimeBean.setZone(ZoneId.of(n.toString()))); // TODO: Plus propre que deux auditeurs ?
+                (p, o, n) -> dateTimeBean.setZone(ZoneId.of(n.toString())));
         dateTimeBean.zoneProperty().addListener((p, o, n) -> timeZoneComboBox.setValue(dateTimeBean.getZone().toString()));
         timeZoneComboBox.setValue(DEFAULT_ZONED_DATE_TIME.getZone().toString()); // Initialisation au lancement
 
