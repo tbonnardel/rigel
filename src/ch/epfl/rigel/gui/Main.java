@@ -52,6 +52,9 @@ public class Main extends Application {
     private final static String PLAY_ICON = "\uf04b";
     private final static String PAUSE_ICON = "\uf04c";
 
+    private final static int LONGITUDE_FORMATTER = 0;
+    private final static int LATITUDE_FORMATTER = 1;
+
     private ObserverLocationBean observerLocationBean = new ObserverLocationBean();
     private ViewingParametersBean viewingParametersBean = new ViewingParametersBean();
     private DateTimeBean dateTimeBean = new DateTimeBean();
@@ -128,14 +131,14 @@ public class Main extends Application {
 
         Label lonLabel = new Label("Longitude (°) :");
         TextField lonTextField = new TextField();
-        TextFormatter<Number> lonTextFormatter = createTextFormatterForLon();
+        TextFormatter<Number> lonTextFormatter = createTextFormatter(LONGITUDE_FORMATTER);
         lonTextFormatter.valueProperty().bindBidirectional(observerLocationBean.lonDegProperty());
         lonTextField.setTextFormatter(lonTextFormatter);
         lonTextField.setStyle(FIELD_STYLE);
 
         Label latLabel = new Label("Latitude (°) :");
         TextField latTextField = new TextField();
-        TextFormatter<Number> latTextFormatter = createTextFormatterForLat();
+        TextFormatter<Number> latTextFormatter = createTextFormatter(LATITUDE_FORMATTER);
         latTextFormatter.valueProperty().bindBidirectional(observerLocationBean.latDegProperty());
         latTextField.setTextFormatter(latTextFormatter);
         latTextField.setStyle(FIELD_STYLE);
@@ -303,9 +306,13 @@ public class Main extends Application {
         return infoBar;
     }
 
-    //TODO: Refactoriser les deux méthodes suivantes et changer son nom en nom unique
-    //TODO: Documenter la méthode
-    private TextFormatter<Number> createTextFormatterForLon() {
+    /**
+     * Méthode privée qui retourne un formateur de texte adapté au type donné.
+     *
+     * @param formatterType le type de formateur (longitude ou latitude)
+     * @return un formateur de texte adapté au type donné
+     */
+    private TextFormatter<Number> createTextFormatter(int formatterType) {
         NumberStringConverter stringConverter =
                 new NumberStringConverter("#0.00");
 
@@ -315,35 +322,22 @@ public class Main extends Application {
                         change.getControlNewText();
                 double newValue =
                         stringConverter.fromString(newText).doubleValue();
-                return GeographicCoordinates.isValidLonDeg(newValue)
-                        ? change
-                        : null;
+                switch (formatterType) {
+                    case LONGITUDE_FORMATTER:
+                        return GeographicCoordinates.isValidLonDeg(newValue)
+                                ? change
+                                : null;
+                    case LATITUDE_FORMATTER:
+                        return GeographicCoordinates.isValidLatDeg(newValue)
+                                ? change
+                                : null;
+                    default:
+                        return null;
+                }
             } catch (Exception e) {
                 return null;
             }
         });
-
-        return new TextFormatter<>(stringConverter, 0, filter);
-    }
-
-    private TextFormatter<Number> createTextFormatterForLat() {
-        NumberStringConverter stringConverter =
-                new NumberStringConverter("#0.00");
-
-        UnaryOperator<TextFormatter.Change> filter = (change -> {
-            try {
-                String newText =
-                        change.getControlNewText();
-                double newValue =
-                        stringConverter.fromString(newText).doubleValue();
-                return GeographicCoordinates.isValidLatDeg(newValue)
-                        ? change
-                        : null;
-            } catch (Exception e) {
-                return null;
-            }
-        });
-
         return new TextFormatter<>(stringConverter, 0, filter);
     }
 
