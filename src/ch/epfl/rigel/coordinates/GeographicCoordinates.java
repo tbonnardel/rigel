@@ -14,6 +14,9 @@ import java.util.Locale;
  */
 public final class GeographicCoordinates extends SphericalCoordinates {
 
+    private final static RightOpenInterval LON_DEG_INTERVAL = RightOpenInterval.symmetric(360);
+    private final static ClosedInterval LAT_DEG_INTERVAL = ClosedInterval.symmetric(180);
+
     private GeographicCoordinates(double lon, double lat) { // Constructeur privé
         super(lon, lat);
     }
@@ -41,8 +44,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
      * @return vrai ssi l'angle qui lui est passé représente une longitude valide en degrés
      */
     public static boolean isValidLonDeg(double lonDeg) {
-        RightOpenInterval lonDegInterval = RightOpenInterval.symmetric(360);
-        return lonDegInterval.contains(lonDeg);
+        return LON_DEG_INTERVAL.contains(lonDeg);
     }
 
     /**
@@ -52,8 +54,7 @@ public final class GeographicCoordinates extends SphericalCoordinates {
      * @return vrai ssi l'angle qui lui est passé représente une latitude valide en degrés
      */
     public static boolean isValidLatDeg(double latDeg) {
-        ClosedInterval latDegInterval = ClosedInterval.symmetric(180);
-        return latDegInterval.contains(latDeg);
+        return LAT_DEG_INTERVAL.contains(latDeg);
     }
 
     /**

@@ -1,5 +1,7 @@
 package ch.epfl.rigel.math;
 
+import ch.epfl.rigel.Preconditions;
+
 import java.util.Locale;
 
 /**
@@ -23,9 +25,7 @@ public final class ClosedInterval extends Interval {
      * @throws IllegalArgumentException si la valeur de low est supérieure ou égale à high
      */
     public static ClosedInterval of(double low, double high) {
-        if (!(low < high)) {
-            throw new IllegalArgumentException();
-        }
+        Preconditions.checkArgument(low < high);
 
         return new ClosedInterval(low, high);
     }
@@ -38,9 +38,7 @@ public final class ClosedInterval extends Interval {
      * @throws IllegalArgumentException si la taille spécifiée n'est pas strictement positive
      */
     public static ClosedInterval symmetric(double size) {
-        if (!(size > 0)) {
-            throw new IllegalArgumentException();
-        }
+        Preconditions.checkArgument(size > 0);
 
         double extremeValue = size / 2d;
         return new ClosedInterval(-extremeValue, extremeValue);
