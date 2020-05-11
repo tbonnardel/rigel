@@ -17,7 +17,7 @@ import static java.lang.Math.sqrt;
  *
  * @author Thomas Bonnardel (319827)
  */
-public class StereographicProjection implements Function<HorizontalCoordinates, CartesianCoordinates> {
+public final class StereographicProjection implements Function<HorizontalCoordinates, CartesianCoordinates> {
 
     private final HorizontalCoordinates center;
     private final double lambda0;
@@ -106,12 +106,12 @@ public class StereographicProjection implements Function<HorizontalCoordinates, 
         if (xy.x() == 0 && xy.y() == 0) { // Cas limite de l'origine (cf. étape 9)
             return HorizontalCoordinates.of(lambda0, phi1);
         }
-
         double x = xy.x();
         double y = xy.y();
-        double rho = sqrt(x*x+ y*y);
-        double sinc = (2*rho) / (rho*rho + 1);
-        double cosc = (1 - rho*rho) / (rho*rho + 1);
+        double rhoSquared = x*x+ y*y;
+        double rho = sqrt(rhoSquared);
+        double sinc = (2*rho) / (rhoSquared + 1);
+        double cosc = (1 - rhoSquared) / (rhoSquared + 1);
 
         double lambda = atan2((x*sinc), (rho*cosPhi1*cosc - y*sinPhi1*sinc)) + lambda0;
         double phi = asin(cosc*sinPhi1 + (y*sinc*cosPhi1)/rho);
@@ -151,7 +151,7 @@ public class StereographicProjection implements Function<HorizontalCoordinates, 
     @Override
     public String toString() {
         return String.format(Locale.ROOT,
-                "(cAz=%.4f°, cAlt=%.4f°)",
+                "StereographicProjection (cAz=%.4f°, cAlt=%.4f°)",
                 center.azDeg(),
                 center.altDeg());
     }
