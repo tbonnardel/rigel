@@ -228,7 +228,7 @@ public class SkyCanvasPainter {
                         sky.starPositions()[2*starIndices.get(i+1)+1]
                 );
 
-                if (boundsCanvas.contains(star1) && boundsCanvas.contains(star2)) {
+                if (boundsCanvas.contains(star1) || boundsCanvas.contains(star2)) {
                     ctx.moveTo(star1.getX(), star1.getY());
                     ctx.lineTo(star2.getX(), star2.getY());
                 }

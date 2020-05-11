@@ -55,9 +55,13 @@ public enum AsterismLoader implements StarCatalogue.Loader {
     private List<Star> getStarsListFromHipparcosIdTab(String[] hipparcosIdTab, List<Star> stars) {
         List<Star> result = new ArrayList<>();
         List<Integer> listHipparcosId = this.stringTabToIntList(hipparcosIdTab);
-        for (Star s: stars) {
-            if (listHipparcosId.contains(s.hipparcosId()))
-                result.add(s);
+        for (int id: listHipparcosId) {
+            for (Star s: stars) {
+                if (s.hipparcosId() == id) {
+                    result.add(s);
+                    continue;
+                }
+            }
         }
 
         return result;
