@@ -170,7 +170,7 @@ public class Main extends Application {
         timeTextField.setStyle("-fx-pref-width: 75; -fx-alignment: baseline-right;");
 
 
-        ComboBox timeZoneComboBox = new ComboBox();
+        ComboBox<String> timeZoneComboBox = new ComboBox<>();
         timeZoneComboBox.setStyle("-fx-pref-width: 180;");
         timeZoneComboBox.setItems(FXCollections.observableArrayList(
                 ZoneId.getAvailableZoneIds()).sorted());
@@ -212,7 +212,7 @@ public class Main extends Application {
      * @throws IOException en cas d'erreur entrée / sortie
      */
     private HBox createTimeAnimationHBox() throws IOException {
-        ChoiceBox acceleratorChoiceBox = new ChoiceBox();
+        ChoiceBox<NamedTimeAccelerator> acceleratorChoiceBox = new ChoiceBox<>();
         acceleratorChoiceBox.setItems(FXCollections.observableList(NamedTimeAccelerator.ALL));
 
         acceleratorChoiceBox.valueProperty().addListener(
