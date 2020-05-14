@@ -26,7 +26,7 @@ public class MyStarCatalogueTest {
         StarCatalogue catalogue = new StarCatalogue(stars1, List.of(asterism1));
     }
 
-    @Test
+
     void constructorWorksWithMultipleAsterisms() {
         List<Star> stars = new ArrayList<>();
         List<Star> stars1 = new ArrayList<>();
@@ -95,7 +95,7 @@ public class MyStarCatalogueTest {
         assertEquals(stars1, catalogue.stars());
     }
 
-    @Test
+
     void asterismsWorks() {
         List<Star> stars = new ArrayList<>();
         List<Star> stars1 = new ArrayList<>();
@@ -120,7 +120,7 @@ public class MyStarCatalogueTest {
         assertEquals(Set.of(asterism1, asterism2), catalogue.asterisms());
     }
 
-    @Test
+
     void asterismIndicesWorksWithValidParameter() {
         List<Star> stars = new ArrayList<>();
         List<Star> stars1 = new ArrayList<>();
