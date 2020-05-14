@@ -13,7 +13,7 @@ public final class Polynomial {
 
     private final double[] coefficients;
 
-    private Polynomial(double[] coefficients) { this.coefficients = coefficients.clone(); } // Constructeur privé avec copie défensive
+    private Polynomial(double[] coefficients) { this.coefficients = coefficients; } // Constructeur privé avec copie défensive
 
     /**
      * Méthode qui retourne la fonction polynomiale avec les coefficients donnés,

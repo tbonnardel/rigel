@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Ce type énuméré contient un seul élément nommé INSTANCE et
@@ -54,25 +56,13 @@ public enum AsterismLoader implements StarCatalogue.Loader {
      */
     private List<Star> getStarsListFromHipparcosIdTab(String[] hipparcosIdTab, List<Star> stars) {
         List<Star> result = new ArrayList<>();
-        List<Integer> listHipparcosId = this.stringTabToIntList(hipparcosIdTab);
-        for (Star s: stars) {
-            if (listHipparcosId.contains(s.hipparcosId()))
-                result.add(s);
+        Map<Integer, Star> hipparcosStarMap = new HashMap<>();
+        for (Star s: stars)
+            hipparcosStarMap.put(s.hipparcosId(), s);
+
+        for (int i = 0; i < hipparcosIdTab.length; i++) {
+            result.add(hipparcosStarMap.get(Integer.parseInt(hipparcosIdTab[i])));
         }
-
-        return result;
-    }
-
-    /**
-     * Méthode privée qui convertit un tableau de chaînes de caractères en liste d'entiers.
-     *
-     * @param strTab le tableau de chaînes de caractères
-     * @return la liste d'entiers
-     */
-    private List<Integer> stringTabToIntList(String[] strTab) {
-        List<Integer> result = new ArrayList<>();
-        for (int i = 0; i < strTab.length; i++)
-            result.add(Integer.parseInt(strTab[i]));
 
         return result;
     }

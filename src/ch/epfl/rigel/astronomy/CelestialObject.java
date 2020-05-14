@@ -1,5 +1,6 @@
 package ch.epfl.rigel.astronomy;
 
+import ch.epfl.rigel.Preconditions;
 import ch.epfl.rigel.coordinates.EquatorialCoordinates;
 
 import java.util.Objects;
@@ -30,8 +31,7 @@ public abstract class CelestialObject {
      * @throws NullPointerException si le nom ou la position équatoriale sont nuls
      */
     CelestialObject(String name, EquatorialCoordinates equatorialPos, float angularSize, float magnitude) {
-        if (angularSize < 0)
-            throw new IllegalArgumentException();
+        Preconditions.checkArgument(angularSize >= 0);
 
         this.name = Objects.requireNonNull(name);
         this.equatorialPos = Objects.requireNonNull(equatorialPos);

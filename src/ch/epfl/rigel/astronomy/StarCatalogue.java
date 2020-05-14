@@ -12,6 +12,7 @@ import java.util.*;
 public final class StarCatalogue {
 
     private final List<Star> stars;
+    private final Map<Star, Integer> starIndexMap;
     private final Map<Asterism, List<Integer>> catalogue;
 
     /**
@@ -27,11 +28,20 @@ public final class StarCatalogue {
     public StarCatalogue(List<Star> stars, List<Asterism> asterisms) {
         this.stars = List.copyOf(stars);
 
+        // Construction de starIntegerMap
+        starIndexMap = new HashMap<>();
+        for (int i = 0; i < stars.size(); i++)
+            starIndexMap.put(stars.get(i), i);
+
         Map<Asterism, List<Integer>> catalogue = new HashMap<>();
         for (Asterism asterism : asterisms) {
             List<Integer> starsIndex = new ArrayList<>();
             for (Star star: asterism.stars()) {
-                starsIndex.add(getStarIndex(star));
+                if (starIndexMap.containsKey(star)) {
+                    starsIndex.add(starIndexMap.get(star));
+                } else {
+                    throw new IllegalArgumentException();
+                }
             }
             catalogue.put(asterism, starsIndex);
         }
@@ -76,27 +86,6 @@ public final class StarCatalogue {
     }
 
     /**
-     * Méthode qui retourne l'index de l'étoile donnée de la liste stars.
-     *
-     * @param star l'étoile recherchée
-     * @return l'index de l'étoile donnée en paramètre dans la liste stars
-     * @throws IllegalArgumentException si l'étoile star n'est pas dans la liste stars
-     */
-    private int getStarIndex(Star star) {
-        int hipparcosIdTarget = star.hipparcosId();
-        for(int i = 0; i < stars.size(); i++) {
-            if (stars.get(i).hipparcosId() == hipparcosIdTarget) {
-                return i;
-            }
-        }
-
-        throw new IllegalArgumentException();
-    }
-
-
-
-
-    /**
      * Cette classe imbriquée statique représente un bâtisseur de catalogue d'étoiles.
      */
     public final static class Builder {
@@ -125,7 +114,7 @@ public final class StarCatalogue {
         }
 
         /**
-         * méthode d'accès qui retourne une vue non modifiable — mais pas immuable — 
+         * Méthode d'accès qui retourne une vue non modifiable — mais pas immuable — 
          * sur les étoiles du catalogue en cours de construction.
          *
          * @return une vue non modifiable — mais pas immuable - sur les étoiles

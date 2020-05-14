@@ -82,8 +82,6 @@ public final class ObserverLocationBean {
     public void setLatDeg(double latDeg) { this.latDeg.set(latDeg); }
 
 
-    // TODO: ajouter coordinatesProperty ou pas ?
-
     /**
      * Méthode d'accès retournant le contenu de la propriété
      * des coordonnées de la position de l'observateur.

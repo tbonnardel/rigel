@@ -87,7 +87,7 @@ public final class HorizontalCoordinates extends SphericalCoordinates {
      * @return l'azimut en degrés
      */
     public double azDeg() {
-        return Angle.toDeg(this.lon());
+        return super.lonDeg();
     }
 
     /**

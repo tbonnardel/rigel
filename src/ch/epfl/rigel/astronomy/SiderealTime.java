@@ -15,6 +15,8 @@ import java.time.temporal.ChronoUnit;
 public final class SiderealTime {
 
     private final static double NB_MILLIS_PER_HOUR = 3600.*1000.;
+    private final static double S1_CONSTANT = 1.002737909;
+    private final static Polynomial S0_POLYNOM = Polynomial.of(0.000025862, 2400.051336, 6.697374558);
 
     private SiderealTime() {} // Constructeur privée pour rendre la classe non instantiable
 
@@ -33,8 +35,8 @@ public final class SiderealTime {
         // Calculs des paramètres définis dans le paragraphe 2.5 de l'énoncé de l'étape 3
         double T = Epoch.J2000.julianCenturiesUntil(whenInUTCTruncatedToDays);
         double t = whenInUTCTruncatedToDays.until(whenInUTC, ChronoUnit.MILLIS) / NB_MILLIS_PER_HOUR;
-        double S0 = Polynomial.of(0.000025862, 2400.051336, 6.697374558).at(T);
-        double S1 = 1.002737909*t;
+        double S0 = S0_POLYNOM.at(T);
+        double S1 = S1_CONSTANT*t;
 
         double SgInHoursAndNotNormalised = S0 + S1;
 
