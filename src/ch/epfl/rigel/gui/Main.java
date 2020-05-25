@@ -48,6 +48,7 @@ public class Main extends Application {
     private final static NamedTimeAccelerator DEFAULT_TIME_ANIMATOR = NamedTimeAccelerator.TIMES_300;
 
     private final static String CONTROL_BAR_HBOX_CHILDREN_STYLE = "-fx-spacing: inherit; -fx-alignment: baseline-left;";
+    private static final String FONT_AWESOME = "/Font Awesome 5 Free-Solid-900.otf";
     private final static String UNDO_ICON = "\uf0e2";
     private final static String PLAY_ICON = "\uf04b";
     private final static String PAUSE_ICON = "\uf04c";
@@ -224,8 +225,7 @@ public class Main extends Application {
         Button resetButton = new Button(UNDO_ICON);
         Button playPauseButton = new Button(PLAY_ICON);
 
-        try (InputStream fontStream = resourceStream(
-                "/Font Awesome 5 Free-Solid-900.otf")) {
+        try (InputStream fontStream = resourceStream(FONT_AWESOME)) {
             Font fontAwesome = Font.loadFont(fontStream, 15);
             resetButton.setFont(fontAwesome);
             playPauseButton.setFont(fontAwesome);
