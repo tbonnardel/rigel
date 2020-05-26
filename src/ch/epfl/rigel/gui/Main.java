@@ -62,6 +62,8 @@ public class Main extends Application {
     private DateTimeBean dateTimeBean = new DateTimeBean();
     private TimeAnimator timeAnimator = new TimeAnimator(dateTimeBean);
 
+    private CelestialObjectSearchEngine searchEngine;
+
 
     private SkyCanvasManager skyCanvasManager;
 
@@ -90,6 +92,9 @@ public class Main extends Application {
         timeAnimator.setAccelerator(NamedTimeAccelerator.TIMES_300.getAccelerator());
 
         BorderPane root = new BorderPane(createSky(), createControlBar(), null, createInfoBar(), null);
+
+        searchEngine = new CelestialObjectSearchEngine(skyCanvasManager.getCelestialObjectMap(), null);
+
 
         primaryStage.setTitle(APPLICATION_NAME);
         primaryStage.setMinWidth(MIN_WIDTH);
@@ -268,6 +273,15 @@ public class Main extends Application {
             Font fontAwesome = Font.loadFont(fontStream, 15);
             searchButton.setFont(fontAwesome);
         }
+
+        searchButton.setOnMousePressed(e -> {
+            boolean objectFounded = searchEngine.search(searchTextField.getText());
+            if (!objectFounded)
+                searchTextField.setStyle("-fx-border-color: red");
+            else
+                searchTextField.setStyle("");
+
+        });
 
         HBox searchHBox = new HBox(searchTextField, searchButton);
         searchHBox.setStyle("-fx-spacing: inherit;");

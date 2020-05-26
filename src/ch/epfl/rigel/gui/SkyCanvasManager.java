@@ -16,6 +16,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.Math.*;
@@ -32,6 +33,8 @@ public final class SkyCanvasManager {
     private final DateTimeBean dateTimeB;
     private final ViewingParametersBean viewingParametersB;
     private final ObserverLocationBean observerLocationB;
+
+    private Map<String, CelestialObject> celestialObjectMap = null;
 
     private final ObjectProperty<Canvas> canvas;
 
@@ -159,6 +162,14 @@ public final class SkyCanvasManager {
         addAllListeners();
     }
 
+    /**
+     * Méthode publique qui retourne la table associative des objets célestes dessinés.
+     *
+     * @return la table associative des objets célestes dessinés
+     */
+    public Map<String, CelestialObject> getCelestialObjectMap() {
+        return celestialObjectMap;
+    }
 
     /**
      * Méthode privée qui dessine le ciel sur le canevas.
@@ -175,6 +186,7 @@ public final class SkyCanvasManager {
         painter.drawSun(sky, planeToCanvas);
         painter.drawMoon(sky, planeToCanvas);
         painter.drawHorizon(projection, planeToCanvas);
+        celestialObjectMap = painter.getCelestialObjectMap();
     }
 
     /**
