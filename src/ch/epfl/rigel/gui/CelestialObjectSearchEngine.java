@@ -2,7 +2,7 @@ package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.CelestialObject;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Cette classe représente un moteur de recherche d'objets célestes.
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public final class CelestialObjectSearchEngine {
 
-    private final List<CelestialObject> visibleObjects;
+    private final Map<String, CelestialObject> visibleObjects;
 
     public CelestialObjectSearchEngine() {
         this.visibleObjects = null;
