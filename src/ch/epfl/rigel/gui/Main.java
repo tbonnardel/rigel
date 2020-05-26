@@ -52,6 +52,7 @@ public class Main extends Application {
     private final static String UNDO_ICON = "\uf0e2";
     private final static String PLAY_ICON = "\uf04b";
     private final static String PAUSE_ICON = "\uf04c";
+    private final static String SEARCH_ICON = "\uf002";
 
     private final static int LONGITUDE_FORMATTER = 0;
     private final static int LATITUDE_FORMATTER = 1;
@@ -110,11 +111,13 @@ public class Main extends Application {
         HBox observedLocationHBox = createObservedLocationHBox();
         HBox observedDateTimeHBox = createObservedDateTimeHBox();
         HBox timeAnimationHBox = createTimeAnimationHBox();
+        HBox searchHBox = createSearchHBox();
 
         HBox controlBar = new HBox(
                 observedLocationHBox, new Separator(Orientation.VERTICAL),
                 observedDateTimeHBox, new Separator(Orientation.VERTICAL),
-                timeAnimationHBox);
+                timeAnimationHBox, new Separator(Orientation.VERTICAL),
+                searchHBox);
         controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
 
         return controlBar;
@@ -253,6 +256,22 @@ public class Main extends Application {
         timeAnimationHBox.setStyle("-fx-spacing: inherit;");
 
         return timeAnimationHBox;
+    }
+
+    private HBox createSearchHBox() throws IOException {
+        TextField searchTextField = new TextField();
+        searchTextField.setPromptText("Rigel, Soleil ...");
+        Button searchButton = new Button(SEARCH_ICON);
+
+        // TODO: Refacto pour éviter la duplication de code
+        try (InputStream fontStream = resourceStream(FONT_AWESOME)) {
+            Font fontAwesome = Font.loadFont(fontStream, 15);
+            searchButton.setFont(fontAwesome);
+        }
+
+        HBox searchHBox = new HBox(searchTextField, searchButton);
+        searchHBox.setStyle("-fx-spacing: inherit;");
+        return  searchHBox;
     }
 
     /**
