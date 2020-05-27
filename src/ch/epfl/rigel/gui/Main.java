@@ -295,17 +295,7 @@ public class Main extends Application {
                     viewingParametersBean.setCenter(objectCenter);
                     viewingParametersBean.setFieldOfViewDeg(SEARCH_ZOOM_VALUE);
                 } else {
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Objet invisible");
-
-                    alert.setContentText(new StringBuilder()
-                            .append("L'objet céleste <")
-                            .append(searchTextField.getText())
-                            .append("> n'est pas visible à cet instant / position d'observation.")
-                            .toString());
-
-                    alert.showAndWait();
-                    System.out.printf("L'objet céleste <%s> n'est pas visible à cet instant / position d'observation.%n", searchTextField.getText());
+                    createUnvisibleObjectWarningAlert(targetName);
                 }
             }
 
@@ -364,6 +354,25 @@ public class Main extends Application {
                 null, horizontalPositionLabel, null, fieldOfViewLabel);
         infoBar.setStyle("-fx-padding: 4; -fx-background-color: white;");
         return infoBar;
+    }
+
+    /**
+     * Méthode privée qui créée et affiche un alerte d'avertissement
+     * lorsque un objet céleste recherché est invisible.
+     *
+     * @param objectName le nom de l'objet céleste invisible
+     */
+    private void createUnvisibleObjectWarningAlert(String objectName) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Objet invisible");
+
+        alert.setContentText(new StringBuilder()
+                .append("L'objet céleste <")
+                .append(objectName)
+                .append("> n'est pas visible à cet instant / position d'observation.")
+                .toString());
+
+        alert.showAndWait();
     }
 
     /**
