@@ -211,7 +211,7 @@ public final class SkyCanvasPainter {
                 absCenter.x(),
                 absCenter.y());
         if (object != null && !object.name().isBlank()) {
-            celestialObjectMap.put(object.name().toLowerCase(), object);
+            celestialObjectMap.put(object.name().toUpperCase(), object);
         }
         Point2D dimension = planeToCanvas.deltaTransform(absSize, absSize);
         ctx.fillOval(

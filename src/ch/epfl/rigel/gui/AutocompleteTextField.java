@@ -24,19 +24,14 @@ public final class AutocompleteTextField extends TextField {
 
     /**
      * Constructeur de champ de texte avec auto-completion.
-     *
-     * @param suggestions l'ensemble des valeurs suggérables
      */
-    public AutocompleteTextField(Set<String> suggestions) {
+    public AutocompleteTextField() {
         this.suggestions = new TreeSet<>();
         autocompletionBlock = new ContextMenu();
 
         // Attache l'auditeur
         this.textProperty().addListener(
-                (p, o, n) -> {
-                    System.out.println(findMatchValues(n)); // TODO: A enlever
-                    hydrateAutocompletionBlock(findMatchValues(n));
-                }
+                (p, o, n) -> hydrateAutocompletionBlock(findMatchValues(n))
         );
     }
 
@@ -62,7 +57,7 @@ public final class AutocompleteTextField extends TextField {
             if (set.size() > MAX_NAMES_ON_DIPLAY)
                 break;
 
-            if (s.startsWith(prefix.toLowerCase()))
+            if (s.startsWith(prefix.toUpperCase()))
                 set.add(s);
         }
 

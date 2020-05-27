@@ -264,7 +264,7 @@ public final class Main extends Application {
     }
 
     private HBox createSearchHBox() {
-        AutocompleteTextField searchTextField = new AutocompleteTextField(Set.of("Saturne", "Soleil", "Lune", "Rigel", "Mercure", "Mars"));
+        AutocompleteTextField searchTextField = new AutocompleteTextField();
         observedCatalogueBean.celestialObjectMapProperty().addListener(
                 (p, o, n) ->
                     {
@@ -275,7 +275,7 @@ public final class Main extends Application {
         searchTextField.setPromptText("Rigel, Soleil ...");
 
         searchTextField.setOnAction(e -> {
-            String targetName = searchTextField.getText().toLowerCase();
+            String targetName = searchTextField.getText().toUpperCase();
             boolean objectFounded = searchEngine.search(targetName);
             if (!objectFounded) {
                 searchTextField.setStyle("-fx-border-color: red");
