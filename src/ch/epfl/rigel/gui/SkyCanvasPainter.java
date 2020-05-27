@@ -24,7 +24,7 @@ import static java.lang.Math.tan;
  *
  * @author Thomas Bonnardel (319827)
  */
-public class SkyCanvasPainter {
+public final class SkyCanvasPainter {
 
     private final Canvas canvas;
 
