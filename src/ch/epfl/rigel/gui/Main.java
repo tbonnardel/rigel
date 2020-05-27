@@ -53,7 +53,6 @@ public class Main extends Application {
     private final static String UNDO_ICON = "\uf0e2";
     private final static String PLAY_ICON = "\uf04b";
     private final static String PAUSE_ICON = "\uf04c";
-    private final static String SEARCH_ICON = "\uf002";
 
     private final static int LONGITUDE_FORMATTER = 0;
     private final static int LATITUDE_FORMATTER = 1;
@@ -265,18 +264,11 @@ public class Main extends Application {
         return timeAnimationHBox;
     }
 
-    private HBox createSearchHBox() throws IOException {
+    private HBox createSearchHBox() {
         TextField searchTextField = new TextField();
         searchTextField.setPromptText("Rigel, Soleil ...");
-        Button searchButton = new Button(SEARCH_ICON);
 
-        // TODO: Refacto pour éviter la duplication de code
-        try (InputStream fontStream = resourceStream(FONT_AWESOME)) {
-            Font fontAwesome = Font.loadFont(fontStream, 15);
-            searchButton.setFont(fontAwesome);
-        }
-
-        searchButton.setOnMousePressed(e -> {
+        searchTextField.setOnAction(e -> {
             String targetName = searchTextField.getText().toLowerCase();
             boolean objectFounded = searchEngine.search(targetName);
             if (!objectFounded) {
@@ -298,10 +290,9 @@ public class Main extends Application {
                     createUnvisibleObjectWarningAlert(targetName);
                 }
             }
-
         });
 
-        HBox searchHBox = new HBox(searchTextField, searchButton);
+        HBox searchHBox = new HBox(searchTextField);
         searchHBox.setStyle("-fx-spacing: inherit;");
         return  searchHBox;
     }
