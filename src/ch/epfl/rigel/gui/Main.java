@@ -64,6 +64,7 @@ public class Main extends Application {
     private TimeAnimator timeAnimator = new TimeAnimator(dateTimeBean);
 
     private CelestialObjectSearchEngine searchEngine;
+    private final static double SEARCH_ZOOM_VALUE = 30d;
 
 
     private SkyCanvasManager skyCanvasManager;
@@ -276,23 +277,25 @@ public class Main extends Application {
         }
 
         searchButton.setOnMousePressed(e -> {
-            boolean objectFounded = searchEngine.search(searchTextField.getText().toLowerCase());
+            String targetName = searchTextField.getText().toLowerCase();
+            boolean objectFounded = searchEngine.search(targetName);
             if (!objectFounded) {
                 searchTextField.setStyle("-fx-border-color: red");
             }
             else {
                 searchTextField.setStyle("");
-                EquatorialCoordinates ec = searchEngine.getObject(searchTextField.getText().toLowerCase()).equatorialPos();
+                EquatorialCoordinates ec = searchEngine.getObject(targetName).equatorialPos();
                 EquatorialToHorizontalConversion equToHrz = new EquatorialToHorizontalConversion(
                         dateTimeBean.getZonedDateTime(),
                         observerLocationBean.getCoordinates());
                 HorizontalCoordinates objectCenter = equToHrz.apply(ec);
+
                 if (ClosedInterval.of(0, 90).contains(objectCenter.altDeg())
                         && RightOpenInterval.of(0, 360).contains(objectCenter.azDeg())) {
                     viewingParametersBean.setCenter(objectCenter);
-                    viewingParametersBean.setFieldOfViewDeg(35d);
+                    viewingParametersBean.setFieldOfViewDeg(SEARCH_ZOOM_VALUE);
                 } else {
-                    System.out.println("L'objet céleste n'est pas visible à cet instant / position d'observation.");
+                    System.out.printf("L'objet céleste <%s> n'est pas visible à cet instant / position d'observation.%n", searchTextField.getText());
                 }
             }
 
