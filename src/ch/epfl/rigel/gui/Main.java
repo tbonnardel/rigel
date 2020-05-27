@@ -3,8 +3,9 @@ package ch.epfl.rigel.gui;
 import ch.epfl.rigel.astronomy.AsterismLoader;
 import ch.epfl.rigel.astronomy.HygDatabaseLoader;
 import ch.epfl.rigel.astronomy.StarCatalogue;
-import ch.epfl.rigel.coordinates.GeographicCoordinates;
-import ch.epfl.rigel.coordinates.HorizontalCoordinates;
+import ch.epfl.rigel.coordinates.*;
+import ch.epfl.rigel.math.ClosedInterval;
+import ch.epfl.rigel.math.RightOpenInterval;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -275,11 +276,25 @@ public class Main extends Application {
         }
 
         searchButton.setOnMousePressed(e -> {
-            boolean objectFounded = searchEngine.search(searchTextField.getText());
-            if (!objectFounded)
+            boolean objectFounded = searchEngine.search(searchTextField.getText().toLowerCase());
+            if (!objectFounded) {
                 searchTextField.setStyle("-fx-border-color: red");
-            else
+            }
+            else {
                 searchTextField.setStyle("");
+                EquatorialCoordinates ec = searchEngine.getObject(searchTextField.getText().toLowerCase()).equatorialPos();
+                EquatorialToHorizontalConversion equToHrz = new EquatorialToHorizontalConversion(
+                        dateTimeBean.getZonedDateTime(),
+                        observerLocationBean.getCoordinates());
+                HorizontalCoordinates objectCenter = equToHrz.apply(ec);
+                if (ClosedInterval.of(0, 90).contains(objectCenter.altDeg())
+                        && RightOpenInterval.of(0, 360).contains(objectCenter.azDeg())) {
+                    viewingParametersBean.setCenter(objectCenter);
+                    viewingParametersBean.setFieldOfViewDeg(35d);
+                } else {
+                    System.out.println("L'objet céleste n'est pas visible à cet instant / position d'observation.");
+                }
+            }
 
         });
 

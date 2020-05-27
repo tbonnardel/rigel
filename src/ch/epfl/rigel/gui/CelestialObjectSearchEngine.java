@@ -1,7 +1,6 @@
 package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.CelestialObject;
-import ch.epfl.rigel.coordinates.HorizontalCoordinates;
 import javafx.scene.transform.Transform;
 
 import java.util.Map;
@@ -25,12 +24,10 @@ public final class CelestialObjectSearchEngine {
         return celestialObjectMap.keySet().contains(name);
     }
 
-    public HorizontalCoordinates findCenter(String name) {
-        if (search(name)) {
-            CelestialObject celestialObject = celestialObjectMap.get(name);
-            //celestialObject.
-            // TODO: WIP
-        }
-        return null;
+    public CelestialObject getObject(String name) {
+        if (!search(name))
+            throw new IllegalArgumentException();
+
+        return celestialObjectMap.get(name);
     }
 }
