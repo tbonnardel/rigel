@@ -1,5 +1,7 @@
 package ch.epfl.rigel.gui;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
@@ -17,25 +19,41 @@ import java.util.TreeSet;
  * @author Thomas Bonnardel (319827)
  */
 public final class AutocompleteTextField extends TextField {
-    private final Set<String> values;
+    private ObjectProperty<Set<String>> suggestions;
     private ContextMenu autocompletionBlock;
 
     /**
      * Constructeur de champ de texte avec auto-completion.
      *
-     * @param values l'ensemble des valeurs acceptables
+     * @param suggestions l'ensemble des valeurs suggérables
      */
-    public AutocompleteTextField(Set<String> values) {
-        this.values = values;
+    public AutocompleteTextField(Set<String> suggestions) {
+        this.suggestions = new SimpleObjectProperty<>();
+        setSuggestions(suggestions);
         autocompletionBlock = new ContextMenu();
 
         // Attache l'auditeur
         this.textProperty().addListener(
                 (p, o, n) -> {
-                    System.out.println(findMatchValues(n));
+                    System.out.println(findMatchValues(n)); // TODO: A enlever
                     hydrateAutocompletionBlock(findMatchValues(n));
                 }
         );
+    }
+
+    // TODO: Documentation
+    public Set<String> getSuggestions() {
+        return suggestions.get();
+    }
+
+    // TODO: Documentation
+    public ObjectProperty<Set<String>> suggestionsProperty() {
+        return suggestions;
+    }
+
+    // TODO: Documentation
+    public void setSuggestions(Set<String> suggestions) {
+        this.suggestions.set(suggestions);
     }
 
     /**
@@ -51,7 +69,7 @@ public final class AutocompleteTextField extends TextField {
             return null;
 
         Set<String> set = new TreeSet<>();
-        for (String s : values) {
+        for (String s : getSuggestions()) {
             if (s.startsWith(prefix))
                 set.add(s);
         }
