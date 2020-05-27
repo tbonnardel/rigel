@@ -295,6 +295,16 @@ public class Main extends Application {
                     viewingParametersBean.setCenter(objectCenter);
                     viewingParametersBean.setFieldOfViewDeg(SEARCH_ZOOM_VALUE);
                 } else {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Objet invisible");
+
+                    alert.setContentText(new StringBuilder()
+                            .append("L'objet céleste <")
+                            .append(searchTextField.getText())
+                            .append("> n'est pas visible à cet instant / position d'observation.")
+                            .toString());
+
+                    alert.showAndWait();
                     System.out.printf("L'objet céleste <%s> n'est pas visible à cet instant / position d'observation.%n", searchTextField.getText());
                 }
             }
