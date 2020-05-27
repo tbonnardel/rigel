@@ -62,6 +62,7 @@ public final class Main extends Application {
     private ViewingParametersBean viewingParametersBean = new ViewingParametersBean();
     private DateTimeBean dateTimeBean = new DateTimeBean();
     private TimeAnimator timeAnimator = new TimeAnimator(dateTimeBean);
+    private ObservedCatalogueBean observedCatalogueBean = new ObservedCatalogueBean();
 
     private CelestialObjectSearchEngine searchEngine;
     private final static double SEARCH_ZOOM_VALUE = 30d;
@@ -315,7 +316,8 @@ public final class Main extends Application {
 
             skyCanvasManager =
                     new SkyCanvasManager(catalogue,
-                            dateTimeBean, observerLocationBean, viewingParametersBean);
+                            dateTimeBean, observerLocationBean,
+                            viewingParametersBean, observedCatalogueBean);
             Canvas skyCanvas = skyCanvasManager.canvas();
             skyPane = new Pane(skyCanvas);
             skyCanvas.widthProperty().bind(skyPane.widthProperty());
