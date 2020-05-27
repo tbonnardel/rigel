@@ -4,6 +4,7 @@ import ch.epfl.rigel.astronomy.CelestialObject;
 import javafx.scene.transform.Transform;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Cette classe représente un moteur de recherche d'objets célestes.
@@ -21,8 +22,10 @@ public final class CelestialObjectSearchEngine {
     }
 
     public boolean search(String name) {
-        return celestialObjectMap.keySet().contains(name);
+        return getObjectNameSet().contains(name);
     }
+
+    public Set<String> getObjectNameSet() {return celestialObjectMap.keySet(); }
 
     public CelestialObject getObject(String name) {
         if (!search(name))

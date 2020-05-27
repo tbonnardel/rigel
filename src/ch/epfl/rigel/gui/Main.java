@@ -27,6 +27,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 
 /**
@@ -265,7 +266,7 @@ public class Main extends Application {
     }
 
     private HBox createSearchHBox() {
-        TextField searchTextField = new TextField();
+        AutocompleteTextField searchTextField = new AutocompleteTextField(Set.of("Saturne", "Soleil", "Lune", "Rigel", "Mercure", "Mars"));
         searchTextField.setPromptText("Rigel, Soleil ...");
 
         searchTextField.setOnAction(e -> {
