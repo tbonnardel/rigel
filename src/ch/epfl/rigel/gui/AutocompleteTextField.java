@@ -6,10 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 
 /**
@@ -19,8 +16,11 @@ import java.util.TreeSet;
  * @author Thomas Bonnardel (319827)
  */
 public final class AutocompleteTextField extends TextField {
-    private ObjectProperty<Set<String>> suggestions;
+
+    private Set<String> suggestions;
     private ContextMenu autocompletionBlock;
+
+    private final static int MAX_NAMES_ON_DIPLAY = 10;
 
     /**
      * Constructeur de champ de texte avec auto-completion.
@@ -28,8 +28,7 @@ public final class AutocompleteTextField extends TextField {
      * @param suggestions l'ensemble des valeurs suggérables
      */
     public AutocompleteTextField(Set<String> suggestions) {
-        this.suggestions = new SimpleObjectProperty<>();
-        setSuggestions(suggestions);
+        this.suggestions = new TreeSet<>();
         autocompletionBlock = new ContextMenu();
 
         // Attache l'auditeur
@@ -42,18 +41,8 @@ public final class AutocompleteTextField extends TextField {
     }
 
     // TODO: Documentation
-    public Set<String> getSuggestions() {
-        return suggestions.get();
-    }
-
-    // TODO: Documentation
-    public ObjectProperty<Set<String>> suggestionsProperty() {
-        return suggestions;
-    }
-
-    // TODO: Documentation
     public void setSuggestions(Set<String> suggestions) {
-        this.suggestions.set(suggestions);
+        this.suggestions = suggestions;
     }
 
     /**
@@ -69,8 +58,11 @@ public final class AutocompleteTextField extends TextField {
             return null;
 
         Set<String> set = new TreeSet<>();
-        for (String s : getSuggestions()) {
-            if (s.startsWith(prefix))
+        for (String s : suggestions) {
+            if (set.size() > MAX_NAMES_ON_DIPLAY)
+                break;
+
+            if (s.startsWith(prefix.toLowerCase()))
                 set.add(s);
         }
 

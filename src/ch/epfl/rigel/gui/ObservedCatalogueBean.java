@@ -2,8 +2,10 @@ package ch.epfl.rigel.gui;
 
 import ch.epfl.rigel.astronomy.CelestialObject;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Cette classe représente un bean du catalogue de l'instant observé.
@@ -14,6 +16,11 @@ public final class ObservedCatalogueBean {
 
     private ObjectProperty<Map<String, CelestialObject>> celestialObjectMap;
 
+    public ObservedCatalogueBean() {
+        celestialObjectMap = new SimpleObjectProperty<>();
+
+        setCelestialObjectMap(new TreeMap<>());
+    }
 
     public Map<String, CelestialObject> getCelestialObjectMap() {
         return celestialObjectMap.get();

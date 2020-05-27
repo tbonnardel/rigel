@@ -64,7 +64,7 @@ public final class Main extends Application {
     private TimeAnimator timeAnimator = new TimeAnimator(dateTimeBean);
     private ObservedCatalogueBean observedCatalogueBean = new ObservedCatalogueBean();
 
-    private CelestialObjectSearchEngine searchEngine;
+    private CelestialObjectSearchEngine searchEngine = new CelestialObjectSearchEngine();
     private final static double SEARCH_ZOOM_VALUE = 30d;
 
 
@@ -95,9 +95,6 @@ public final class Main extends Application {
         timeAnimator.setAccelerator(NamedTimeAccelerator.TIMES_300.getAccelerator());
 
         BorderPane root = new BorderPane(createSky(), createControlBar(), null, createInfoBar(), null);
-
-        searchEngine = new CelestialObjectSearchEngine(skyCanvasManager.getCelestialObjectMap(), null);
-
 
         primaryStage.setTitle(APPLICATION_NAME);
         primaryStage.setMinWidth(MIN_WIDTH);
@@ -268,6 +265,13 @@ public final class Main extends Application {
 
     private HBox createSearchHBox() {
         AutocompleteTextField searchTextField = new AutocompleteTextField(Set.of("Saturne", "Soleil", "Lune", "Rigel", "Mercure", "Mars"));
+        observedCatalogueBean.celestialObjectMapProperty().addListener(
+                (p, o, n) ->
+                    {
+                        searchTextField.setSuggestions(n.keySet());
+                        searchEngine.setCelestialObjectMap(n);
+                    }
+                );
         searchTextField.setPromptText("Rigel, Soleil ...");
 
         searchTextField.setOnAction(e -> {
