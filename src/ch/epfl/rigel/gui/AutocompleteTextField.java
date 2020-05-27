@@ -1,7 +1,5 @@
 package ch.epfl.rigel.gui;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Side;
 import javafx.scene.control.*;
