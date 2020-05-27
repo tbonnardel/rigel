@@ -33,7 +33,7 @@ import java.util.function.UnaryOperator;
  *
  * @author Thomas Bonnardel (319827)
  */
-public class Main extends Application {
+public final class Main extends Application {
 
     private final static String APPLICATION_NAME = "Rigel";
     private final static double MIN_WIDTH = 800;
