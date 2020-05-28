@@ -53,6 +53,7 @@ public final class Main extends Application {
     private final static String UNDO_ICON = "\uf0e2";
     private final static String PLAY_ICON = "\uf04b";
     private final static String PAUSE_ICON = "\uf04c";
+    private final static String SEARCH_ICON = "\uf002";
 
     private final static int LONGITUDE_FORMATTER = 0;
     private final static int LATITUDE_FORMATTER = 1;
@@ -262,8 +263,9 @@ public final class Main extends Application {
         return timeAnimationHBox;
     }
 
-    private HBox createSearchHBox() {
+    private HBox createSearchHBox() throws IOException {
         AutocompleteTextField searchTextField = new AutocompleteTextField();
+        searchTextField.setPromptText("Rigel, Soleil ...");
         observedCatalogueBean.celestialObjectMapProperty().addListener(
                 (p, o, n) ->
                     {
@@ -271,9 +273,14 @@ public final class Main extends Application {
                         searchEngine.setCelestialObjectMap(n);
                     }
                 );
-        searchTextField.setPromptText("Rigel, Soleil ...");
 
-        searchTextField.setOnAction(e -> {
+        Button searchButton = new Button(SEARCH_ICON);
+        try (InputStream fontStream = resourceStream(FONT_AWESOME)) {
+            Font fontAwesome = Font.loadFont(fontStream, 15);
+            searchButton.setFont(fontAwesome);
+        }
+
+        searchButton.setOnMousePressed(e -> {
             String targetName = searchTextField.getText().toUpperCase();
             boolean objectFounded = searchEngine.search(targetName);
             if (!objectFounded) {
@@ -297,7 +304,7 @@ public final class Main extends Application {
             }
         });
 
-        HBox searchHBox = new HBox(searchTextField);
+        HBox searchHBox = new HBox(searchTextField, searchButton);
         searchHBox.setStyle("-fx-spacing: inherit;");
         return  searchHBox;
     }
