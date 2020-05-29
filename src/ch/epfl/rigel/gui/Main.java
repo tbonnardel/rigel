@@ -282,22 +282,19 @@ public final class Main extends Application {
 
         searchButton.setOnMousePressed(e -> {
             String targetName = searchTextField.getText().toUpperCase();
-            boolean objectFounded = searchEngine.search(targetName);
-            if (!objectFounded) {
+
+            if (! searchEngine.search(targetName)) {
                 searchTextField.setStyle("-fx-border-color: red");
             }
             else {
                 searchTextField.setStyle("");
-                EquatorialCoordinates ec = searchEngine.getObject(targetName).equatorialPos();
                 EquatorialToHorizontalConversion equToHrz = new EquatorialToHorizontalConversion(
                         dateTimeBean.getZonedDateTime(),
                         observerLocationBean.getCoordinates());
-                HorizontalCoordinates objectCenter = equToHrz.apply(ec);
+                HorizontalCoordinates objectCenter = equToHrz.apply(searchEngine.getObject(targetName).equatorialPos());
 
-                if (ClosedInterval.of(0, 90).contains(objectCenter.altDeg())
-                        && RightOpenInterval.of(0, 360).contains(objectCenter.azDeg())) {
-                    viewingParametersBean.setCenter(objectCenter);
-                    viewingParametersBean.setFieldOfViewDeg(SEARCH_ZOOM_VALUE);
+                if (observedCatalogueBean.isVisible(objectCenter)) {
+                    zoomAndFocusOn(objectCenter);
                 } else {
                     createUnvisibleObjectWarningAlert(targetName);
                 }
@@ -307,6 +304,17 @@ public final class Main extends Application {
         HBox searchHBox = new HBox(searchTextField, searchButton);
         searchHBox.setStyle("-fx-spacing: inherit;");
         return  searchHBox;
+    }
+
+    /**
+     * Méthode qui zoom et centre l'objet céleste à l'écran
+     * dont les coordonnées horizontales de son centre sont données.
+     *
+     * @param objectCenter les coordonnées horizontales du centre de l'objet
+     */
+    private void zoomAndFocusOn(HorizontalCoordinates objectCenter) {
+        viewingParametersBean.setCenter(objectCenter);
+        viewingParametersBean.setFieldOfViewDeg(SEARCH_ZOOM_VALUE);
     }
 
     /**
