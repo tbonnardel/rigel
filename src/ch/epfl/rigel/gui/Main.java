@@ -4,8 +4,6 @@ import ch.epfl.rigel.astronomy.AsterismLoader;
 import ch.epfl.rigel.astronomy.HygDatabaseLoader;
 import ch.epfl.rigel.astronomy.StarCatalogue;
 import ch.epfl.rigel.coordinates.*;
-import ch.epfl.rigel.math.ClosedInterval;
-import ch.epfl.rigel.math.RightOpenInterval;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;

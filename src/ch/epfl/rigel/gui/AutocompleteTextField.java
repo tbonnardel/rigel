@@ -33,7 +33,11 @@ public final class AutocompleteTextField extends TextField {
         );
     }
 
-    // TODO: Documentation
+    /**
+     * Méthode qui définie l'ensemble des suggestions à afficher.
+     *
+     * @param suggestions les suggestions à afficher
+     */
     public void setSuggestions(Set<String> suggestions) {
         this.suggestions = suggestions;
     }

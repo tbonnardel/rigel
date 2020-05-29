@@ -22,20 +22,38 @@ public final class ObservedCatalogueBean {
 
     private ObjectProperty<Map<String, CelestialObject>> celestialObjectMap;
 
+    /**
+     * Constructeur du bean du catalogue observable.
+     */
     public ObservedCatalogueBean() {
         celestialObjectMap = new SimpleObjectProperty<>();
 
         setCelestialObjectMap(new TreeMap<>());
     }
 
+    /**
+     * Méthode d'accès qui retourne la table associative des objets célestes.
+     *
+     * @return la table associative des objets célestes
+     */
     public Map<String, CelestialObject> getCelestialObjectMap() {
         return celestialObjectMap.get();
     }
 
+    /**
+     * Méthode d'accès qui retourne la propriété celestianObjectMap.
+     *
+     * @return la propriété celestianObjectMap
+     */
     public ObjectProperty<Map<String, CelestialObject>> celestialObjectMapProperty() {
         return celestialObjectMap;
     }
 
+    /**
+     * Méthode publique qui (re)initialise la table associative des objets célestes.
+     *
+     * @param celestialObjectMap la nouvelle table associative des objets célestes
+     */
     public void setCelestialObjectMap(Map<String, CelestialObject> celestialObjectMap) {
         this.celestialObjectMap.set(celestialObjectMap);
     }
