@@ -18,8 +18,6 @@ import javafx.scene.transform.Transform;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import static java.lang.Math.*;
 
