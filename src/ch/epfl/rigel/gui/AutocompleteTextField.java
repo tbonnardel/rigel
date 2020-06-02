@@ -27,7 +27,6 @@ public final class AutocompleteTextField extends TextField {
         this.suggestions = new TreeSet<>();
         autocompletionBlock = new ContextMenu();
 
-        // Attache l'auditeur
         this.textProperty().addListener(
                 (p, o, n) -> hydrateAutocompletionBlock(findMatchValues(n))
         );
