@@ -13,7 +13,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Transform;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.tan;
@@ -27,6 +29,7 @@ import static java.lang.Math.tan;
 public final class SkyCanvasPainter {
 
     private final Canvas canvas;
+    private Map<String, CelestialObject> celestialObjectMap;
 
     private final static Color BACKGROUND_COLOR = Color.BLACK;
     private final static Color ASTERISMS_COLOR = Color.BLUE;
@@ -52,8 +55,17 @@ public final class SkyCanvasPainter {
      */
     public SkyCanvasPainter(Canvas canvas) {
         this.canvas = canvas;
+        this.celestialObjectMap = new HashMap<>();
     }
 
+    /**
+     * Méthode publique qui retourne la table associative des objets célestes dessinés.
+     *
+     * @return la table associative des objets célestes dessinés
+     */
+    public Map<String, CelestialObject> getCelestialObjectMap() {
+        return celestialObjectMap;
+    }
 
     /**
      * Méthode qui efface le canevas.
@@ -85,7 +97,8 @@ public final class SkyCanvasPainter {
                             sky.starPositions()[2*i+1]),
                     size(star),
                     BlackBodyColor.colorForTemperature(star.colorTemperature()),
-                    planeToCanvas);
+                    planeToCanvas,
+                    sky.stars().get(i));
         }
     }
 
@@ -104,7 +117,8 @@ public final class SkyCanvasPainter {
                             sky.planetPositions()[2*i+1]),
                     size(sky.planets().get(i)),
                     PLANETS_COLOR,
-                    planeToCanvas
+                    planeToCanvas,
+                    sky.planets().get(i)
                     );
         }
     }
@@ -126,19 +140,22 @@ public final class SkyCanvasPainter {
                 absCenter,
                 sunSize*HALO_COEF,
                 SUN_HALO_COLOR,
-                planeToCanvas
+                planeToCanvas,
+                sun
         );
         drawDisk(
                 absCenter,
                 sunSize + abs(2/planeToCanvas.getMxx()),
                 SUN_MIDDLE_COLOR,
-                planeToCanvas
+                planeToCanvas,
+                null
         );
         drawDisk(
                 absCenter,
                 size(sun),
                 SUN_CENTER_COLOR,
-                planeToCanvas
+                planeToCanvas,
+                null
         );
     }
 
@@ -154,7 +171,8 @@ public final class SkyCanvasPainter {
                 sky.moonPosition(),
                 size(sky.moon()),
                 MOON_COLOR,
-                planeToCanvas
+                planeToCanvas,
+                sky.moon()
         );
     }
 
@@ -182,15 +200,19 @@ public final class SkyCanvasPainter {
      * @param color la couleur du disque
      * @param planeToCanvas la transformation entre le repère de la
      *                      projection et celui du canevas
+     * @param object l'objet céleste à dessiner
      */
     private void drawDisk(CartesianCoordinates absCenter, double absSize,
-                          Color color, Transform planeToCanvas) {
+                          Color color, Transform planeToCanvas, CelestialObject object) {
         GraphicsContext ctx = canvas.getGraphicsContext2D();
         ctx.setFill(color);
 
         Point2D center = planeToCanvas.transform(
                 absCenter.x(),
                 absCenter.y());
+        if (object != null && !object.name().isBlank()) {
+            celestialObjectMap.put(object.name().toUpperCase(), object);
+        }
         Point2D dimension = planeToCanvas.deltaTransform(absSize, absSize);
         ctx.fillOval(
                 center.getX() - dimension.getX()/2,

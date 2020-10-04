@@ -3,8 +3,7 @@ package ch.epfl.rigel.gui;
 import ch.epfl.rigel.astronomy.AsterismLoader;
 import ch.epfl.rigel.astronomy.HygDatabaseLoader;
 import ch.epfl.rigel.astronomy.StarCatalogue;
-import ch.epfl.rigel.coordinates.GeographicCoordinates;
-import ch.epfl.rigel.coordinates.HorizontalCoordinates;
+import ch.epfl.rigel.coordinates.*;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -52,6 +51,7 @@ public final class Main extends Application {
     private final static String UNDO_ICON = "\uf0e2";
     private final static String PLAY_ICON = "\uf04b";
     private final static String PAUSE_ICON = "\uf04c";
+    private final static String SEARCH_ICON = "\uf002";
 
     private final static int LONGITUDE_FORMATTER = 0;
     private final static int LATITUDE_FORMATTER = 1;
@@ -60,6 +60,10 @@ public final class Main extends Application {
     private ViewingParametersBean viewingParametersBean = new ViewingParametersBean();
     private DateTimeBean dateTimeBean = new DateTimeBean();
     private TimeAnimator timeAnimator = new TimeAnimator(dateTimeBean);
+    private ObservedCatalogueBean observedCatalogueBean = new ObservedCatalogueBean();
+
+    private CelestialObjectSearchEngine searchEngine = new CelestialObjectSearchEngine();
+    private final static double SEARCH_ZOOM_VALUE = 30d;
 
 
     private SkyCanvasManager skyCanvasManager;
@@ -110,11 +114,13 @@ public final class Main extends Application {
         HBox observedLocationHBox = createObservedLocationHBox();
         HBox observedDateTimeHBox = createObservedDateTimeHBox();
         HBox timeAnimationHBox = createTimeAnimationHBox();
+        HBox searchHBox = createSearchHBox();
 
         HBox controlBar = new HBox(
                 observedLocationHBox, new Separator(Orientation.VERTICAL),
                 observedDateTimeHBox, new Separator(Orientation.VERTICAL),
-                timeAnimationHBox);
+                timeAnimationHBox, new Separator(Orientation.VERTICAL),
+                searchHBox);
         controlBar.setStyle("-fx-spacing: 4; -fx-padding: 4;");
 
         return controlBar;
@@ -255,6 +261,60 @@ public final class Main extends Application {
         return timeAnimationHBox;
     }
 
+    private HBox createSearchHBox() throws IOException {
+        AutocompleteTextField searchTextField = new AutocompleteTextField();
+        searchTextField.setPromptText("Rigel, Soleil ...");
+        observedCatalogueBean.celestialObjectMapProperty().addListener(
+                (p, o, n) ->
+                    {
+                        searchTextField.setSuggestions(n.keySet());
+                        searchEngine.setCelestialObjectMap(n);
+                    }
+                );
+
+        Button searchButton = new Button(SEARCH_ICON);
+        try (InputStream fontStream = resourceStream(FONT_AWESOME)) {
+            Font fontAwesome = Font.loadFont(fontStream, 15);
+            searchButton.setFont(fontAwesome);
+        }
+
+        searchButton.setOnMousePressed(e -> {
+            String targetName = searchTextField.getText().toUpperCase();
+
+            if (! searchEngine.search(targetName)) {
+                searchTextField.setStyle("-fx-border-color: red");
+            }
+            else {
+                searchTextField.setStyle("");
+                EquatorialToHorizontalConversion equToHrz = new EquatorialToHorizontalConversion(
+                        dateTimeBean.getZonedDateTime(),
+                        observerLocationBean.getCoordinates());
+                HorizontalCoordinates objectCenter = equToHrz.apply(searchEngine.getObject(targetName).equatorialPos());
+
+                if (observedCatalogueBean.isVisible(objectCenter)) {
+                    zoomAndFocusOn(objectCenter);
+                } else {
+                    createUnvisibleObjectWarningAlert(targetName);
+                }
+            }
+        });
+
+        HBox searchHBox = new HBox(searchTextField, searchButton);
+        searchHBox.setStyle("-fx-spacing: inherit;");
+        return  searchHBox;
+    }
+
+    /**
+     * Méthode qui zoom et centre l'objet céleste à l'écran
+     * dont les coordonnées horizontales de son centre sont données.
+     *
+     * @param objectCenter les coordonnées horizontales du centre de l'objet
+     */
+    private void zoomAndFocusOn(HorizontalCoordinates objectCenter) {
+        viewingParametersBean.setCenter(objectCenter);
+        viewingParametersBean.setFieldOfViewDeg(SEARCH_ZOOM_VALUE);
+    }
+
     /**
      * Méthode privée qui retourne le panneau du ciel.
      *
@@ -272,7 +332,8 @@ public final class Main extends Application {
 
             skyCanvasManager =
                     new SkyCanvasManager(catalogue,
-                            dateTimeBean, observerLocationBean, viewingParametersBean);
+                            dateTimeBean, observerLocationBean,
+                            viewingParametersBean, observedCatalogueBean);
             Canvas skyCanvas = skyCanvasManager.canvas();
             skyPane = new Pane(skyCanvas);
             skyCanvas.widthProperty().bind(skyPane.widthProperty());
@@ -303,6 +364,25 @@ public final class Main extends Application {
                 null, horizontalPositionLabel, null, fieldOfViewLabel);
         infoBar.setStyle("-fx-padding: 4; -fx-background-color: white;");
         return infoBar;
+    }
+
+    /**
+     * Méthode privée qui créée et affiche un alerte d'avertissement
+     * lorsque un objet céleste recherché est invisible.
+     *
+     * @param objectName le nom de l'objet céleste invisible
+     */
+    private void createUnvisibleObjectWarningAlert(String objectName) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Objet invisible");
+
+        alert.setContentText(new StringBuilder()
+                .append("L'objet céleste <")
+                .append(objectName)
+                .append("> n'est pas visible à cet instant / position d'observation.")
+                .toString());
+
+        alert.showAndWait();
     }
 
     /**
