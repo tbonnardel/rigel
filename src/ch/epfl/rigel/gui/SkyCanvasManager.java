@@ -16,6 +16,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.Math.*;
@@ -32,6 +33,9 @@ public final class SkyCanvasManager {
     private final DateTimeBean dateTimeB;
     private final ViewingParametersBean viewingParametersB;
     private final ObserverLocationBean observerLocationB;
+    private final ObservedCatalogueBean observedCatalogueB;
+
+    private Map<String, CelestialObject> celestialObjectMap = null;
 
     private final ObjectProperty<Canvas> canvas;
 
@@ -64,14 +68,17 @@ public final class SkyCanvasManager {
      *                           l'observateur
      * @param viewingParametersB le bean contenant les paramètres
      *                           déterminant la portion du ciel à afficher
+     * @param observedCatalogueB le bean contenant le catalogue du ciel affiché
      */
     public SkyCanvasManager(StarCatalogue starCatalogue, DateTimeBean dateTimeB,
                             ObserverLocationBean observerLocationB,
-                            ViewingParametersBean viewingParametersB) {
+                            ViewingParametersBean viewingParametersB,
+                            ObservedCatalogueBean observedCatalogueB) {
         this.starCatalogue = starCatalogue;
         this.dateTimeB = dateTimeB;
         this.viewingParametersB = viewingParametersB;
         this.observerLocationB = observerLocationB;
+        this.observedCatalogueB = observedCatalogueB;
 
         this.canvas = new SimpleObjectProperty<>();
         this.canvas.setValue(new Canvas(DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT));
@@ -159,6 +166,14 @@ public final class SkyCanvasManager {
         addAllListeners();
     }
 
+    /**
+     * Méthode publique qui retourne la table associative des objets célestes dessinés.
+     *
+     * @return la table associative des objets célestes dessinés
+     */
+    public Map<String, CelestialObject> getCelestialObjectMap() {
+        return celestialObjectMap;
+    }
 
     /**
      * Méthode privée qui dessine le ciel sur le canevas.
@@ -175,6 +190,7 @@ public final class SkyCanvasManager {
         painter.drawSun(sky, planeToCanvas);
         painter.drawMoon(sky, planeToCanvas);
         painter.drawHorizon(projection, planeToCanvas);
+        observedCatalogueB.setCelestialObjectMap(painter.getCelestialObjectMap());
     }
 
     /**
